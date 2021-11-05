@@ -11,4 +11,3 @@ Then, in your Python code:
 
     from smartgrid.world import World
     from smartgrid.environment import SmartGrid
-
