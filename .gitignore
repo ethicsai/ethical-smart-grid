@@ -27,3 +27,6 @@ gen
 .LSOverride
 # Thumbnails
 ._*
+
+### Sphinx documentation
+docs/build

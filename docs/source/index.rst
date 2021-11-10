@@ -9,8 +9,7 @@ distribution, using the OpenAI Gym framework.
    :caption: Contents:
 
    usage
-   api
-
+   generated/modules
 
 Indices and tables
 ==================
