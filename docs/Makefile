@@ -16,7 +16,7 @@ help:
 # (and submodules).
 generate-autodoc:
 	mkdir -p "$(SOURCEDIR)/generated"
-	sphinx-apidoc --force --module-first --output-dir "$(SOURCEDIR)/generated" "../smartgrid"
+	sphinx-apidoc --force --module-first --private --output-dir "$(SOURCEDIR)/generated" "../smartgrid"
 
 .PHONY: help Makefile generate-autodoc
 
