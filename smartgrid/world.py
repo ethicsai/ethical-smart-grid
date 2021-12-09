@@ -27,7 +27,7 @@ class World(object):
     def step(self):
         # Integrate all agents' actions
         for i, agent in enumerate(self.agents):
-            action_enacted = self.handle_action(agent, agent.action)
+            agent.enacted_action = self.handle_action(agent, agent.intended_action)
 
         # Compute next state
         self.current_step += 1
@@ -113,7 +113,7 @@ class World(object):
         # The initial quantity of available energy
         production = self.available_energy
         # The quantity consumed by agents
-        consumption = sum([agent.action.grid_consumption
+        consumption = sum([agent.enacted_action.grid_consumption
                            for agent in self.agents])
         return consumption / production
 

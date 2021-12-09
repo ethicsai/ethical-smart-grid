@@ -34,20 +34,23 @@ class Observation(namedtuple('Observation', fields)):
         """Compute observations that an agent will receive about the env."""
 
         # Pre-compute some intermediate data
-        comforts = [a.state.comfort for a in env.agents]
-        sum_taken = sum([a.action.grid_consumption + a.action.store_energy
-                         for a in env.agents])
-        sum_given = sum([a.action.give_energy for a in env.agents])
-        sum_transactions = sum([a.action.buy_energy + a.action.sell_energy
-                                for a in env.agents])
-        sum_consumed = sum([a.action.grid_consumption + a.action.storage_consumption
-                            for a in env.agents])
-        sum_stored = sum([a.action.store_energy for a in env.agents])
+        comforts = []
+        sum_taken, sum_given, sum_transactions, sum_consumed, sum_stored = 0, 0, 0, 0, 0
+        for a in env.agents:
+            comforts.append(a.state.comfort)
+            sum_taken += a.enacted_action.grid_consumption \
+                         + a.enacted_action.store_energy
+            sum_given += a.enacted_action.give_energy
+            sum_transactions += a.enacted_action.buy_energy \
+                                + a.enacted_action.sell_energy
+            sum_consumed += a.enacted_action.grid_consumption \
+                            + a.enacted_action.storage_consumption
+            sum_stored += a.enacted_action.store_energy
 
         # Individual data
-        personal_storage = agent.state.storage  # FIXME: scale!
+        personal_storage = agent.storage_ratio
         comfort = agent.state.comfort
-        payoff = agent.state.payoff  # FIXME: scale!
+        payoff = agent.payoff_ratio
 
         # Compute some common measures about env
         hour = (env.world.current_step % 24) / 24

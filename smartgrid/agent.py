@@ -1,4 +1,6 @@
 from collections import namedtuple
+
+import numpy as np
 from gym.spaces import Space
 
 from smartgrid.util.bounded import (increase_bounded, decrease_bounded)
@@ -32,7 +34,11 @@ class Agent(object):
     action_space: Space
     max_storage: int
     state: AgentState
-    action: Action
+    intended_action: Action
+    enacted_action: Action
+
+    # The range in which the 'payoff' can be.
+    payoff_range = (-10_000, +10_000)
 
     def __init__(self,
                  name: str,
@@ -72,8 +78,8 @@ class Agent(object):
 
     def compute_comfort(self):
         # Total quantity consumed by agent
-        consumption = self.action.grid_consumption \
-                      + self.action.storage_consumption
+        consumption = self.enacted_action.grid_consumption \
+                      + self.enacted_action.storage_consumption
         # Energy that agent needed
         need = self.state.need
         return self._compute_comfort(consumption, need)
@@ -87,7 +93,18 @@ class Agent(object):
     def reset(self):
         self.state = AgentState()
         self.state.need = self._compute_need(0)
-        self.action = Action(*[0] * len(Action._fields))
+        self.intended_action = Action(*[0] * len(Action._fields))
+        self.enacted_action = self.intended_action
+
+    @property
+    def storage_ratio(self):
+        """Return the current storage quantity over its capacity (in [0,1])."""
+        return self.state.storage / (self.max_storage + 10E-300)
+
+    @property
+    def payoff_ratio(self):
+        """Return the current payoff scaled to [0,1]"""
+        return np.interp(self.state.payoff, Agent.payoff_range, (0, 1))
 
     def __str__(self):
         return '<Agent {}>'.format(self.name)
