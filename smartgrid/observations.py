@@ -54,7 +54,9 @@ class Observation(namedtuple('Observation', fields)):
 
         # Compute some common measures about env
         hour = (env.world.current_step % 24) / 24
-        available_energy = env.world.available_energy  # FIXME: scale to [0,1]!
+        available_energy = np.interp(env.world.available_energy,
+                                     env.world.energy_generator.available_energy_bounds(env.world),
+                                     (0, 1))
         equity = 1.0 - hoover(comforts)
 
         over_consumption = max(0, sum_taken - sum_given - env.world.available_energy)
@@ -83,7 +85,7 @@ class Observation(namedtuple('Observation', fields)):
                   exclusion=exclusion,
                   well_being=well_being,
                   over_consumption=over_consumption)
-        # obs.check_between_0_and_1()
+        obs.check_between_0_and_1()
 
         return obs
 

@@ -1,8 +1,9 @@
 import math
-from typing import Callable, List
+from typing import List
 
 from smartgrid.agent import Action, Agent
 from smartgrid.util.bounded import decrease_bounded, increase_bounded
+from smartgrid.util import EnergyGenerator
 
 
 class World(object):
@@ -10,17 +11,17 @@ class World(object):
     # List of agents acting in the world
     # (currently, no distinction between policy and scripted agents)
     agents: List[Agent]
-    # Function to compute the next quantity of available energy
-    compute_available_energy: Callable[['World'], int]
+    # `EnergyGenerator` to compute the next quantity of available energy
+    energy_generator: EnergyGenerator
     # The current step, begins at 0. Represents the current time of simulation
     current_step: int
     # Quantity of available energy in the local grid
     # (that agents can freely access)
     available_energy: int
 
-    def __init__(self, compute_available_energy):
+    def __init__(self, energy_generator):
         self.agents = []
-        self.compute_available_energy = compute_available_energy
+        self.energy_generator = energy_generator
         self.current_step = 0
         self.available_energy = 0
 
@@ -32,7 +33,7 @@ class World(object):
         # Compute next state
         self.current_step += 1
         ratio_consprod = self._compute_ratio_consprod()
-        self.available_energy = self.compute_available_energy(self)
+        self.available_energy = self.energy_generator.generate_available_energy(self)
         for agent in self.agents:
             agent.state.comfort = agent.compute_comfort()
             agent.state.need = agent.compute_need(self.current_step)
@@ -104,7 +105,7 @@ class World(object):
 
     def reset(self):
         self.current_step = 0
-        self.available_energy = self.compute_available_energy(self)
+        self.available_energy = self.energy_generator.generate_available_energy(self)
         for agent in self.agents:
             agent.reset()
 
