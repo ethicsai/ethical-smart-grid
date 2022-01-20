@@ -117,5 +117,16 @@ class World(object):
                            for agent in self.agents])
         return consumption / production
 
+    @property
+    def max_needed_energy(self):
+        """The total amount of energy that all agents need.
+
+        It can be used for example to interpolate the current amount of
+        available energy to [0,1].
+        This maximum amount depends on the list of current agents,
+        especially the maximum amount of energy that each may need.
+        """
+        return sum([agent.max_energy_needed for agent in self.agents])
+
     def __str__(self):
         return '<World t={}>'.format(self.current_step)

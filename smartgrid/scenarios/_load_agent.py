@@ -74,10 +74,12 @@ def _create_agent(name, comfort_fn, profile_filename):
                            need_per_hour=profile.need_per_hour)
     compute_production = partial(_compute_production,
                                  production_per_hour=profile.production_per_hour)
+    max_energy_needed = max(profile.need_per_hour)
 
     agent = Agent(name,
                   action_space,
                   max_storage,
+                  max_energy_needed,
                   comfort_fn,
                   compute_need,
                   compute_production,

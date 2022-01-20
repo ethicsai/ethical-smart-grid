@@ -33,6 +33,7 @@ class Agent(object):
     name: str
     action_space: Space
     max_storage: int
+    max_energy_needed: int
     state: AgentState
     intended_action: Action
     enacted_action: Action
@@ -44,6 +45,7 @@ class Agent(object):
                  name: str,
                  action_space,
                  max_storage,
+                 max_energy_needed,
                  compute_comfort,
                  compute_need,
                  compute_production,
@@ -53,6 +55,7 @@ class Agent(object):
         self.name = name
         self.action_space = action_space
         self.max_storage = max_storage
+        self.max_energy_needed = max_energy_needed
 
         # Callbacks (for parametrizing agent profiles)
         self._compute_comfort = compute_comfort
