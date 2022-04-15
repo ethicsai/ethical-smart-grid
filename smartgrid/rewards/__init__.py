@@ -7,5 +7,3 @@ Some reward functions are purely numerical, somewhat traditional in the
 Reinforcement Learning literature, whereas others are based on more
 symbolic reasoning.
 """
-
-from .numeric.equity import equity_reward
