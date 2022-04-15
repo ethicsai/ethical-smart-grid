@@ -9,22 +9,25 @@ step of the simulation.
 from decimal import Decimal
 
 
-def comfort_flexible(consumption, need):
+def flexible_comfort_profile(consumption: float, need: float) -> float:
     ratio = consumption / need
-    return richard_curve(ratio, q=0.1, b=20, v=2, m=1/2)
+    comfort = richard_curve(ratio, q=0.1, b=20, v=2, m=1 / 2)
+    return comfort
 
 
-def comfort_neutral(consumption, need):
+def neutral_comfort_profile(consumption: float, need: float) -> float:
     ratio = consumption / need
-    return richard_curve(ratio, q=1, b=10, v=1, m=1/2)
+    comfort = richard_curve(ratio, q=1, b=10, v=1, m=1 / 2)
+    return comfort
 
 
-def comfort_strict(consumption, need):
+def strict_comfort_profile(consumption: float, need: float) -> float:
     ratio = consumption / need
-    return richard_curve(ratio, q=10, b=16, v=0.7, m=1/2)
+    comfort = richard_curve(ratio, q=10, b=16, v=0.7, m=1/2)
+    return comfort
 
 
-def richard_curve(x, a=0.0, k=1.0, b=1.0, v=1.0, q=1.0, c=1.0, m=0.0):
+def richard_curve(x, a=0.0, k=1.0, b=1.0, v=1.0, q=1.0, c=1.0, m=0.0) -> float:
     """
     Richard's Curve or Generalised logistic function.
     See https://en.wikipedia.org/wiki/Generalised_logistic_function
@@ -43,4 +46,4 @@ def richard_curve(x, a=0.0, k=1.0, b=1.0, v=1.0, q=1.0, c=1.0, m=0.0):
     # x can be a numpy float, which is not directly convertible into Decimal
     x = Decimal(float(x))
     m = Decimal(float(m))
-    return float(a + (k-a) / ((c + q * (-b * (x-m)).exp()) ** (1/v)))
+    return float(a + (k - a) / ((c + q * (-b * (x - m)).exp()) ** (1 / v)))
