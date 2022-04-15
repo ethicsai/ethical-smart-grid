@@ -1,30 +1,19 @@
-"""
-This file defines the `comfort` functions for several profiles of agents.
-
-These functions determine the comfort level of an agent, based on the
-quantity of energy it consumed and the quantity it needed during the last
-step of the simulation.
-"""
-
 from decimal import Decimal
 
 
 def flexible_comfort_profile(consumption: float, need: float) -> float:
     ratio = consumption / need
-    comfort = richard_curve(ratio, q=0.1, b=20, v=2, m=1 / 2)
-    return comfort
+    return richard_curve(ratio, q=0.1, b=20, v=2, m=1/2)
 
 
 def neutral_comfort_profile(consumption: float, need: float) -> float:
     ratio = consumption / need
-    comfort = richard_curve(ratio, q=1, b=10, v=1, m=1 / 2)
-    return comfort
+    return richard_curve(ratio, q=1, b=10, v=1, m=1/2)
 
 
 def strict_comfort_profile(consumption: float, need: float) -> float:
     ratio = consumption / need
-    comfort = richard_curve(ratio, q=10, b=16, v=0.7, m=1/2)
-    return comfort
+    return richard_curve(ratio, q=10, b=16, v=0.7, m=1/2)
 
 
 def richard_curve(x, a=0.0, k=1.0, b=1.0, v=1.0, q=1.0, c=1.0, m=0.0) -> float:

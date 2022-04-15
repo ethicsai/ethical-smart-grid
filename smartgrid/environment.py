@@ -2,7 +2,7 @@ import numpy as np
 import gym
 from gym.spaces import Box
 
-from smartgrid.agent import Action
+from smartgrid.agents.agent import Action
 from smartgrid.observations import Observation
 from smartgrid.rewards import equity_reward
 
