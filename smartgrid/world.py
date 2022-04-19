@@ -26,7 +26,7 @@ class World(object):
     def step(self):
         # Integrate all agents' actions
         for i, agent in enumerate(self.agents):
-            agent.enacted_action = handle_action(agent, agent.intended_action)
+            agent.enacted_action = agent.handle_action()
 
         # Compute next state
         self.current_step += 1

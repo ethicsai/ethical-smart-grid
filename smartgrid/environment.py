@@ -3,7 +3,7 @@ import gym
 from gym.spaces import Box
 
 from smartgrid.agents.agent import Action
-from smartgrid.observations import Observation
+from smartgrid.observation.observations import Observation
 from smartgrid.rewards import equity_reward
 
 
