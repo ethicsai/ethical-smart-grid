@@ -1,4 +1,4 @@
-from make_env import make_env
+from smartgrid.scenarios.scenario import TestScenario
 
 try:
     # Use `tqdm` to display a progress meter as we iterate over steps
@@ -9,7 +9,7 @@ except ImportError:
 
 
 def run(config):
-    env = make_env('debug')
+    env = TestScenario().make_env()
     n_episodes = 1
     episode_length = 5
 
