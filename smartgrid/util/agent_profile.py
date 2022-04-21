@@ -59,7 +59,6 @@ from gym import spaces
 
 
 class Profile(object):
-
     # Class-scoped attributes
     # Path to the `data/` folder
     _data_path = Path(__file__).parent / '../../data'

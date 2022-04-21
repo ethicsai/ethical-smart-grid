@@ -25,11 +25,13 @@ and the other to return the bounds.
 
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
 import random
+from abc import ABC, abstractmethod
 from typing import Tuple
 
 import numpy as np
+
+from smartgrid.world import World
 
 
 class EnergyGenerator(ABC):
@@ -106,7 +108,7 @@ class RealisticEnergyGenerator(EnergyGenerator):
 
     The `data` parameter should be a NumPy ndarray giving the ratio of
     energy for each step, with respect to the maximum amount of energy
-    needed by the Agents.
+    needed by the agents.
 
     For example, `[0.3, 0.8, 0.7]` means that at the 1st step, we should make
     30% of the agents' total need available ; 80% at the 2nd step, and 70%
