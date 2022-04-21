@@ -1,10 +1,9 @@
-import numpy as np
 import gym
-from gym.spaces import Box
+import numpy as np
+from gym.vector.utils import spaces
 
 from smartgrid.agents.agent import Action
-from smartgrid.observation.observations import Observation
-from smartgrid.rewards import equity_reward
+from smartgrid.world import World
 
 
 class SmartGrid(gym.Env):
@@ -15,71 +14,85 @@ class SmartGrid(gym.Env):
     metadata = {
         'render.modes': ['text'],
     }
+
     # reward_range = (0.0, +1.0)
 
-    def __init__(self, world):
+    def __init__(self, world: World):
         self.world = world
-        self.agents = world.agents
-        self.n_agents = len(self.agents)
-
-        # Scenario callbacks
-        # self.reset_callback = None
-        self.reward_callback = equity_reward
-        # self.info_callback = None
-        # self.done_callback = None
 
         # Configure spaces
         self.action_space = []
         self.observation_space = []
-        for agent in self.agents:
-            self.action_space.append(agent.action_space)
-            obs_space = Box(low=0.0, high=1.0, shape=(len(Observation._fields),))
-            self.observation_space.append(obs_space)
+        for agent in self.world.agents:
+            self.action_space.append(agent.profile.action_space)
+            self.observation_space.append(world.observation.get_observation_space())
+
+        self.action_space = np.array(self.action_space)
 
     def step(self, action_n):
         obs_n = []
         reward_n = []
-        done_n = [False] * self.n_agents
-        info_n = {}
+        done_n = [False] * len(self.world.agents)
 
         # Reload list of agents
         # self.agents = self.world.policy_agents
 
         # Set action for each agent (will be performed in `world.step()`)
-        for i, agent in enumerate(self.agents):
-            self._set_action(action_n[i], agent)
+        for i, agent in enumerate(self.world.agents):
+            agent.intended_action = Action(*(action_n[i]))
 
         # Next step of simulation
         self.world.step()
 
         # Compute next observations and rewards
-        for agent in self.agents:
-            obs_n.append(self._get_obs(agent))
-            reward_n.append(self._get_reward(agent))
+        for agent in self.world.agents:
+            # TODO move that to Environment or a wrapper
+            obs_n.append(self.world.get_observation_agent(agent))
+            reward_n.append(self.world.get_reward(agent))
+
+        obs = {
+            "global": self.world.get_observation_global(),
+            "local": [self.world.get_observation_agent(agent) for agent in self.world.agents]
+        }
 
         # Only used for visualization, performance metrics, ...
-        mean_reward = np.mean(reward_n)
-        info_n['global_reward'] = mean_reward
-
-        return obs_n, reward_n, done_n, info_n
+        info_n = self.world.get_info(reward_n)
+        return obs, reward_n, done_n, info_n
 
     def reset(self):
         self.world.reset()
-        self.agents = self.world.agents
-        self.n_agents = len(self.agents)
-        obs_n = [
-            self._get_obs(agent) for agent in self.agents
-        ]
-        return obs_n
+        obs = {
+            "global": self.world.get_observation_global(),
+            "local": [self.world.get_observation_agent(agent) for agent in self.world.agents]
+        }
+        return obs
 
     def render(self, mode='text'):
         pass
 
-    def _get_obs(self, agent):
-        return Observation.compute(self, agent)
+    @property
+    def n_agent(self):
+        return len(self.world.agents)
 
-    def _get_reward(self, agent):
-        return self.reward_callback(self, agent)
+    @property
+    def observation_shape(self):
+        return self.world.observation_shape
 
-    def _set_action(self, action, agent):
-        agent.action = Action(*action)
+    @property
+    def world_observation_space(self):
+        return self.world.observation_space
+
+    def observation_space_per_agent(self, agent_num: int):
+        all_space = self.world.observation_space
+        to_return = all_space['global'].spaces
+        to_return.update(all_space['local'][str(agent_num)].spaces)
+
+        return spaces.Dict(to_return)
+
+    @property
+    def agents(self):
+        return self.world.agents
+
+    @property
+    def available_energy(self):
+        return self.world.available_energy
