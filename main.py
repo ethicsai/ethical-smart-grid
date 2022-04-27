@@ -1,3 +1,4 @@
+from algorithms.qsom.qsom import QSOM
 from smartgrid.scenarios.scenario import TestScenario
 
 try:
@@ -9,7 +10,7 @@ except ImportError:
 
 
 def run(config):
-    env = TestScenario().make_env()
+    env = make_env('debug')
     n_episodes = 1
     episode_length = 5
 
