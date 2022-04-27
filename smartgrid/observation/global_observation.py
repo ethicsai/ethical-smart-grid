@@ -1,15 +1,16 @@
-from abc import abstractmethod
-from collections import namedtuple
+from abc import ABC, abstractmethod
 
 import numpy as np
 
 from smartgrid.agents.agent import Agent
 from smartgrid.util import hoover
+from smartgrid.world import World
 
 
-
+# TODO herit from nameTuple
 # TODO see if update is needed
-class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
+# TODO suppress herit
+class GlobalObservation(ABC):
     """
     All observation of the World. It's the same for all Agent in the grid.
     Compute once by step.
@@ -24,27 +25,55 @@ class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
         - over_consumption: energy that was present physically in the world
         - sum_taken: energy take by all Agent in the Grid
     """
+    hour: float
+    available_energy: float
+    equity: float
+    energy_loss: float
+    autonomy: float
+    exclusion: float
+    well_being: float
+    over_consumption: float
+    sum_taken: float
 
     # computation reduction
-    last_step_compute = -1
+    last_step_compute: int
+    pass
 
-    @classmethod
-    def _is_compute(self, world: 'World') -> bool:
+    def _is_compute(self, world: World)->bool:
         return world.current_step == self.last_step_compute
 
-    @classmethod
-    def compute(cls, world: World):
+    @abstractmethod
+    def compute(self, world: World)->None:
+        pass
+
+    @abstractmethod
+    def update(self, world: World, agent: Agent):
+        pass
+
+    def reset(self):
+        self.last_step_compute = -1
+
+
+class BaseGlobal(GlobalObservation):
+    def __init__(self):
+        self.last_step_compute = -1
+
+    def update(self, world: World, agent: Agent):
+        # todo implement it
+        pass
+
+    def compute(self, world: World):
         # return directly if the step have been computed
-        if cls._is_compute(world):
-            return cls.computed
+        if self._is_compute(world):
+            return
 
         # Pre-compute some intermediate data
         comforts = []
-        sum_taken, sum_given, sum_transactions, sum_consumed, sum_stored = 0, 0, 0, 0, 0
+        self.sum_taken, sum_given, sum_transactions, sum_consumed, sum_stored = 0, 0, 0, 0, 0
         for a in world.agents:
             comforts.append(a.state.comfort)
-            sum_taken += a.enacted_action.grid_consumption \
-                                     + a.enacted_action.store_energy
+            self.sum_taken += a.enacted_action.grid_consumption \
+                              + a.enacted_action.store_energy
             sum_given += a.enacted_action.give_energy
             sum_transactions += a.enacted_action.buy_energy \
                                 + a.enacted_action.sell_energy
@@ -53,44 +82,25 @@ class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
             sum_stored += a.enacted_action.store_energy
 
         # Compute some common measures about env
-        hour = (world.current_step % 24) / 24
-        available_energy = np.interp(world.available_energy,
-                                                 world.energy_generator.available_energy_bounds(world),
-                                                 (0, 1))
-        equity = 1.0 - hoover(comforts)
+        self.hour = (world.current_step % 24) / 24
+        self.available_energy = np.interp(world.available_energy,
+                                          world.energy_generator.available_energy_bounds(world),
+                                          (0, 1))
+        self.equity = 1.0 - hoover(comforts)
 
-        over_consumption = max(0.0, sum_taken - sum_given - world.available_energy)
-        over_consumption /= (sum_taken + 10E-300)
+        self.over_consumption = max(0.0, self.sum_taken - sum_given - world.available_energy)
+        self.over_consumption /= (self.sum_taken + 10E-300)
 
-        energy_loss = max(0.0, -over_consumption)
+        self.energy_loss = max(0.0, -self.over_consumption)
 
-        autonomy = 1.0 - sum_transactions / (sum_consumed + sum_stored
-                                                         + sum_given + sum_transactions + 10E-300)
+        self.autonomy = 1.0 - sum_transactions / (sum_consumed + sum_stored
+                                                  + sum_given + sum_transactions + 10E-300)
 
-        well_being = np.median(comforts)
-        if np.isnan(well_being):
-            well_being = 0.0
+        self.well_being = np.median(comforts)
+        if np.isnan(self.well_being):
+            self.well_being = 0.0
 
-        threshold = well_being / 2
-        exclusion = len([c for c in comforts if c < threshold]) / len(comforts)
+        threshold = self.well_being / 2
+        self.exclusion = len([c for c in comforts if c < threshold]) / len(comforts)
 
-        cls.last_step_compute = world.current_step
-        cls.computed = cls(hour=hour,
-                    available_energy=available_energy,
-                    equity=equity,
-                    energy_loss=energy_loss,
-                    autonomy=autonomy,
-                    exclusion=exclusion,
-                    well_being=well_being,
-                    over_consumption=over_consumption,
-        )
-        return cls.computed
-
-    @abstractmethod
-    def update(self, world: 'World', agent: Agent):
-        # todo implement it
-        pass
-
-    @classmethod
-    def reset(cls):
-        cls.last_step_compute = -1
+        self.last_step_compute = world.current_step

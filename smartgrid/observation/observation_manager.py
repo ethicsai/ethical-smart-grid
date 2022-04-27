@@ -6,7 +6,12 @@ from smartgrid.observation.local_observation import LocalObservation
 from smartgrid.observation.observations import Observation
 
 
+# TODO herit from nameTuple
 class ObservationManager(ABC):
+    """
+    ObservationManager is a handler of the computation of the observation for one Agent.
+    It's fusion global and local observation.
+    """
     global_observation: GlobalObservation
     local_observation: LocalObservation
 
@@ -15,7 +20,12 @@ class ObservationManager(ABC):
         self.local_observation = local_observation
 
     @abstractmethod
-    def compute(self, world: World, agent: Agent):
+    def compute(self, world: World, agent: Agent) -> Observation:
+        """
+        Create the observation for an Agent.
+        :param world: use for global and local observation
+        :param agent: use for local observation
+        """
         pass
 
     def reset(self):

@@ -3,17 +3,33 @@ from __future__ import annotations
 from collections import namedtuple
 
 import numpy as np
-from gym.spaces import Box
 
 from smartgrid.observation.global_observation import GlobalObservation
 from smartgrid.observation.local_observation import LocalObservation
 
+fields = [
+    'hour',
+    'available_energy',
+    'personal_storage',
+    'comfort',
+    'payoff',
+    'equity',
+    'energy_loss',
+    'autonomy',
+    'exclusion',
+    'well_being',
+    'over_consumption',
+]
 
-class Observation(namedtuple('Observation', LocalObservation._fields + GlobalObservation._fields)):
+
+#TODO herit from nameTuple
+#TODO suppress herit
+
+class Observation(namedtuple('Observation', fields)):
 
     @classmethod
     def get_observation_space(cls):
-        return Box(low=0.0, high=1.0, shape=(len(cls._fields),))
+        return fields
 
     def check_between_0_and_1(self):
         errors = {k: v for k, v in self._asdict().items() if v < 0.0 or v > 1.0}

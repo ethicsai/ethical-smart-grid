@@ -13,6 +13,6 @@ class ProductionProfile:
     def __init__(self, production_per_hour):
         self.production_per_hour = production_per_hour
 
-    def compute(self, step=0):
+    def compute(self, step=0) -> float:
         step %= len(self.production_per_hour)
         return self.production_per_hour[step]

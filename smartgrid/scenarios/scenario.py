@@ -16,6 +16,7 @@ from smartgrid.util import EnergyGenerator, RandomEnergyGenerator
 from smartgrid.world import World
 
 
+# todo make a static method for constructing env
 class Scenario(ABC):
     name: str
     confort_name: str
