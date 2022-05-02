@@ -2,7 +2,6 @@ from typing import List, Dict
 
 from smartgrid.agents.agent import Agent
 from smartgrid.rewards.reward import Reward
-from smartgrid.world import World
 
 
 class RewardCollection:
@@ -15,7 +14,7 @@ class RewardCollection:
         assert len(rewards) > 0, "You need to specify at least one Reward."
         self.rewards = rewards
 
-    def compute(self, world: World, agent: Agent) -> Dict[str, float]:
+    def compute(self, world: 'World', agent: Agent) -> Dict[str, float]:
         """
         Compute the set of Reward for the Agent.
         :param world: need to be specified for certain Reward

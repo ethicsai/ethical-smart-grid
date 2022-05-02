@@ -1,8 +1,5 @@
 from abc import ABC, abstractmethod
 
-from smartgrid.agents.agent import Agent
-from smartgrid.world import World
-
 
 class Reward(ABC):
     """
@@ -15,11 +12,10 @@ class Reward(ABC):
         self.name = name
 
     @abstractmethod
-    def calculate(self, world: World, agent: Agent) -> float:
+    def calculate(self, world: 'World', agent: 'Agent') -> float:
         """
         Methods for having a reward depending on:
         :param world: representation of the physical environment
         :param agent: indicate information for calculating his reward
         """
-        # todo add params
         pass

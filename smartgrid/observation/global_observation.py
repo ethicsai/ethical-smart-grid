@@ -1,16 +1,25 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
+from collections import namedtuple
 
 import numpy as np
 
 from smartgrid.agents.agent import Agent
 from smartgrid.util import hoover
-from smartgrid.world import World
+
+global_fields = [
+    'hour',
+    'available_energy',
+    'equity',
+    'energy_loss',
+    'autonomy',
+    'exclusion',
+    'well_being',
+    'over_consumption',
+]
 
 
-# TODO herit from nameTuple
 # TODO see if update is needed
-# TODO suppress herit
-class GlobalObservation(ABC):
+class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
     """
     All observation of the World. It's the same for all Agent in the grid.
     Compute once by step.
@@ -37,32 +46,14 @@ class GlobalObservation(ABC):
 
     # computation reduction
     last_step_compute: int
-    pass
 
-    def _is_compute(self, world: World)->bool:
-        return world.current_step == self.last_step_compute
-
-    @abstractmethod
-    def compute(self, world: World)->None:
-        pass
-
-    @abstractmethod
-    def update(self, world: World, agent: Agent):
-        pass
-
-    def reset(self):
-        self.last_step_compute = -1
-
-
-class BaseGlobal(GlobalObservation):
     def __init__(self):
         self.last_step_compute = -1
 
-    def update(self, world: World, agent: Agent):
-        # todo implement it
-        pass
+    def _is_compute(self, world: 'World') -> bool:
+        return world.current_step == self.last_step_compute
 
-    def compute(self, world: World):
+    def compute(self, world: 'World') -> None:
         # return directly if the step have been computed
         if self._is_compute(world):
             return
@@ -104,3 +95,11 @@ class BaseGlobal(GlobalObservation):
         self.exclusion = len([c for c in comforts if c < threshold]) / len(comforts)
 
         self.last_step_compute = world.current_step
+
+    @abstractmethod
+    def update(self, world: 'World', agent: Agent):
+        # todo implement it
+        pass
+
+    def reset(self):
+        self.last_step_compute = -1

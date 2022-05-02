@@ -31,8 +31,6 @@ from typing import Tuple
 
 import numpy as np
 
-from smartgrid.world import World
-
 
 class EnergyGenerator(ABC):
 
@@ -120,13 +118,13 @@ class RealisticEnergyGenerator(EnergyGenerator):
         assert len(data.shape) == 1
         self._data = data
 
-    def generate_available_energy(self, world: World):
+    def generate_available_energy(self, world: 'World'):
         step = world.current_step % len(self._data)
         ratio = self._data[step]
         max_needed = world.max_needed_energy
         return int(ratio * max_needed)
 
-    def available_energy_bounds(self, world: World):
+    def available_energy_bounds(self, world: 'World'):
         max_needed = world.max_needed_energy
         min_ratio = min(self._data)
         max_ratio = max(self._data)

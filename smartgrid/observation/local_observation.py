@@ -1,11 +1,16 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
+from collections import namedtuple
 
 from smartgrid.agents.agent import Agent
-from smartgrid.world import World
+
+local_field = [
+    'personal_storage',
+    'comfort',
+    'payoff',
+]
 
 
-#TODO herit from nameTuple
-class LocalObservation(ABC):
+class LocalObservation(namedtuple('LocalObservation', local_field)):
     """
     Observation for a single Agent, it contains:
         - personal_storage: the amount of energy in the battery.
@@ -17,16 +22,10 @@ class LocalObservation(ABC):
     payoff: float
 
     @abstractmethod
-    def compute(self, world: World, agent: Agent):
+    def compute(self, world: 'World', agent: Agent):
         """
         Compute all metric for the local observation.
         """
-        pass
-
-
-class BaseLocal(LocalObservation):
-
-    def compute(self, world: World, agent: Agent):
         # Individual data
         self.personal_storage = agent.storage_ratio
         self.comfort = agent.state.comfort
