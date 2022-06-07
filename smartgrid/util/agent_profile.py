@@ -129,7 +129,7 @@ class Profile(object):
         this method will raise exceptions.
 
         :param filename: The name of the file to load. It will be resolved
-            relatively to the `data/` folder in the project root (similarly
+            relatively to the `data/` folder in the project root, similarly
             to the `Profile.save(filename)` method.
         :type filename: str
 

@@ -3,17 +3,17 @@ This module implements a Q-SOM Agent, with the decision and learning
 algorithms that make the agent act based on the received observations
 from the environment.
 
-The Q-SOM Agent uses 2 SOMs to represent the continuous and multi-dimensional
+The Q-SOM Agent uses 2 SOMs to represent the continuous and multidimensional
 States and Actions.
 """
 
-from algorithms.qsom.som import SOM
-from algorithms.util.action_selector import ActionSelector
-from algorithms.util.action_perturbator import ActionPerturbator
-
+import numpy as np
 from gym.spaces import Box
 
-import numpy as np
+from algorithms.qsom.som import SOM
+from algorithms.qsom.util.action_perturbator import ActionPerturbator
+from algorithms.qsom.util.action_selector import ActionSelector
+from algorithms.utils import interpolate
 
 
 class QsomAgent(object):
@@ -55,8 +55,8 @@ class QsomAgent(object):
         self.action_perturbator = action_perturbator
 
         # Q-Learning parameters
-        self.alpha = q_learning_rate       # α  = Q-Learning Rate
-        self.gamma = q_discount_factor     # γ  = Q-Learning Discount Factor
+        self.alpha = q_learning_rate  # α  = Q-Learning Rate
+        self.gamma = q_discount_factor  # γ  = Q-Learning Discount Factor
         self.update_all = update_all
         self.use_neighborhood = use_neighborhood
 

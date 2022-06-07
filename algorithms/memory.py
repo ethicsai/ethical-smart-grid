@@ -1,4 +1,4 @@
-from random import random
+from random import randint
 from typing import List, Tuple, Dict
 
 from torch import FloatTensor
@@ -145,7 +145,7 @@ class Memory:
             step = None
             step_in = True
             while step_in:
-                step = random.randint(0, len(self.agent_memory[0]) - 2)  # -2 because, you don't want the last step
+                step = randint(0, len(self.agent_memory[0]) - 2)  # -2 because, you don't want the last step
                 step_in = step in steps
             steps.append(step)
 

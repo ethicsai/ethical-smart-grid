@@ -15,6 +15,7 @@ We consider 2 selectors:
 """
 
 from random import random, randrange, choices
+
 import numpy as np
 
 

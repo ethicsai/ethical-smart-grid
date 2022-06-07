@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from collections import namedtuple
 
 from smartgrid.agents.agent import Agent
@@ -17,16 +16,19 @@ class LocalObservation(namedtuple('LocalObservation', local_field)):
         - comfort: represent the fulfilled of his need with a Richard_curve
         - payoff: money earn in selling energy.
     """
-    personal_storage: float
-    comfort: float
-    payoff: float
 
-    @abstractmethod
-    def compute(self, world: 'World', agent: Agent):
+    @classmethod
+    def compute(cls, agent: Agent):
         """
         Compute all metric for the local observation.
         """
         # Individual data
-        self.personal_storage = agent.storage_ratio
-        self.comfort = agent.state.comfort
-        self.payoff = agent.payoff_ratio
+        personal_storage = agent.storage_ratio
+        comfort = agent.comfort
+        payoff = agent.payoff_ratio
+
+        return cls(
+            personal_storage=personal_storage,
+            comfort=comfort,
+            payoff=payoff,
+        )

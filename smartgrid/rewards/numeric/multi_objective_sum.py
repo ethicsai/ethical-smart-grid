@@ -18,6 +18,6 @@ class MultiObjectiveSum(Reward):
         self.over_consumption = OverConsumption()
 
     def calculate(self, world: 'World', agent: 'Agent') -> float:
-        sum = self.coefficient["Comfort"] * self.comfort.calculate(world, agent)
-        sum += self.coefficient["OverConsumption"] * self.over_consumption.calculate(world, agent)
-        return sum
+        to_return = self.coefficient["Comfort"] * self.comfort.calculate(world, agent)
+        to_return += self.coefficient["OverConsumption"] * self.over_consumption.calculate(world, agent)
+        return to_return

@@ -8,7 +8,7 @@ exceeds 100, the rest will be considered an "overhead".
 Similarly, when decreasing, if the quantity cannot be lower than 0,
 the operation will return a "missing" quantity.
 
-Examples: (assuming a lower bound of 0, and a upper bound of 100)
+Examples: (assuming a lower bound of 0, and an upper bound of 100)
     30 + 30 => new=60, overhead=0
     60 + 50 => new=100, overhead=10
     100 - 50 => new=50, missing=0
@@ -16,8 +16,8 @@ Examples: (assuming a lower bound of 0, and a upper bound of 100)
 
 The `increase` and `decrease` functions return the following tuple:
  * the new quantity, after the operation on the original quantity
- * the amount that was actually added or subtracted (may be lower than
-   the intended amount, based on the constraints)
+ * the amount that was actually added or subtracted: may be lower than
+   the intended amount, based on the constraints
  * the overhead or missing amount, i.e., the quantity that could not
    be added or subtracted. Note that the intended amount is equal to
    the actual amount + the overhead or missing amount.

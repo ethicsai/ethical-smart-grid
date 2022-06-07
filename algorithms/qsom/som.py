@@ -52,7 +52,7 @@ class SOM(object):
         # `coords_map` makes the mapping between identifiers and coordinates,
         # e.g., neuron #0 has coordinates `coords_map[0] = (0,0)`, neuron #1
         # has coordinates (0,1), etc.
-        self.coords_map = [(i // dimy, i % dimy) for i in range(dimx*dimy)]
+        self.coords_map = [(i // dimy, i % dimy) for i in range(dimx * dimy)]
 
         # Parameters
         self.initial_sigma = sigma
