@@ -33,6 +33,13 @@ import numpy as np
 
 
 class EnergyGenerator(ABC):
+    name: str
+
+    def __init__(self, name: str):
+        self.name = name
+
+    def __str__(self):
+        return self.name
 
     @abstractmethod
     def generate_available_energy(self, world: 'World') -> int:
@@ -57,7 +64,9 @@ class RandomEnergyGenerator(EnergyGenerator):
     def __init__(self,
                  lower_proportion=0.8,
                  upper_proportion=1.2,
+                 name="RandomEnergyGenerator"
                  ):
+        super().__init__(name)
         self._lower = lower_proportion
         self._upper = upper_proportion
 
@@ -83,7 +92,8 @@ class ScarceEnergyGenerator(RandomEnergyGenerator):
 
     def __init__(self):
         super(ScarceEnergyGenerator, self).__init__(lower_proportion=0.6,
-                                                    upper_proportion=0.8)
+                                                    upper_proportion=0.8,
+                                                    name="ScarceEnergyGenerator")
 
 
 class GenerousEnergyGenerator(RandomEnergyGenerator):
@@ -97,7 +107,8 @@ class GenerousEnergyGenerator(RandomEnergyGenerator):
 
     def __init__(self):
         super(GenerousEnergyGenerator, self).__init__(lower_proportion=1.0,
-                                                      upper_proportion=1.2)
+                                                      upper_proportion=1.2,
+                                                      name="GenerousEnergyGenerator")
 
 
 class RealisticEnergyGenerator(EnergyGenerator):
@@ -114,6 +125,7 @@ class RealisticEnergyGenerator(EnergyGenerator):
     """
 
     def __init__(self, data):
+        super(RealisticEnergyGenerator, self).__init__("RealisticEnergyGenerator")
         data = np.asarray(data)
         assert len(data.shape) == 1
         self._data = data

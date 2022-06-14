@@ -25,3 +25,9 @@ class RewardCollection:
             to_return[reward.name] = reward.calculate(world, agent)
 
         return to_return
+
+    def __str__(self):
+        to_return = []
+        for reward in self.rewards:
+            to_return.append(str(reward))
+        return '_'.join(to_return)

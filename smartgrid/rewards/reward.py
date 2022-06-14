@@ -19,3 +19,6 @@ class Reward(ABC):
         :param agent: indicate information for calculating his reward
         """
         pass
+
+    def __str__(self):
+        return self.name
