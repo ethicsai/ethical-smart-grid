@@ -11,8 +11,8 @@ import numpy as np
 from gym.spaces import Box
 
 from algorithms.qsom.som import SOM
-from algorithms.qsom.util.action_perturbator import ActionPerturbator
-from algorithms.qsom.util.action_selector import ActionSelector
+from algorithms.util.action_perturbator import ActionPerturbator
+from algorithms.util.action_selector import ActionSelector
 from algorithms.utils import interpolate
 
 
@@ -172,7 +172,7 @@ class QsomAgent(object):
         assert len(self.observation_space.shape) == 1, 'Observation space must be 1D'
         old_bounds = list(zip(self.observation_space.low, self.observation_space.high))
         new_bounds = [(0.0, 1.0)] * self.observation_space.shape[0]
-        return self._interpolate(observations, old_bounds, new_bounds)
+        return interpolate(observations, old_bounds, new_bounds)
 
     def _interpolate_action(self, action: np.ndarray):
         """
@@ -185,13 +185,6 @@ class QsomAgent(object):
         assert len(self.action_space.shape) == 1, 'Action space must be 1D'
         old_bounds = [(0.0, 1.0)] * self.action_space.shape[0]
         new_bounds = list(zip(self.action_space.low, self.action_space.high))
-        return self._interpolate(action, old_bounds, new_bounds)
+        return interpolate(action, old_bounds, new_bounds)
 
-    def _interpolate(self, array, old_bounds, new_bounds):
-        assert len(array) == len(old_bounds) == len(new_bounds)
-        interpolated = [
-            np.interp(array[k], old_bounds[k], new_bounds[k])
-            for k in range(len(array))
-        ]
-        interpolated = np.array(interpolated)
-        return interpolated
+

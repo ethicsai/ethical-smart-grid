@@ -13,12 +13,24 @@ from smartgrid.environment import SmartGrid
 
 class QSOM(object):
 
-    def __init__(self, env: SmartGrid):
-        self.n_agents = env.n_agents
+    def __init__(self, env: SmartGrid,
+                 q_learning_rate: float = 0.7,
+                 q_discount_factor: float = 0.9,
+                 update_all: bool = True,
+                 use_neighborhood: bool = True,
+                 sigma_state: float = 1.0,
+                 lr_state: float = 0.58,
+                 sigma_action: float = 1.0,
+                 lr_action: float = 0.7,
+                 initial_tau: float = 0.5,
+                 tau_decay: bool = False,
+                 tau_decay_coeff: float = 1.0,
+                 noise: float = 0.08):
+        self.n_agents = env.n_agent
         self.qsom_agents = []
 
-        action_selector = BoltzmannActionSelector(0.5, False, 1.0)
-        action_perturbator = EpsilonActionPerturbator(0.08)
+        action_selector = BoltzmannActionSelector(initial_tau, tau_decay, tau_decay_coeff)
+        action_perturbator = EpsilonActionPerturbator(noise)
 
         for num_agent in range(self.n_agents):
             obs_space = env.observation_space[num_agent]
@@ -28,12 +40,12 @@ class QSOM(object):
 
             state_som = SOM(12, 12,
                             obs_space.shape[0],
-                            sigma=1.0,
-                            learning_rate=0.8)
+                            sigma=sigma_state,
+                            learning_rate=lr_state)
             action_som = SOM(3, 3,
                              action_space.shape[0],
-                             sigma=1.0,
-                             learning_rate=0.7)
+                             sigma=sigma_action,
+                             learning_rate=lr_action)
 
             qsom_agent = QsomAgent(obs_space,
                                    action_space,
@@ -41,10 +53,10 @@ class QSOM(object):
                                    action_som,
                                    action_selector,
                                    action_perturbator,
-                                   q_learning_rate=0.7,
-                                   q_discount_factor=0.9,
-                                   update_all=True,
-                                   use_neighborhood=True)
+                                   q_learning_rate=q_learning_rate,
+                                   q_discount_factor=q_discount_factor,
+                                   update_all=update_all,
+                                   use_neighborhood=use_neighborhood)
 
             self.qsom_agents.append(qsom_agent)
 
