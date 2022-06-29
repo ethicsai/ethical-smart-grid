@@ -34,6 +34,8 @@ import numpy as np
 
 class EnergyGenerator(ABC):
     name: str
+    lower: float
+    upper: float
 
     def __init__(self, name: str):
         self.name = name
@@ -42,11 +44,11 @@ class EnergyGenerator(ABC):
         return self.name
 
     @abstractmethod
-    def generate_available_energy(self, world: 'World') -> int:
+    def generate_available_energy(self, need_at_step: int) -> int:
         pass
 
     @abstractmethod
-    def available_energy_bounds(self, world: 'World') -> Tuple[int, int]:
+    def available_energy_bounds(self, need_at_step: int) -> Tuple[int, int]:
         pass
 
 
@@ -67,17 +69,16 @@ class RandomEnergyGenerator(EnergyGenerator):
                  name="RandomEnergyGenerator"
                  ):
         super().__init__(name)
-        self._lower = lower_proportion
-        self._upper = upper_proportion
+        self.lower = lower_proportion
+        self.upper = upper_proportion
 
-    def generate_available_energy(self, world: 'World'):
-        lower_bound, upper_bound = self.available_energy_bounds(world)
+    def generate_available_energy(self, need_at_step: int):
+        lower_bound, upper_bound = self.available_energy_bounds(need_at_step)
         return random.randint(lower_bound, upper_bound)
 
-    def available_energy_bounds(self, world: 'World'):
-        max_needed = world.max_needed_energy
-        lower_bound = int(self._lower * max_needed)
-        upper_bound = int(self._upper * max_needed)
+    def available_energy_bounds(self, need_at_step: int):
+        lower_bound = int(self.lower * need_at_step)
+        upper_bound = int(self.upper * need_at_step)
         return lower_bound, upper_bound
 
 

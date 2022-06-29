@@ -61,9 +61,6 @@ class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
 
         # Compute some common measures about env
         hour = (world.current_step % 24) / 24
-        available_energy = np.interp(world.available_energy,
-                                     world.energy_generator.available_energy_bounds(world),
-                                     (0, 1))
         equity = 1.0 - hoover(comforts)
 
         over_consumption = max(0.0, sum_taken - sum_given - world.available_energy)
@@ -83,7 +80,7 @@ class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
 
         cls.last_step_compute = world.current_step
         cls.computed = cls(hour=hour,
-                           available_energy=available_energy,
+                           available_energy=world.available_energy,
                            equity=equity,
                            energy_loss=energy_loss,
                            autonomy=autonomy,
