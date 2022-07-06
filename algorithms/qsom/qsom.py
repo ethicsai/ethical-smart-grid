@@ -16,13 +16,15 @@ class QSOM(Model):
     def save(self, param):
         pass
 
-    #todo add Memory
-    def __init__(self, agent_num: int, env: SmartGrid,  hyper_parameters: dict, device: str):
+    # todo add Memory
+    def __init__(self, agent_num: int, env: SmartGrid, hyper_parameters: dict, device: str):
         super().__init__(agent_num, env, hyper_parameters, device)
         self.n_agents = env.n_agent
         self.qsom_agents = []
 
-        action_selector = BoltzmannActionSelector(self.hyper_parameters["initial_tau"], self.hyper_parameters["tau_decay"], self.hyper_parameters["tau_decay_coeff"])
+        action_selector = BoltzmannActionSelector(self.hyper_parameters["initial_tau"],
+                                                  self.hyper_parameters["tau_decay"],
+                                                  self.hyper_parameters["tau_decay_coeff"])
         action_perturbator = EpsilonActionPerturbator(self.hyper_parameters["noise"])
 
         for num_agent in range(self.n_agents):
@@ -55,7 +57,8 @@ class QSOM(Model):
 
     def forward(self, observations_per_agent):
         """Choose an action for each agent, based on their observations."""
-        observations_per_agent = [list(observations_per_agent['local'][i]) + list(observations_per_agent['global']) for i in range(self.agent_num)]
+        observations_per_agent = [list(observations_per_agent['local'][i]) + list(observations_per_agent['global']) for
+                                  i in range(self.agent_num)]
         assert len(observations_per_agent) == self.n_agents
         actions = [
             self.qsom_agents[i].forward(observations_per_agent[i])
@@ -65,7 +68,9 @@ class QSOM(Model):
 
     def backward(self, new_observations_per_agent, reward_per_agent):
         """Make each agent learn, based on their rewards and observations."""
-        new_observations_per_agent = [list(new_observations_per_agent['local'][i]) + list(new_observations_per_agent['global']) for i in range(self.agent_num)]
+        new_observations_per_agent = [
+            list(new_observations_per_agent['local'][i]) + list(new_observations_per_agent['global']) for i in
+            range(self.agent_num)]
         assert len(reward_per_agent) == self.n_agents
         assert len(new_observations_per_agent) == self.n_agents
         for i, agent in enumerate(self.qsom_agents):

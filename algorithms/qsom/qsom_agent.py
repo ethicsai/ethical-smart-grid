@@ -186,5 +186,3 @@ class QsomAgent(object):
         old_bounds = [(0.0, 1.0)] * self.action_space.shape[0]
         new_bounds = list(zip(self.action_space.low, self.action_space.high))
         return interpolate(action, old_bounds, new_bounds)
-
-

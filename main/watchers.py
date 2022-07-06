@@ -33,7 +33,8 @@ class MetricsWatcher:
 
         for a in self.agents:
             # creating the context
-            context = {"name": a.name, "profile": a.profile.name, "n_agent": n_agent,"confort_fn": a.profile.comfort_fn.__name__}
+            context = {"name": a.name, "profile": a.profile.name, "n_agent": n_agent,
+                       "confort_fn": a.profile.comfort_fn.__name__}
             to_return[f"agent_state_comfort_{a.name}"] = (float(a.state.comfort), context)
             to_return[f"agent_state_payoff_{a.name}"] = (float(a.state.payoff), context)
             to_return[f"agent_state_storage_{a.name}"] = (float(a.state.storage), context)
@@ -80,14 +81,14 @@ class Collector:
             name = scenario.second_name
 
         self.hyper_parameters = {
-                "scenario_name": name,
-                "model_name": model_name,
-                "hyper_parameters_name": hyper_parameters_name,
-                "reward_name": str(smartgrid.world.reward_calculator),
-                "energy_generator": str(scenario.energy_generator),
-                "aggregate_name": scenario.aggregate_function_name,
-                "data_used": str(scenario.data_conversion)
-            }
+            "scenario_name": name,
+            "model_name": model_name,
+            "hyper_parameters_name": hyper_parameters_name,
+            "reward_name": str(smartgrid.world.reward_calculator),
+            "energy_generator": str(scenario.energy_generator),
+            "aggregate_name": scenario.aggregate_function_name,
+            "data_used": str(scenario.data_conversion)
+        }
 
     def get_path(self):
         basic_path = "./saved/"
