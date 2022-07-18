@@ -7,6 +7,7 @@ class Comfort(Reward):
     """
     Comfort is already compute in state
     """
+
     def __init__(self):
         super().__init__("Comfort")
 

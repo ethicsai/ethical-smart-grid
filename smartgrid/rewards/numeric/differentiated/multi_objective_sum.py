@@ -1,5 +1,5 @@
-from smartgrid.rewards.numeric.comfort import Comfort
-from smartgrid.rewards.numeric.over_consumption import OverConsumption
+from smartgrid.rewards.numeric.per_agent.comfort import Comfort
+from smartgrid.rewards.numeric.differentiated.over_consumption import OverConsumption
 from smartgrid.rewards.reward import Reward
 
 
