@@ -25,5 +25,9 @@ class Model(ABC):
         pass
 
     @abstractmethod
-    def save(self, param):
+    def save(self, path):
+        pass
+
+    @abstractmethod
+    def load(self, path):
         pass

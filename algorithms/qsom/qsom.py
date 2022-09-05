@@ -4,17 +4,17 @@ the instantiation of Q-SOM Agents from a Gym Environment.
 
 It handles creating the correct structures, giving the correct parameters, ...
 """
+import numpy as np
+
 from algorithms.model import Model
 from algorithms.qsom.qsom_agent import QsomAgent
 from algorithms.qsom.som import SOM
-from algorithms.qsom.util.action_perturbator import EpsilonActionPerturbator
-from algorithms.qsom.util.action_selector import BoltzmannActionSelector
+from algorithms.util.action_perturbator import EpsilonActionPerturbator
+from algorithms.util.action_selector import BoltzmannActionSelector
 from smartgrid.environment import SmartGrid
 
 
 class QSOM(Model):
-    def save(self, param):
-        pass
 
     # todo add Memory
     def __init__(self, agent_num: int, env: SmartGrid, hyper_parameters: dict, device: str):
@@ -77,3 +77,23 @@ class QSOM(Model):
             agent.backward(new_observations_per_agent[i],
                            reward_per_agent[i])
         return []
+
+    def save(self, path):
+        args = {}
+        for i in range(len(self.qsom_agents)):
+            dict = self.qsom_agents[i].save(i)
+            for key in dict.keys():
+                args[key] = dict[key]
+
+        np.savez(path, **args)
+
+    def load(self, path):
+        # load agent
+        weights = np.load(path + '.npz')
+        for i in range(self.n_agents):
+            weight = {
+                "state" : weights[f"state_%i" % (i)],
+                "action" : weights[f"action_%i" % (i)],
+                "qtable" : weights[f"qtable_%i" % (i)],
+            }
+            self.qsom_agents[i].load(weight)

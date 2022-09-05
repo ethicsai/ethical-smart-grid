@@ -186,3 +186,19 @@ class QsomAgent(object):
         old_bounds = [(0.0, 1.0)] * self.action_space.shape[0]
         new_bounds = list(zip(self.action_space.low, self.action_space.high))
         return interpolate(action, old_bounds, new_bounds)
+
+    def save(self,id):
+        return {"state_"+str(id): self.state_som.save(),
+                "action_"+str(id): self.action_som.save(),
+                "qtable_"+str(id): self.qtable}
+
+    def load(self, weights:dict):
+        for key in weights.keys():
+            if "state" in key:
+                self.state_som.load(weights[key])
+            elif "action" in key:
+                self.action_som.load(weights[key])
+            elif "qtable" in key:
+                self.qtable = weights[key]
+            else:
+                print("error")
