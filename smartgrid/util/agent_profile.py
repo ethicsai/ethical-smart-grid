@@ -96,7 +96,7 @@ class Profile(object):
         self.action_space = spaces.Box(
             low=action_space_low,
             high=action_space_high,
-            dtype=np.int
+            dtype=int
         )
 
     def save(self, filename):

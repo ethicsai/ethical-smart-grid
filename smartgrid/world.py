@@ -43,7 +43,7 @@ class World(object):
         low = min(available_energy_per_step) * self.energy_generator.lower
         high = max(available_energy_per_step) * self.energy_generator.upper
 
-        global_space = {'available_energy': spaces.Box(low=low, high=high, shape=(1,), dtype=np.int),
+        global_space = {'available_energy': spaces.Box(low=low, high=high, shape=(1,), dtype=int),
                         'equity': spaces.Box(0, 1, (1,), dtype=np.float64),
                         'energy_loss': spaces.Box(0, 1, (1,), dtype=np.float64),
                         'autonomy': spaces.Box(0, 1, (1,), dtype=np.float64),

@@ -40,12 +40,12 @@ class AgentProfile:
             low=action_space_low,
             high=action_space_high,
             shape=(action_dim,),
-            dtype=np.int
+            dtype=int
         )
 
         # create observation_space for an agent
         space_dict = {
-            'personal_storage': spaces.Box(low=0, high=1, shape=(1,), dtype=np.int),
+            'personal_storage': spaces.Box(low=0, high=1, shape=(1,), dtype=int),
             'comfort': spaces.Box(0, 1, (1,), dtype=float),
             'payoff': spaces.Box(0, 1, (1,), dtype=float)
         }
