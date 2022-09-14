@@ -18,8 +18,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..',
 # -- Project information -----------------------------------------------------
 
 project = 'EthicalSmartGrid-Gym'
-copyright = '2021, Remy Chaput'
-author = 'Remy Chaput'
+copyright = '2022, Clément Scheirlinck & Rémy Chaput'
+author = 'Clément Scheirlinck & Rémy Chaput'
 
 
 # -- General configuration ---------------------------------------------------
@@ -28,8 +28,12 @@ author = 'Remy Chaput'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    # Include documentation from docstrings
     'sphinx.ext.autodoc',
+    # Generate summaries (tables/listings) for autodoc
     'sphinx.ext.autosummary',
+    # Link to external (other projects') documentation
+    'sphinx.ext.intersphinx',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -39,6 +43,13 @@ templates_path = ['_templates']
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
+
+# Mapping to other projects
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
+    'gym': ('https://www.gymlibrary.dev/', None),
+}
 
 
 # -- Options for HTML output -------------------------------------------------
