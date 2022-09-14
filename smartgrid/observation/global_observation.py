@@ -18,32 +18,110 @@ global_fields = [
 ]
 
 
-# TODO see if update is needed
 class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
     """
-    All observation of the World. It's the same for all Agent in the grid.
-    Compute once by step.
-    It contains:
-        - hour: represent by 24 values
-        - available_energy: in the grid
-        - equity: 1 - hoover of the Comfort
-        - energy_loss: in the grid
-        - autonomy: metric that represent the self sustain of the grid
-        - exclusion: mean of Agent where their comfort is inferior well_being/2
-        - well_being: median of the Comfort
-        - over_consumption: energy that was present physically in the world
-        - sum_taken: energy take by all Agent in the Grid
+    Global observations of the World, shared by all Agents in the smart grid.
+
+    These observations are not directly linked to a particular agent, but
+    rather to the whole society of agents in the :py:class:`.World`, i.e.,
+    in this smart grid. Thus, the measures are the same for all agents.
+
+    To optimize computations, we thus create global observations only once
+    each step.
+
+    A global observation is a vector containing the following measures:
+
+    hour
+        The current hour in the simulated world. It is computed as a ratio
+        between 0 and 1, and days are ignored by using a modulo.
+        Specifically, assuming that the current time step is ``t``, the *hour*
+        measure is computed as ``(t % 24) / 24``.
+
+    available_energy
+        The quantity of energy available in the grid, which is accessible to
+        all agents. This is a large pool of energy, however they should avoid
+        over-consuming it, and take an appropriate quantity so as to let
+        other agents profit as well.
+        This measure is normalized as a value between 0 and 1, from the *real*
+        available quantity, w.r.t. the bounds of energy that could have been
+        generated at this step. See the :py:mod:`.energy_generator` module
+        for more details on energy generators, and their bounds.
+
+    equity
+        The equity of comforts between all agents in the grid, i.e., to which
+        degree do they have a similar comfort. It is computed as a statistical
+        indicator of dispersion named the
+        `Hoover index <https://en.wikipedia.org/wiki/Hoover_index>`_, which
+        is a well-known tool in economy, originally made to describe income
+        inequality.
+        ``equity`` is computed as ``1 - hoover(comforts)``, such that 0
+        represents a perfect inequality (one person has everything, the others
+        nothing), and 1 a perfect equality (everybody has the same comfort).
+
+    energy_loss
+        The quantity of energy that was available to agents, but not used
+        (i.e., neither consumed nor stored) at this time step.
+
+    autonomy
+        This measure represents the autonomy, or self-sustainability, of the
+        smart grid. It is measured based on the transactions (i.e., selling or
+        buying energy from and to the national grid), w.r.t. the total amount
+        of energy exchanged within the grid (given, stored, consumed).
+
+    exclusion
+        The proportion of agents that have a comfort lower than half the median
+        of agents' comforts. Such agents are said to be *excluded*.
+
+    over_consumption
+        The quantity of energy that agents have consumed, but was not
+        originally available in the grid. We assume that the grid automatically
+        bought this missing energy from the national grid.
+        It is computed as the sum of energy consumed from the grid and stored
+        from the grid, by all agents, minus the sum of energy given by all
+        agents, and the energy initially available, divided by the sum of
+        energy taken by all agents, to obtain a ratio between 0 and 1.
+        If the measure is less than 0, we set it to 0.
     """
 
-    # computation reduction
     last_step_compute = -1
+    """
+    Last time step at which global observations were computed.
+    
+    This is used to optimize the computations and avoid re-computing already
+    known observations, since these are the same for all agents at a given
+    time step.
+    """
+
+    computed = None
+    """
+    Memoized global observations, computed at the time step indicated by
+    :py:attr:`.last_step_compute`.
+    """
 
     @classmethod
     def _is_compute(cls, world: 'World') -> bool:
+        """
+        Private method to know whether the current step has already been computed.
+        """
         return world.current_step == cls.last_step_compute
 
     @classmethod
     def compute(cls, world: 'World'):
+        """
+        Return the global observations computed from the World state.
+
+        This method uses memoization through :py:attr:`.computed`,
+        :py:meth:`._is_compute` and :py:attr:`.last_step_compute` to avoid
+        re-computing already known observations. In such cases, the cached
+        instance is returned. Otherwise, measures are computed, and a new
+        instance is created, memoized, and returned.
+
+        :type world: smartgrid.world.World
+        :param world: The World for which we want to compute the global
+            observations.
+
+        :rtype: GlobalObservation
+        """
         # return directly if the step have been computed
         if cls._is_compute(world):
             return cls.computed
@@ -61,6 +139,11 @@ class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
 
         # Compute some common measures about env
         hour = (world.current_step % 24) / 24
+        available_energy = np.interp(
+            world.available_energy,
+            world.energy_generator.available_energy_bounds(world.max_needed_energy),
+            (0, 1)
+        )
         equity = 1.0 - hoover(comforts)
 
         over_consumption = max(0.0, sum_taken - sum_given - world.available_energy)
@@ -80,7 +163,7 @@ class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
 
         cls.last_step_compute = world.current_step
         cls.computed = cls(hour=hour,
-                           available_energy=world.available_energy,
+                           available_energy=available_energy,
                            equity=equity,
                            energy_loss=energy_loss,
                            autonomy=autonomy,
@@ -90,11 +173,9 @@ class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
                            )
         return cls.computed
 
-    @abstractmethod
-    def update(self, world: 'World', agent: Agent):
-        # todo implement it
-        pass
-
     @classmethod
     def reset(cls):
+        """
+        Reset the counter of steps computed, i.e., the memoization.
+        """
         cls.last_step_compute = -1
