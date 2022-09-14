@@ -183,7 +183,7 @@ class World(object):
         self.current_step += 1
         for agent in self.agents:
             agent.update(self.current_step)
-        self.available_energy = self.energy_generator.generate_available_energy(sum([a.need for a in self.agents]))
+        self.available_energy = self.energy_generator.compute_available_energy(sum([a.need for a in self.agents]))
 
     def reset(self):
         """
@@ -198,7 +198,7 @@ class World(object):
         self.observation_manager.reset()
         for agent in self.agents:
             agent.reset()
-        self.available_energy = self.energy_generator.generate_available_energy(sum([a.need for a in self.agents]))
+        self.available_energy = self.energy_generator.compute_available_energy(sum([a.need for a in self.agents]))
 
     @property
     def max_needed_energy(self):
