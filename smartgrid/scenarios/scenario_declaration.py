@@ -44,6 +44,11 @@ class BaseOpenEI(Scenario, ABC):
                 new_agent = Agent(f"{len(self.agents)}", self.data_conversion.profiles[profile_name])
                 self.agents.append(new_agent)
 
+        cumulative_need = [sum([a.profile.need_fn.need_per_hour[i] for a in self.agents])
+                           for i in range(self.data_conversion.max_step)]
+        self.lower_cumulated = min(cumulative_need)
+        self.upper_cumulated = max(cumulative_need)
+
 
 class ScenarioOne(BaseOpenEI):
     def _prepare(self):
@@ -54,10 +59,11 @@ class ScenarioOne(BaseOpenEI):
             "residential": 10
         }
         # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -72,8 +78,9 @@ class ScenarioTwo(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1)
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         # Generate OpenEI data and agent
         self._default()
@@ -91,11 +98,11 @@ class ScenarioThree(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -110,11 +117,11 @@ class ScenarioFour(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -129,11 +136,11 @@ class ScenarioFive(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -148,11 +155,11 @@ class ScenarioSix(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -167,11 +174,11 @@ class ScenarioSeven(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = MultiObjectiveProduct
@@ -186,11 +193,11 @@ class ScenarioEight(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -205,10 +212,10 @@ class ScenarioNine(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator()
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -223,10 +230,10 @@ class ScenarioTen(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator()
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -241,10 +248,10 @@ class ScenarioEleven(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator()
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -259,10 +266,10 @@ class ScenarioTwelve(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator()
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -277,10 +284,10 @@ class ScenarioThirteen(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator()
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -295,10 +302,10 @@ class ScenarioFourteen(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator()
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -313,10 +320,10 @@ class ScenarioFifteen(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator()
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = MultiObjectiveProduct
@@ -331,14 +338,15 @@ class ScenarioSixteen(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator()
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
         self.rewards = [Comfort()]
+
 
 class ScenarioSeventeen(BaseOpenEI):
     def _prepare(self):
@@ -348,11 +356,11 @@ class ScenarioSeventeen(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -367,11 +375,11 @@ class ScenarioEighteen(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -386,11 +394,11 @@ class ScenarioNineteen(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -405,11 +413,11 @@ class ScenarioTwenty(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -424,11 +432,11 @@ class ScenarioTwentyOne(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -443,11 +451,11 @@ class ScenarioTwentyTwo(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = MultiObjectiveProduct
@@ -462,10 +470,10 @@ class ScenarioTwentyThree(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator()
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -480,10 +488,10 @@ class ScenarioTwentyFour(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator()
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -498,10 +506,10 @@ class ScenarioTwentyFive(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator()
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -516,10 +524,10 @@ class ScenarioTwentySix(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator()
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -534,10 +542,10 @@ class ScenarioTwentySeven(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator()
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -552,14 +560,15 @@ class ScenarioTwentyEight(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator()
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = MultiObjectiveProduct
         self.rewards = [EquityRewardPerAgent(), Comfort(), OverConsumptionPerAgent()]
+
 
 #  TODO Add the best two Scenario with more agent
 class ScenarioTwentyNine(BaseOpenEI):
@@ -570,14 +579,15 @@ class ScenarioTwentyNine(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator()
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
         self.rewards = [OverConsumption()]
+
 
 class ScenarioThirty(BaseOpenEI):
     def _prepare(self):
@@ -587,14 +597,15 @@ class ScenarioThirty(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator()
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
         self.rewards = [OverConsumptionPerAgent()]
+
 
 class ScenarioThirtyOne(BaseOpenEI):
     def _prepare(self):
@@ -605,11 +616,11 @@ class ScenarioThirtyOne(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -625,11 +636,11 @@ class ScenarioThirtyTwo(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -645,11 +656,11 @@ class ScenarioThirtyThree(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -665,11 +676,11 @@ class ScenarioThirtyFour(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = MultiObjectiveProduct
@@ -685,11 +696,11 @@ class ScenarioThirtyFive(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -705,11 +716,11 @@ class ScenarioThirtySix(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -725,11 +736,11 @@ class ScenarioThirtySeven(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -745,11 +756,11 @@ class ScenarioThirtyEight(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        # production maximum at a step: 1.1 * amount_need_by_all_agent_at_ste
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = MultiObjectiveProduct
@@ -765,10 +776,11 @@ class ScenarioThirtyNine(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
@@ -784,10 +796,11 @@ class ScenarioFourty(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1)
-
         # Generate OpenEI data and agent
         self._default()
+        self.energy_generator = RandomEnergyGenerator(upper_proportion=1,
+                                                      lower_cumulated=self.lower_cumulated,
+                                                      upper_cumulated=self.upper_cumulated)
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
