@@ -37,8 +37,12 @@ class EnergyGenerator(ABC):
     lower: float
     upper: float
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, lower_cumulated, upper_cumulated, lower_proportion, upper_proportion):
         self.name = name
+        self.lower = lower_proportion
+        self.upper = upper_proportion
+        self.upper_amount = upper_cumulated * self.upper
+        self.lower_amount = lower_cumulated * self.lower
 
     def __str__(self):
         return self.name
@@ -50,6 +54,10 @@ class EnergyGenerator(ABC):
     @abstractmethod
     def available_energy_bounds(self, need_at_step: int) -> Tuple[int, int]:
         pass
+
+    def compute_available_energy(self, need_at_step: int) -> float:
+        amount = self.generate_available_energy(need_at_step)
+        return (amount - self.lower_amount) / (self.upper_amount - self.lower_amount)
 
 
 class RandomEnergyGenerator(EnergyGenerator):
@@ -64,13 +72,13 @@ class RandomEnergyGenerator(EnergyGenerator):
     """
 
     def __init__(self,
+                 lower_cumulated,
+                 upper_cumulated,
                  lower_proportion=0.8,
                  upper_proportion=1.2,
-                 name="RandomEnergyGenerator"
+                 name="RandomEnergyGenerator",
                  ):
-        super().__init__(name)
-        self.lower = lower_proportion
-        self.upper = upper_proportion
+        super().__init__(name, lower_cumulated, upper_cumulated, lower_proportion, upper_proportion)
 
     def generate_available_energy(self, need_at_step: int):
         lower_bound, upper_bound = self.available_energy_bounds(need_at_step)
@@ -91,8 +99,9 @@ class ScarceEnergyGenerator(RandomEnergyGenerator):
     force conflicts between agents by not giving them enough.
     """
 
-    def __init__(self):
-        super(ScarceEnergyGenerator, self).__init__(lower_proportion=0.6,
+    def __init__(self, lower_cumulated, upper_cumulated):
+        super(ScarceEnergyGenerator, self).__init__(lower_cumulated, upper_cumulated,
+                                                    lower_proportion=0.6,
                                                     upper_proportion=0.8,
                                                     name="ScarceEnergyGenerator")
 
@@ -106,8 +115,9 @@ class GenerousEnergyGenerator(RandomEnergyGenerator):
     have enough energy available for all agents.
     """
 
-    def __init__(self):
-        super(GenerousEnergyGenerator, self).__init__(lower_proportion=1.0,
+    def __init__(self,lower_cumulated, upper_cumulated):
+        super(GenerousEnergyGenerator, self).__init__(lower_cumulated, upper_cumulated,
+                                                      lower_proportion=1.0,
                                                       upper_proportion=1.2,
                                                       name="GenerousEnergyGenerator")
 
