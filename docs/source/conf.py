@@ -34,6 +34,8 @@ extensions = [
     'sphinx.ext.autosummary',
     # Link to external (other projects') documentation
     'sphinx.ext.intersphinx',
+    # Matplotlib plot in documentation
+    'matplotlib.sphinxext.plot_directive',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
