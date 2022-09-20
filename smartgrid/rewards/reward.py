@@ -3,8 +3,12 @@ from abc import ABC, abstractmethod
 
 class Reward(ABC):
     """
-    The class for representing a Reward.
-    A reward is always a single value (See RewardCollection for multiple Reward)
+    The Reward is responsible for computing a unique reward for an agent. The list of reward used is passed in parameter
+    of :py:class:`.World`.
+
+    The computing calls (:py:meth:`.calculate`) and return a single floating value.
+    Multiple reward will be computed by :py:class:`.RewardCollection` and aggregate with :py:class:`.AggregateFunction`.
+    Creation of a new unique Reward passed by the extension of this class.
     """
     name: str
 
@@ -14,9 +18,11 @@ class Reward(ABC):
     @abstractmethod
     def calculate(self, world: 'World', agent: 'Agent') -> float:
         """
-        Methods for having a reward depending on:
-        :param world: representation of the physical environment
-        :param agent: indicate information for calculating his reward
+        Compute the reward for an Agent.
+
+        :param world: reference on the world for global information.
+        :param agent: reference on the agent for local information.
+        :return: The value of the reward.
         """
         pass
 

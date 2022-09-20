@@ -5,7 +5,8 @@ from smartgrid.world import World
 
 class Comfort(Reward):
     """
-    Comfort is already compute in state
+    Comfort is the metric compute by the function field attach to :py:class:`.AgentProfile`, after that the comfort is
+    stored in :py:class:`.AgentState`.
     """
 
     def __init__(self):

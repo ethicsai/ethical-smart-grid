@@ -6,8 +6,10 @@ from smartgrid.rewards.reward import Reward
 
 class RewardCollection:
     """
-    Reward Collection is a set of Reward for one Agent.
-    If you have multiple reward, you need to specify an adequate AggregateFunction for passing to one value.
+    Reward Collection is responsible for keeping reward used in memory and compute it.
+
+    Multiple reward used an :py:class:`.AggregateFunction` that can be extended.
+    Mono reward used :py:class:`.BasicAggregateFunction`.
     """
 
     def __init__(self, rewards: List[Reward]):
@@ -16,9 +18,13 @@ class RewardCollection:
 
     def compute(self, world: 'World', agent: Agent) -> Dict[str, float]:
         """
-        Compute the set of Reward for the Agent.
-        :param world: need to be specified for certain Reward
-        :param agent: the agent
+        Compute the list of :py:class:`.Reward` for the Agent.
+
+        :param world: reference on the world for global information.
+        :param agent: reference on the agent for local information.
+
+        :rtype: dict
+        :return: The name of the reward with his value.
         """
         to_return = {}
         for reward in self.rewards:

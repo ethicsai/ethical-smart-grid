@@ -12,12 +12,9 @@ class EquityRewardPerAgent(Reward):
     """
     Reward based on the equity of comforts measure.
 
-    It follows the principle of Difference Rewards: we compare the measure
-    in the actual environment (in which the agent acted) and in a
-    hypothetical environment (in which the agent would not have acted).
-    If the actual environment is better than the hypothetical one, the
-    agent's action improved it and should be rewarded.
-    Otherwise, the agent degraded it and should be punished.
+    It's a measure of statical dispersion of the Comfort metrics of all agents.
+    The Comfort metric compute by the function field attach to :py:class:`.AgentProfile`, after that the comfort is
+    stored in :py:class:`.AgentState`.
     """
 
     def __init__(self):

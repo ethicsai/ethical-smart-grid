@@ -6,6 +6,8 @@ from smartgrid.rewards.reward import Reward
 class MultiObjectiveSumPerAgent(Reward):
     """
     Weighted sum calculation.
+    Depends on :py:class:`.Comfort` and :py:class:`.OverConsumptionPerAgent`.
+    :py:attr:`.coefficient` can be changed by the extension of this class.
     """
 
     def __init__(self):

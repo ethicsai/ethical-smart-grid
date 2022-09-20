@@ -10,9 +10,9 @@ from smartgrid.rewards.reward import Reward
 
 class AdaptabilityOnePerAgent(Reward):
     """
-    Adaptability One depends on step for calculating. You have two cases:
-        - step is inferior to 3000, you look at the Equity metrics.
-        - otherwise, it's a weighted sum.
+    AdaptabilityOnePerAgent depends on step for calculating. You have two cases:
+        - step is inferior to 3000, you look at :py:class:`.EquityRewardPerAgent`.
+        - otherwise, it's :py:class:`.MultiObjectiveSumPerAgent` that calculate the reward.
     """
 
     def __init__(self):
@@ -29,9 +29,9 @@ class AdaptabilityOnePerAgent(Reward):
 
 class AdaptabilityTwoPerAgent(Reward):
     """
-    Adaptability Two depends on step for calculating. You have two cases:
-        - step is inferior to 2000, you look at the Equity metrics.
-        - otherwise, it's the mean of Equity and OverConsumption
+    AdaptabilityTwoPerAgent depends on step for calculating. You have two cases:
+        - step is inferior to 2000, you look at :py:class:`.EquityRewardPerAgent`.
+        - otherwise, it's mean of :py:class:`.OverConsumptionPerAgent` and :py:class:`.EquityRewardPerAgent`.
     """
 
     def __init__(self):
@@ -48,9 +48,12 @@ class AdaptabilityTwoPerAgent(Reward):
 
 class AdaptabilityThreePerAgent(Reward):
     """
-    Adaptability Three depends on step for calculating. You have two cases:
-        - step is inferior to 2000, you look at the Equity metrics.
-        - otherwise, it's the mean of Equity, OverConsumption and Comfort
+    AdaptabilityThreePerAgent depends on step for calculating. You have two cases:
+        - step is inferior to 2000, you look at :py:class:`.EquityRewardPerAgent`.
+        - step is inferior to 6000, it's mean of :py:class:`.OverConsumptionPerAgent` and
+         :py:class:`.EquityRewardPerAgent`.
+        - otherwise, it's mean of :py:class:`.OverConsumptionPerAgent`, :py:class:`.EquityRewardPerAgent`
+         and :py:class:`.Comfort`.
     """
 
     def __init__(self):
