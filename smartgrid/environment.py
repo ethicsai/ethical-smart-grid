@@ -119,17 +119,6 @@ class SmartGrid(gym.Env):
         return spaces.Dict(to_return)
 
     @property
-    def world_observation_space(self):
-        return self.world.observation_space
-
-    def observation_space_per_agent(self, agent_num: int):
-        all_space = self.world.observation_space
-        to_return = all_space['global'].spaces
-        to_return.update(all_space['local'][str(agent_num)].spaces)
-
-        return spaces.Dict(to_return)
-
-    @property
     def agents(self):
         """
         Property that reduce indirection.
