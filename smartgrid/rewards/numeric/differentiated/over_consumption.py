@@ -5,7 +5,25 @@ from smartgrid.world import World
 
 class OverConsumption(Reward):
     """
-    Reward representing the overConsumption percentage of an Agent.
+    Reward representing the *over-consumption* of an Agent.
+
+    The *over-consumption* is the quantity of energy that was consumed by
+    the society of agents, but which was not available in the grid.
+    (We assume that the grid automatically buys from the national grid to
+    compensate, which has a negative impact. Over-consumption should thus be
+    avoided).
+
+    We compare the quantity of energy *taken* (i.e., consumed + stored from
+    the grid) by all agents to the quantity of energy over-consumed by all
+    agents. This gives us a *global* component (the current environment).
+
+    Then, we compare the quantity of energy over-consumed, minus the agent's
+    taken energy, and we compare to the sum of energy taken by all agents.
+    This gives us a *local* component (the hypothetical environment, had the
+    agent not acted).
+
+    The reward follows the Difference Reward principle, and thus is the global
+    component minus the local component.
     """
 
     def __init__(self):

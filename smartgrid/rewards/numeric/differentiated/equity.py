@@ -10,14 +10,19 @@ from smartgrid.world import World
 
 class EquityRewardOne(Reward):
     """
-    Reward based on the equity of comforts measure.
+    Reward based on the equity of comforts.
 
-    It follows the principle of Difference Rewards: we compare the measure
-    in the actual environment (in which the agent acted) and in a
-    hypothetical environment (in which the agent would not have acted).
-    If the actual environment is better than the hypothetical one, the
-    agent's action improved it and should be rewarded.
-    Otherwise, the agent degraded it and should be punished.
+    We first get the comfort of all agents in the society, and we compute the
+    equity of these comforts (see the :py:mod:`.util.equity` and especially
+    :py:func:`.util.equity.hoover` for details). This gives us a *global*
+    component (the current environment).
+
+    Then, we compute the equity only for the *others*' comforts, i.e., all
+    agents except the one being currently judged. This gives us a *local*
+    component (the hypothetical environment, had the agent not acted).
+
+    The reward follows the Difference Reward principle, and thus is the global
+    component minus the local component.
     """
 
     def __init__(self):
@@ -41,14 +46,11 @@ class EquityRewardOne(Reward):
 
 
 class EquityRewardTwo(Reward):
-    """Reward based on the equity of comforts measure.
+    """
+    Reward based on the equity of comforts.
 
-    It follows the principle of Difference Rewards: we compare the measure
-    in the actual environment (in which the agent acted) and in a
-    hypothetical environment (in which the agent would not have acted).
-    If the actual environment is better than the hypothetical one, the
-    agent's action improved it and should be rewarded.
-    Otherwise, the agent degraded it and should be punished.
+    The reward is the agent's comfort, minus the mean of all other agents'
+    comforts.
     """
 
     def __init__(self):

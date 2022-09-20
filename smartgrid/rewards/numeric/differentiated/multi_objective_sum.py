@@ -5,7 +5,11 @@ from smartgrid.rewards.reward import Reward
 
 class MultiObjectiveSum(Reward):
     """
-    Weighted sum calculation.
+    Weighted sum of multiple objectives: *comfort*, and *over-consumption*.
+
+    The reward is equal to ``0.2 * comfort + 0.8 * overconsumption``, where
+    ``comfort`` refers to the reward of :py:class:`.Comfort`, and
+    ``overconsumption`` refers to the reward of :py:class:`.OverConsumption`.
     """
 
     def __init__(self):
@@ -18,6 +22,6 @@ class MultiObjectiveSum(Reward):
         self.over_consumption = OverConsumption()
 
     def calculate(self, world: 'World', agent: 'Agent') -> float:
-        to_return = self.coefficient["Comfort"] * self.comfort.calculate(world, agent)
-        to_return += self.coefficient["OverConsumption"] * self.over_consumption.calculate(world, agent)
-        return to_return
+        comfort = self.coefficient["Comfort"] * self.comfort.calculate(world, agent)
+        oc = self.coefficient["OverConsumption"] * self.over_consumption.calculate(world, agent)
+        return comfort + oc
