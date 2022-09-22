@@ -62,6 +62,11 @@ class Scenario(ABC):
     """
     The name of the RewardWrapper used.
     """
+    observation_type: Type[Observation] = Observation
+    """
+    Fields containing the type of Observation for extending purpose.
+    Per default it's the class :py:class:`.Observation`.
+    """
 
     @property
     def max_step(self):
@@ -79,7 +84,7 @@ class Scenario(ABC):
         world = World(self.observation_manager,
                       self.agents,
                       self.rewards,
-                      Observation,
+                      self.observation_type,
                       self.max_step,
                       self.energy_generator)
         # 3. Construct the Gym Environment
