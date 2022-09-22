@@ -78,6 +78,8 @@ class ScenarioTwo(BaseOpenEI):
             "school": 1,
             "residential": 10
         }
+        # Generate OpenEI data and entity
+        self._default()
         self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1,
                                                       lower_cumulated=self.lower_cumulated,
                                                       upper_cumulated=self.upper_cumulated)

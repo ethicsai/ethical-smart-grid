@@ -192,7 +192,7 @@ class AgentProfile:
         self.action_space = spaces.Box(
             low=action_space_low,
             high=action_space_high,
-            shape=action_space_high.shape,
+            shape=(6,),
             dtype=int
         )
 
