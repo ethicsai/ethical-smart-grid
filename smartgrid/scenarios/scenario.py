@@ -109,35 +109,3 @@ class Scenario(ABC):
         :return: nothing
         """
         pass
-
-
-class DefaultScenario(Scenario):
-
-    def _prepare(self):
-        self.name = "default"
-        config = {
-            "office": ("./data/phd/profile_office_annually.npz", neutral_comfort_profile),
-            "school": ("./data/phd/profile_school_annually.npz", strict_comfort_profile),
-            "residential": ("./data/phd/profile_residential_annually.npz", flexible_comfort_profile)
-        }
-        number = {
-            "office": 5,
-            "school": 1,
-            "residential": 50
-        }
-        self.energy_generator = RandomEnergyGenerator()
-        self.data_conversion = DataOpenEIConversion()
-
-        self.data_conversion.load("office", config["office"])
-        self.data_conversion.load("school", config["school"])
-        self.data_conversion.load("residential", config["residential"])
-
-        self.agents = []
-        for profile_name in number.keys():
-            for _ in range(number[profile_name]):
-                new_agent = Agent(f"{len(self.agents)}", self.data_conversion.profiles[profile_name])
-                self.agents.append(new_agent)
-
-        self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
-        self.aggregate_function = BasicAggregateFunction
-        self.rewards = [EquityRewardOne()]
