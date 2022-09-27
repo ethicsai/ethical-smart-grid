@@ -23,18 +23,13 @@ class AgentProfile:
     agents that correspond to a Household. *School* can be another profile,
     with different characteristics, etc.
 
-    An *AgentProfile* is composed of the following characteristics:
+    An *AgentProfile* is principally composed of the following characteristics:
 
     - ``name``: the profile's name, used for identification.
-    - ``need_profile``:
-
-    A AgentProfile is a way to resume how an agent interact with the world.
-    You have many profile and all data is loaded inside his metrics.
-
-    In the basic case of the Simulator, you have:
-        - ProductionProfile: The production of the electrical device of Agent
-        - NeedProfile: For the energetic need of the Agent
-        - ComfortProfile: For the calculation of the Comfort at a step
+    - ``need_profile``: generator of needs for each time step.
+    - ``production_fn``: generator of energy produced for each time step.
+    - ``comfort_fn``: determines the comfort, based on need and consumption.
+    - ``max_storage``: the capacity of the agent's personal battery.
     """
 
     name: str
