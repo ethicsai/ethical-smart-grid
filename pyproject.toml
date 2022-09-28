@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ethical-smart-grid-simulator"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
     { name = "Clément Scheirlinck" },
     { name = "Rémy Chaput", email = "rchaput.pro@gmail.com" }
@@ -13,6 +13,10 @@ description = "A RL environment for learning ethically-aligned behaviours in a S
 readme = "Readme.md"
 license = { file = "LICENSE.md" }
 requires-python = ">=3.7"
+dependencies = [
+    "gym >= 0.20.0",
+    "numpy >= 1.22.3",
+]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -20,9 +24,23 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
+keywords = [
+    "Reinforcement Learning",
+    "Machine Ethics",
+    "OpenAI Gym",
+    "Smart Grid",
+    "Multi-Agent System",
+]
+
+[project.optional-dependencies]
+extra = [
+    "tqdm >= 4.61.2",
+    "aim >= 3.13.4",
+    "torch >= 1.11.0",
+]
 
 [project.urls]
-"Homepage" = "https://github.com/ethicsai/ethical-smart-grid"
+"Source code" = "https://github.com/ethicsai/ethical-smart-grid"
 "Bug Tracker" = "https://github.com/ethicsai/ethical-smart-grid/issues"
 
 # Ignore some files when building with hatchling
