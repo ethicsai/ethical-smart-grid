@@ -1,13 +1,12 @@
-import random
 from abc import ABC, abstractmethod
 from typing import Dict
 
 import numpy as np
-from smartgrid.agents.agent import Action
 
-from smartgrid.agents.profile.agent_profile import AgentProfile
-from smartgrid.agents.profile.need import NeedProfile
-from smartgrid.agents.profile.production import ProductionProfile
+from agents.agent import Action
+from agents.profile.agent_profile import AgentProfile
+from agents.profile.need import NeedProfile
+from agents.profile.production import ProductionProfile
 
 
 class DataConversion(ABC):

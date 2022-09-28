@@ -3,8 +3,9 @@ from typing import List, Dict
 
 import numpy as np
 from gym import RewardWrapper
+from numpy import ndarray
 
-from smartgrid.environment import SmartGrid
+from environment import SmartGrid
 
 
 class AggregateFunction(ABC, RewardWrapper):
@@ -45,5 +46,5 @@ class MultiObjectiveProduct(AggregateFunction):
     def __init__(self, env: SmartGrid):
         super(MultiObjectiveProduct, self).__init__(env, "MultiObjectiveProduct")
 
-    def reward(self, reward: List[Dict[str, float]]) -> List[float]:
-        return [np.prod(list(r.values()),axis=0) for r in reward]
+    def reward(self, reward: List[Dict[str, float]]) -> List[ndarray]:
+        return [np.prod(list(r.values()), axis=0) for r in reward]

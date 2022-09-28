@@ -3,8 +3,8 @@ from typing import Callable
 import numpy as np
 from gym.vector.utils import spaces
 
-from smartgrid.agents.profile.need import NeedProfile
-from smartgrid.agents.profile.production import ProductionProfile
+from agents.profile.need import NeedProfile
+from agents.profile.production import ProductionProfile
 
 
 class AgentProfile:
@@ -192,7 +192,7 @@ class AgentProfile:
         self.action_space = spaces.Box(
             low=action_space_low,
             high=action_space_high,
-            shape=(6,),
+            shape=(action_dim,),
             dtype=int
         )
 

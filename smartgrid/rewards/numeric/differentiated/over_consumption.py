@@ -1,6 +1,6 @@
-from smartgrid.agents.agent import Agent
-from smartgrid.rewards.reward import Reward
-from smartgrid.world import World
+from agents.agent import Agent
+from rewards.reward import Reward
+from world import World
 
 
 class OverConsumption(Reward):
@@ -39,8 +39,7 @@ class OverConsumption(Reward):
         # Global reward
         global_reward = 1.0 - global_oc / (sum_taken + 10E-300)
 
-        take_by_agent = agent.enacted_action.grid_consumption \
-                        + agent.enacted_action.store_energy
+        take_by_agent = agent.enacted_action.grid_consumption + agent.enacted_action.store_energy
 
         local_oc = global_oc - take_by_agent / (sum_taken + 10E-300)
 

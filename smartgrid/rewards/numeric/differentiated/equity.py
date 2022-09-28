@@ -1,11 +1,9 @@
-from abc import ABC
-
 import numpy as np
 
-from smartgrid.agents.agent import Agent
-from smartgrid.rewards.reward import Reward
-from smartgrid.util.equity import hoover
-from smartgrid.world import World
+from agents.agent import Agent
+from rewards.reward import Reward
+from util.equity import hoover
+from world import World
 
 
 class EquityRewardOne(Reward):

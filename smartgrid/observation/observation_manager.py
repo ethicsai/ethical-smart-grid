@@ -1,9 +1,8 @@
-from abc import abstractmethod
 from typing import Dict, Type
 
-from smartgrid.agents.agent import Agent
-from smartgrid.observation.global_observation import GlobalObservation
-from smartgrid.observation.local_observation import LocalObservation
+from agents.agent import Agent
+from observation.global_observation import GlobalObservation
+from observation.local_observation import LocalObservation
 
 
 class ObservationManager:

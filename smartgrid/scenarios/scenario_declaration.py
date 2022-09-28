@@ -6,20 +6,20 @@ from rewards.numeric.per_agent.adaptability import AdaptabilityThreePerAgent, Ad
 from rewards.numeric.per_agent.equity import EquityRewardPerAgent
 from rewards.numeric.per_agent.multi_objective_sum import MultiObjectiveSumPerAgent
 from rewards.numeric.per_agent.over_consumption import OverConsumptionPerAgent
-from smartgrid.agents.agent import Agent
-from smartgrid.agents.data_conversion import DataOpenEIConversion
-from smartgrid.agents.profile.comfort import flexible_comfort_profile, neutral_comfort_profile, strict_comfort_profile
-from smartgrid.aggregate_function.aggregate_function import BasicAggregateFunction, MultiObjectiveProduct
-from smartgrid.observation.global_observation import GlobalObservation
-from smartgrid.observation.local_observation import LocalObservation
-from smartgrid.observation.observation_manager import ObservationManager
-from smartgrid.rewards.numeric.differentiated.adaptability import AdaptabilityOne, AdaptabilityTwo, AdaptabilityThree
-from smartgrid.rewards.numeric.per_agent.comfort import Comfort
-from smartgrid.rewards.numeric.differentiated.equity import EquityRewardTwo, EquityRewardOne
-from smartgrid.rewards.numeric.differentiated.multi_objective_sum import MultiObjectiveSum
-from smartgrid.rewards.numeric.differentiated.over_consumption import OverConsumption
-from smartgrid.scenarios.scenario import Scenario
-from smartgrid.util import RandomEnergyGenerator
+from agents.agent import Agent
+from agents.data_conversion import DataOpenEIConversion
+from agents.profile.comfort import flexible_comfort_profile, neutral_comfort_profile, strict_comfort_profile
+from aggregate_function.aggregate_function import BasicAggregateFunction, MultiObjectiveProduct
+from observation.global_observation import GlobalObservation
+from observation.local_observation import LocalObservation
+from observation.observation_manager import ObservationManager
+from rewards.numeric.differentiated.adaptability import AdaptabilityOne, AdaptabilityTwo, AdaptabilityThree
+from rewards.numeric.differentiated.equity import EquityRewardTwo, EquityRewardOne
+from rewards.numeric.differentiated.multi_objective_sum import MultiObjectiveSum
+from rewards.numeric.differentiated.over_consumption import OverConsumption
+from rewards.numeric.per_agent.comfort import Comfort
+from scenarios.scenario import Scenario
+from util import RandomEnergyGenerator
 
 
 class BaseOpenEI(Scenario, ABC):

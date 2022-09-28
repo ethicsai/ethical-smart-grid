@@ -8,22 +8,18 @@ These changes can be incremental, i.e., adding new objectives after some steps,
 or more brutal, i.e., completely replacing the targeted objectives by others.
 """
 
-from smartgrid.rewards.numeric.per_agent.comfort import Comfort
 from smartgrid.rewards.numeric.differentiated.equity import EquityRewardOne
 from smartgrid.rewards.numeric.differentiated.multi_objective_sum import MultiObjectiveSum
 from smartgrid.rewards.numeric.differentiated.over_consumption import OverConsumption
+from smartgrid.rewards.numeric.per_agent.comfort import Comfort
 from smartgrid.rewards.reward import Reward
 
 
 class AdaptabilityOne(Reward):
     """
-    AdaptabilityOne relies on *equity*, *comfort* and *over-consumption*.
-
-    - When the step is inferior to ``3000``, this function is the same as
-      :py:class:`.EquityRewardOne` (which relies on *equity*).
-
-    - Otherwise, this function is the same as :py:class:`.MultiObjectiveSum`
-      (which relies on *comfort* and *over-consumption*).
+    Adaptability One depends on step for calculating. You have two cases:
+        - step is inferior to 3000, you look at the Equity metrics.
+        - otherwise, it's a weighted sum.
     """
 
     def __init__(self):
@@ -40,13 +36,9 @@ class AdaptabilityOne(Reward):
 
 class AdaptabilityTwo(Reward):
     """
-    AdaptabilityTwo relies on *equity* and *over-consumption*.
-
-    - When the current step is inferior to ``2000``, this function is the same
-      as :py:class:`.EquityRewardOne`.
-
-    - Otherwise, it computes the mean of :py:class:`.EquityRewardOne` and
-      :py:class:`.OverConsumption`.
+    Adaptability Two depends on step for calculating. You have two cases:
+        - step is inferior to 2000, you look at the Equity metrics.
+        - otherwise, it's the mean of Equity and OverConsumption
     """
 
     def __init__(self):
@@ -58,27 +50,18 @@ class AdaptabilityTwo(Reward):
         if world.current_step < 2000:
             return self.equity.calculate(world, agent)
         else:
-            equity = self.equity.calculate(world, agent)
-            oc = self.over_consumption.calculate(world, agent)
-            return (equity + oc) / 2
+            return (self.equity.calculate(world, agent) + self.over_consumption.calculate(world, agent)) / 2
 
 
 class AdaptabilityThree(Reward):
     """
-    AdaptabilityThree relies on *equity*, *over-consumption*, and *comfort*.
-
-    - When the step is inferior to ``2000``, this function is the same as
-      :py:class:`.EquityRewardOne`.
-
-    - When the step is inferior to ``6000``, it computes the mean of
-      :py:class:`.EquityRewardOne` and :py:class:`.OverConsumption`.
-
-    - Otherwise, it computes the mean of :py:class:`.EquityRewardOne`,
-      :py:class:`.OverConsumption`, and :py:class:`.Comfort`.
+    Adaptability Three depends on step for calculating. You have two cases:
+        - step is inferior to 2000, you look at the Equity metrics.
+        - otherwise, it's the mean of Equity, OverConsumption and Comfort
     """
 
     def __init__(self):
-        super().__init__("AdaptabilityThree")
+        super().__init__("AdaptabilityTwo")
         self.adaptability = AdaptabilityTwo()
         self.comfort = Comfort()
 

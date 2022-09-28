@@ -115,7 +115,7 @@ class GenerousEnergyGenerator(RandomEnergyGenerator):
     have enough energy available for all agents.
     """
 
-    def __init__(self,lower_cumulated, upper_cumulated):
+    def __init__(self, lower_cumulated, upper_cumulated):
         super(GenerousEnergyGenerator, self).__init__(lower_cumulated, upper_cumulated,
                                                       lower_proportion=1.0,
                                                       upper_proportion=1.2,

@@ -1,6 +1,6 @@
-from smartgrid.rewards.numeric.per_agent.comfort import Comfort
-from smartgrid.rewards.numeric.differentiated.over_consumption import OverConsumption
-from smartgrid.rewards.reward import Reward
+from rewards.numeric.differentiated.over_consumption import OverConsumption
+from rewards.numeric.per_agent.comfort import Comfort
+from rewards.reward import Reward
 
 
 class MultiObjectiveSum(Reward):

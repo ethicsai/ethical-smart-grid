@@ -2,8 +2,8 @@ import gym
 import numpy as np
 from gym.vector.utils import spaces
 
-from smartgrid.agents.agent import Action
-from smartgrid.world import World
+from agents.agent import Action
+from world import World
 
 
 class SmartGrid(gym.Env):

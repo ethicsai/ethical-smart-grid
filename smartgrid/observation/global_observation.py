@@ -1,10 +1,8 @@
-from abc import abstractmethod
 from collections import namedtuple
 
 import numpy as np
 
-from smartgrid.agents.agent import Agent
-from smartgrid.util import hoover
+from util import hoover
 
 global_fields = [
     'hour',

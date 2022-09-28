@@ -1,19 +1,15 @@
 from abc import ABC, abstractmethod
 from typing import List, Type
 
-from smartgrid.agents.agent import Agent
-from smartgrid.agents.data_conversion import DataConversion, DataOpenEIConversion
-from smartgrid.agents.profile.comfort import flexible_comfort_profile, neutral_comfort_profile, strict_comfort_profile
-from smartgrid.aggregate_function.aggregate_function import BasicAggregateFunction, AggregateFunction
-from smartgrid.environment import SmartGrid
-from smartgrid.observation.global_observation import GlobalObservation
-from smartgrid.observation.local_observation import LocalObservation
-from smartgrid.observation.observation_manager import ObservationManager
-from smartgrid.observation.observations import Observation
-from smartgrid.rewards.numeric.differentiated.equity import EquityRewardOne
-from smartgrid.rewards.reward import Reward
-from smartgrid.util import EnergyGenerator, RandomEnergyGenerator
-from smartgrid.world import World
+from agents.agent import Agent
+from agents.data_conversion import DataConversion
+from aggregate_function.aggregate_function import AggregateFunction
+from environment import SmartGrid
+from observation.observation_manager import ObservationManager
+from observation.observations import Observation
+from rewards.reward import Reward
+from util import EnergyGenerator
+from world import World
 
 
 class Scenario(ABC):

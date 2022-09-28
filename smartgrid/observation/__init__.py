@@ -39,7 +39,7 @@ agents.
     :py:class:`.LocalObservation` and :py:class:`.GlobalObservation` instead.
 """
 
-from .local_observation import LocalObservation
 from .global_observation import GlobalObservation
-from .observations import Observation
+from .local_observation import LocalObservation
 from .observation_manager import ObservationManager
+from .observations import Observation

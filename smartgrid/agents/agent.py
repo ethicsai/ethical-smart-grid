@@ -3,8 +3,8 @@ from collections import namedtuple
 
 import numpy as np
 
-from smartgrid.agents.profile.agent_profile import AgentProfile
-from smartgrid.util.bounded import (increase_bounded, decrease_bounded)
+from agents.profile.agent_profile import AgentProfile
+from util.bounded import (increase_bounded, decrease_bounded)
 
 
 class AgentState(object):

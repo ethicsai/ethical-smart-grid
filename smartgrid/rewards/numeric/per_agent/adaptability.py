@@ -1,11 +1,8 @@
-from smartgrid.rewards.numeric.per_agent.comfort import Comfort
-from smartgrid.rewards.numeric.differentiated.equity import EquityRewardOne
-from smartgrid.rewards.numeric.differentiated.multi_objective_sum import MultiObjectiveSum
-from smartgrid.rewards.numeric.differentiated.over_consumption import OverConsumption
-from smartgrid.rewards.numeric.per_agent.equity import EquityRewardPerAgent
-from smartgrid.rewards.numeric.per_agent.multi_objective_sum import MultiObjectiveSumPerAgent
-from smartgrid.rewards.numeric.per_agent.over_consumption import OverConsumptionPerAgent
-from smartgrid.rewards.reward import Reward
+from rewards.numeric.per_agent.comfort import Comfort
+from rewards.numeric.per_agent.equity import EquityRewardPerAgent
+from rewards.numeric.per_agent.multi_objective_sum import MultiObjectiveSumPerAgent
+from rewards.numeric.per_agent.over_consumption import OverConsumptionPerAgent
+from rewards.reward import Reward
 
 
 class AdaptabilityOnePerAgent(Reward):
@@ -66,6 +63,6 @@ class AdaptabilityThreePerAgent(Reward):
         if world.current_step < 6000:
             return adaptability
         else:
-            sum = adaptability * 2
-            sum += self.comfort.calculate(world, agent)
-            return sum / 3
+            total = adaptability * 2
+            total += self.comfort.calculate(world, agent)
+            return total / 3

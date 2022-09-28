@@ -5,8 +5,8 @@ from collections import namedtuple
 import numpy as np
 from gym.spaces import Box
 
-from smartgrid.observation.global_observation import GlobalObservation
-from smartgrid.observation.local_observation import LocalObservation
+from observation.global_observation import GlobalObservation
+from observation.local_observation import LocalObservation
 
 
 class Observation(namedtuple('Observation', LocalObservation._fields + GlobalObservation._fields)):

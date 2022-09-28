@@ -57,7 +57,7 @@ w.r.t. the consumption and need, for each of the implemented functions.
 
     import matplotlib.pyplot as plt
     import numpy as np
-    from smartgrid.agents.profile.comfort import (flexible_comfort_profile,
+    from agents.profile.comfort import (flexible_comfort_profile,
                                                   neutral_comfort_profile,
                                                   strict_comfort_profile)
     x = np.linspace(0, 1, 100)
@@ -89,7 +89,7 @@ def flexible_comfort_profile(consumption: float, need: float) -> float:
         need. The comfort is guaranteed to be within [0,1].
     """
     ratio = consumption / need
-    return richard_curve(ratio, q=0.1, b=20, v=2, m=1/2)
+    return richard_curve(ratio, q=0.1, b=20, v=2, m=1 / 2)
 
 
 def neutral_comfort_profile(consumption: float, need: float) -> float:
@@ -107,7 +107,7 @@ def neutral_comfort_profile(consumption: float, need: float) -> float:
         need. The comfort is guaranteed to be within [0,1].
     """
     ratio = consumption / need
-    return richard_curve(ratio, q=1, b=10, v=1, m=1/2)
+    return richard_curve(ratio, q=1, b=10, v=1, m=1 / 2)
 
 
 def strict_comfort_profile(consumption: float, need: float) -> float:
@@ -124,7 +124,7 @@ def strict_comfort_profile(consumption: float, need: float) -> float:
         need. The comfort is guaranteed to be within [0,1].
     """
     ratio = consumption / need
-    return richard_curve(ratio, q=10, b=16, v=0.7, m=1/2)
+    return richard_curve(ratio, q=10, b=16, v=0.7, m=1 / 2)
 
 
 def richard_curve(x, a=0.0, k=1.0, b=1.0, v=1.0, q=1.0, c=1.0, m=0.0) -> float:
