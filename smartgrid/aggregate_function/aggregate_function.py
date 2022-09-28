@@ -19,7 +19,7 @@ class AggregateFunction(ABC, RewardWrapper):
         pass
 
     def __init__(self, env: SmartGrid, name: str):
-        super().__init__(env)
+        super().__init__(env, new_step_api=True)
         self.name = name
 
     def __str__(self):

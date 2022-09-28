@@ -53,13 +53,6 @@ class Runner:
 
             self.collector.collect(infos, rewards)
 
-            if self.mode != "evaluation":
-                # reminder loop
-                for agent_id in range(self.agent_num):
-                    self.model.reminder(step=step, agent_id=agent_id, action=actions[agent_id],
-                                        observation=obs["local"][agent_id], global_observation=obs["global"],
-                                        reward=rewards[agent_id], done=dones[agent_id])
-
             obs = next_obs
 
             if self.mode != "evaluation":

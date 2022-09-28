@@ -2,8 +2,6 @@ from abc import ABC, abstractmethod
 
 from smartgrid.environment import SmartGrid
 
-from algorithms.memory import Memory
-
 
 class Model(ABC):
     def __init__(self, agent_num: int, env: SmartGrid, hyper_parameters: dict, device: str):
@@ -11,10 +9,6 @@ class Model(ABC):
         self.env = env
         self.hyper_parameters = hyper_parameters
         self.device = device
-        self.memory = Memory(agent_num)
-
-    def reminder(self, step, agent_id, action, observation, global_observation, reward, done):
-        self.memory.add_step(step, agent_id, action, observation, global_observation, reward, done)
 
     @abstractmethod
     def forward(self, observations_per_agent):
