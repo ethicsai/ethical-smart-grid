@@ -1,6 +1,7 @@
 import os
 from typing import List
 
+from aim import Run
 
 from agents.agent import Agent
 from environment import SmartGrid
@@ -90,6 +91,12 @@ class Collector:
             "data_used": str(scenario.data_conversion)
         }
 
+        # Initialize Aim Runnner
+        self.aim_runner = Run()
+
+        # Put hparams into Aim Runner: Be Careful some are reference to object inside the Simulator
+        self.aim_runner['hparams'] = self.hyper_parameters
+
     def get_path(self):
         basic_path = "./saved/"
 
@@ -102,3 +109,32 @@ class Collector:
         basic_path += "_" + self.hyper_parameters["hyper_parameters_name"]
 
         return basic_path
+
+    def collect_metrics(self, step):
+        metrics = self.metrics_watcher.collect()
+        for metric in metrics:
+            self.aim_runner.track(value=metrics[metric][0], name=metric, step=step, context=metrics[metric][1])
+
+    def collect(self, infos, rewards,):
+        # Collect info
+        for agent_id in infos['rewards']:
+            for reward_name in infos['rewards'][agent_id]:
+                self.aim_runner.track(name=f"{reward_name}_{agent_id}",
+                                      value=infos['rewards'][agent_id][reward_name])
+
+        # collect rewards for Aim
+        aim_rewards = self.reward_watcher.collect(rewards)
+        for reward in aim_rewards:
+            self.aim_runner.track(aim_rewards[reward], name=reward)
+
+        # add reward
+        self.aim_runner.track(name="Aggregate Reward", value=sum(rewards))
+
+    def finalize(self):
+        self.aim_runner.finalize()
+
+    def collect_logs(self, step, logs):
+        if logs is None:
+            return
+        for log in logs:
+            self.aim_runner.track(value=logs[log], name=log, step=step)
