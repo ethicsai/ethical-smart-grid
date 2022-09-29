@@ -10,7 +10,8 @@ from watchers import Collector
 
 class Runner:
 
-    def __init__(self, hyper_parameters: dict, model: Type['Model'], device: 'Device', scenario: 'Scenario', mode):
+    def __init__(self, hyper_parameters: dict, model: Type['Model'], device: 'Device', scenario: 'Scenario', mode,
+                 quiet_metrics=False):
         # principal construction
         self.mode = mode
         self.scenario = scenario
@@ -25,7 +26,8 @@ class Runner:
         self.collector = Collector(scenario=self.scenario,
                                    smartgrid=self.smartgrid,
                                    hyper_parameters_name=hyper_parameters["name"],
-                                   model_name=model.__name__)
+                                   model_name=model.__name__,
+                                   quiet_metrics=quiet_metrics)
 
         # save device used for calculation
         self.device = device

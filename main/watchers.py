@@ -72,7 +72,9 @@ class Collector:
                  scenario: Scenario,
                  smartgrid: SmartGrid,
                  hyper_parameters_name: str,
-                 model_name: str):
+                 model_name: str,
+                 quiet_metrics: bool
+                 ):
         self.metrics_watcher = MetricsWatcher(scenario, smartgrid)
         self.reward_watcher = RewardWatcher(smartgrid.agents)
 
@@ -90,12 +92,13 @@ class Collector:
             "aggregate_name": scenario.aggregate_function_name,
             "data_used": str(scenario.data_conversion)
         }
+        self.quiet = quiet_metrics
+        if not self.quiet:
+            # Initialize Aim Runnner
+            self.aim_runner = Run()
 
-        # Initialize Aim Runnner
-        self.aim_runner = Run()
-
-        # Put hparams into Aim Runner: Be Careful some are reference to object inside the Simulator
-        self.aim_runner['hparams'] = self.hyper_parameters
+            # Put hparams into Aim Runner: Be Careful some are reference to object inside the Simulator
+            self.aim_runner['hparams'] = self.hyper_parameters
 
     def get_path(self):
         basic_path = "./saved/"
@@ -111,11 +114,15 @@ class Collector:
         return basic_path
 
     def collect_metrics(self, step):
+        if self.quiet:
+            return
         metrics = self.metrics_watcher.collect()
         for metric in metrics:
             self.aim_runner.track(value=metrics[metric][0], name=metric, step=step, context=metrics[metric][1])
 
     def collect(self, infos, rewards,):
+        if self.quiet:
+            return
         # Collect info
         for agent_id in infos['rewards']:
             for reward_name in infos['rewards'][agent_id]:
@@ -131,10 +138,12 @@ class Collector:
         self.aim_runner.track(name="Aggregate Reward", value=sum(rewards))
 
     def finalize(self):
+        if self.quiet:
+            return
         self.aim_runner.finalize()
 
     def collect_logs(self, step, logs):
-        if logs is None:
+        if logs is None or self.quiet:
             return
         for log in logs:
             self.aim_runner.track(value=logs[log], name=log, step=step)

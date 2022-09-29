@@ -91,7 +91,11 @@ def main():
                       help="Used for aim folder specification")
     parser.add_option("-a", "--allrun", dest="all_run",
                       action="store_true",
-                      help="Check parameters")
+                      help="Be careful with the usage of this options."
+                           "It's a high complexity option, that will calculate for sequential run.")
+    parser.add_option("-q", "--quietMetrics", dest="quiet_metric",
+                      action="store_true",
+                      help="Just for deactivate Aimstack tracking.")
 
     (options, args) = parser.parse_args()
     if len(args) != 0:
@@ -105,7 +109,7 @@ def main():
             scenario = scenarios[options.scenario]
 
             runner = Runner(hyper_parameters=experiment, model=model, device=device, scenario=scenario(),
-                            mode=options.mode)
+                            mode=options.mode, quiet_metrics=options.quiet_metric)
             runner.start()
         else:
             inp = input(
