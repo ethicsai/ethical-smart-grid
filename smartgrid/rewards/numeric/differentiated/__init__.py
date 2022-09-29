@@ -2,8 +2,7 @@ from .adaptability import (AdaptabilityOne,
                            AdaptabilityTwo,
                            AdaptabilityThree)
 
-from .equity import (EquityRewardOne,
-                     EquityRewardTwo)
+from .equity import EquityRewardOne
 
 from .multi_objective_sum import MultiObjectiveSum
 

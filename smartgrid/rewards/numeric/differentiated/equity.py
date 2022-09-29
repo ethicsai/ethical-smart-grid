@@ -41,24 +41,3 @@ class EquityRewardOne(Reward):
 
         # Return the difference between the 2 environments
         return actual_equity - hypothetical_equity
-
-
-class EquityRewardTwo(Reward):
-    """
-    Reward based on the equity of comforts.
-
-    The reward is the agent's comfort, minus the mean of all other agents'
-    comforts.
-    """
-
-    def __init__(self):
-        super().__init__("EquityTwo")
-
-    def calculate(self, world: World, agent: Agent):
-        # Comforts of all other agents (excluding the current `agent`)
-        other_comforts = [a.state.comfort for a in world.agents if a != agent]
-        # Comfort of the current agent
-        agent_comfort = agent.state.comfort
-
-        # Return the difference
-        return agent_comfort - np.mean(other_comforts)

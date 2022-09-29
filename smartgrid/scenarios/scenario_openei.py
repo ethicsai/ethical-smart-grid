@@ -14,7 +14,7 @@ from observation.global_observation import GlobalObservation
 from observation.local_observation import LocalObservation
 from observation.observation_manager import ObservationManager
 from rewards.numeric.differentiated.adaptability import AdaptabilityOne, AdaptabilityTwo, AdaptabilityThree
-from rewards.numeric.differentiated.equity import EquityRewardTwo, EquityRewardOne
+from rewards.numeric.differentiated.equity import EquityRewardOne
 from rewards.numeric.differentiated.multi_objective_sum import MultiObjectiveSum
 from rewards.numeric.differentiated.over_consumption import OverConsumption
 from rewards.numeric.per_agent.comfort import Comfort
@@ -149,25 +149,6 @@ class ScenarioFive(BaseOpenEI):
         self.rewards = [EquityRewardOne()]
 
 
-class ScenarioSix(BaseOpenEI):
-    def _prepare(self):
-        self.name = "Six"
-        self.number = {
-            "office": 2,
-            "school": 1,
-            "residential": 10
-        }
-        # Generate OpenEI data and agent
-        self._default()
-        self.energy_generator = RandomEnergyGenerator(upper_proportion=1.1,
-                                                      lower_cumulated=self.lower_cumulated,
-                                                      upper_cumulated=self.upper_cumulated)
-
-        self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
-        self.aggregate_function = BasicAggregateFunction
-        self.rewards = [EquityRewardTwo()]
-
-
 class ScenarioSeven(BaseOpenEI):
     def _prepare(self):
         self.name = "Seven"
@@ -184,7 +165,7 @@ class ScenarioSeven(BaseOpenEI):
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = MultiObjectiveProduct
-        self.rewards = [EquityRewardTwo(), Comfort(), OverConsumption()]
+        self.rewards = [EquityRewardOne(), Comfort(), OverConsumption()]
 
 
 class ScenarioEight(BaseOpenEI):
@@ -296,24 +277,6 @@ class ScenarioThirteen(BaseOpenEI):
         self.rewards = [EquityRewardOne()]
 
 
-class ScenarioFourteen(BaseOpenEI):
-    def _prepare(self):
-        self.name = "Fourteen"
-        self.number = {
-            "office": 2,
-            "school": 1,
-            "residential": 10
-        }
-        # Generate OpenEI data and agent
-        self._default()
-        self.energy_generator = RandomEnergyGenerator(lower_cumulated=self.lower_cumulated,
-                                                      upper_cumulated=self.upper_cumulated)
-
-        self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
-        self.aggregate_function = BasicAggregateFunction
-        self.rewards = [EquityRewardTwo()]
-
-
 class ScenarioFifteen(BaseOpenEI):
     def _prepare(self):
         self.name = "Fifteen"
@@ -329,7 +292,7 @@ class ScenarioFifteen(BaseOpenEI):
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = MultiObjectiveProduct
-        self.rewards = [EquityRewardTwo(), Comfort(), OverConsumption()]
+        self.rewards = [EquityRewardOne(), Comfort(), OverConsumption()]
 
 
 class ScenarioSixteen(BaseOpenEI):
@@ -666,7 +629,7 @@ class ScenarioThirtyThree(BaseOpenEI):
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = BasicAggregateFunction
-        self.rewards = [EquityRewardTwo()]
+        self.rewards = [EquityRewardOne()]
 
 
 class ScenarioThirtyFour(BaseOpenEI):
@@ -686,7 +649,7 @@ class ScenarioThirtyFour(BaseOpenEI):
 
         self.observation_manager = ObservationManager(LocalObservation, GlobalObservation)
         self.aggregate_function = MultiObjectiveProduct
-        self.rewards = [EquityRewardTwo(), Comfort(), OverConsumption()]
+        self.rewards = [EquityRewardOne(), Comfort(), OverConsumption()]
 
 
 class ScenarioThirtyFive(BaseOpenEI):
