@@ -69,6 +69,7 @@ exclude = [
     "/*.ipynb",
     "/.pytest_cache",
     "/.ruff_cache",
+    "/joss-paper",
 ]
 
 # Also include the `data` folder, and move it to `smartgrid/data` when installed.
