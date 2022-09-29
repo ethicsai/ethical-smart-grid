@@ -28,9 +28,9 @@ class BaseOpenEI(Scenario, ABC):
     def _default(self):
         self.second_name = None
         paths = {
-            "office": ("./data/phd/profile_office_annually.npz", neutral_comfort_profile),
-            "school": ("./data/phd/profile_school_annually.npz", strict_comfort_profile),
-            "residential": ("./data/phd/profile_residential_annually.npz", flexible_comfort_profile)
+            "office": ("./data/openei/profile_office_annually.npz", neutral_comfort_profile),
+            "school": ("./data/openei/profile_school_annually.npz", strict_comfort_profile),
+            "residential": ("./data/openei/profile_residential_annually.npz", flexible_comfort_profile)
         }
         self.data_conversion = DataOpenEIConversion()
 

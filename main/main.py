@@ -5,7 +5,7 @@ import torch
 from algorithms.naive.random_model import rand_experiment, RandomModel
 from algorithms.qsom.experiments import *
 from algorithms.qsom.qsom import QSOM
-from scenarios.scenario_declaration import *
+from scenarios.scenario_openei import *
 from runner import Runner
 
 string_device = "cuda" if torch.cuda.is_available() else "cpu"
