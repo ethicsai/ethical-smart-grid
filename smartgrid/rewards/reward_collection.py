@@ -1,7 +1,7 @@
 from typing import List, Dict
 
-from agents.agent import Agent
-from rewards.reward import Reward
+from smartgrid.agents import Agent
+from .reward import Reward
 
 
 class RewardCollection:

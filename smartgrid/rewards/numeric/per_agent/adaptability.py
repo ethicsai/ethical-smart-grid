@@ -1,8 +1,8 @@
-from rewards.numeric.per_agent.comfort import Comfort
-from rewards.numeric.per_agent.equity import EquityRewardPerAgent
-from rewards.numeric.per_agent.multi_objective_sum import MultiObjectiveSumPerAgent
-from rewards.numeric.per_agent.over_consumption import OverConsumptionPerAgent
-from rewards.reward import Reward
+from smartgrid.rewards.numeric.per_agent.comfort import Comfort
+from smartgrid.rewards.numeric.per_agent.equity import EquityRewardPerAgent
+from smartgrid.rewards.numeric.per_agent.multi_objective_sum import MultiObjectiveSumPerAgent
+from smartgrid.rewards.numeric.per_agent.over_consumption import OverConsumptionPerAgent
+from smartgrid.rewards.reward import Reward
 
 
 class AdaptabilityOnePerAgent(Reward):

@@ -1,11 +1,14 @@
 import os
 from typing import List
 
-from aim import Run
+try:
+    from aim import Run
+except ImportError:
+    Run = None
 
-from agents.agent import Agent
-from environment import SmartGrid
-from scenarios.scenario import Scenario
+from smartgrid.agents.agent import Agent
+from smartgrid.environment import SmartGrid
+from smartgrid.scenarios.scenario import Scenario
 
 
 class MetricsWatcher:

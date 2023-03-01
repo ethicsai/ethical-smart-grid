@@ -3,10 +3,10 @@ from typing import Dict
 
 import numpy as np
 
-from agents.agent import Action
-from agents.profile.agent_profile import AgentProfile
-from agents.profile.need import NeedProfile
-from agents.profile.production import ProductionProfile
+from .agent import Action
+from .profile import AgentProfile
+from .profile import NeedProfile
+from .profile import ProductionProfile
 
 
 class DataConversion(ABC):

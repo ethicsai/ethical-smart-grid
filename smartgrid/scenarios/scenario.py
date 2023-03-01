@@ -1,15 +1,15 @@
 from abc import ABC, abstractmethod
 from typing import List, Type
 
-from agents.agent import Agent
-from agents.data_conversion import DataConversion
-from aggregate_function.aggregate_function import AggregateFunction
-from environment import SmartGrid
-from observation.observation_manager import ObservationManager
-from observation.observations import Observation
-from rewards.reward import Reward
-from util import EnergyGenerator
-from world import World
+from smartgrid.agents.agent import Agent
+from smartgrid.agents.data_conversion import DataConversion
+from smartgrid.aggregate_function.aggregate_function import AggregateFunction
+from smartgrid.environment import SmartGrid
+from smartgrid.observation.observation_manager import ObservationManager
+from smartgrid.observation.observations import Observation
+from smartgrid.rewards.reward import Reward
+from smartgrid.util import EnergyGenerator
+from smartgrid.world import World
 
 
 class Scenario(ABC):

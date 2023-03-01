@@ -3,10 +3,10 @@ from __future__ import annotations
 from collections import namedtuple
 
 import numpy as np
-from gym.spaces import Box
+from gymnasium.spaces import Box
 
-from observation.global_observation import GlobalObservation
-from observation.local_observation import LocalObservation
+from .global_observation import GlobalObservation
+from .local_observation import LocalObservation
 
 
 class Observation(namedtuple('Observation', LocalObservation._fields + GlobalObservation._fields)):

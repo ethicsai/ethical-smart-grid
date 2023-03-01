@@ -1,10 +1,10 @@
 from typing import Callable
 
 import numpy as np
-from gym.vector.utils import spaces
+from gymnasium.vector.utils import spaces
 
-from agents.profile.need import NeedProfile
-from agents.profile.production import ProductionProfile
+from .need import NeedProfile
+from .production import ProductionProfile
 
 
 class AgentProfile:
@@ -37,7 +37,7 @@ class AgentProfile:
 
     action_space: spaces.Box
     """
-    The space in which :py:class:`.Action`s live.
+    The space in which :py:class:`.Action` s live.
     
     We briefly recall that Actions are composed of parameters for consuming
     and exchanging energy. Different *profiles* thus have different domains

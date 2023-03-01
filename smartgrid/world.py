@@ -1,14 +1,12 @@
 from typing import List, Type
 
 import numpy as np
-from gym.vector.utils import spaces
+from gymnasium.vector.utils import spaces
 
-from agents.agent import Agent
-from observation.observation_manager import ObservationManager
-from observation.observations import Observation
-from rewards.reward import Reward
-from rewards.reward_collection import RewardCollection
-from util import EnergyGenerator
+from smartgrid.agents import Agent
+from smartgrid.observation import Observation, ObservationManager
+from smartgrid.rewards import Reward, RewardCollection
+from smartgrid.util import EnergyGenerator
 
 
 class World(object):

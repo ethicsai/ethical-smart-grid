@@ -1,8 +1,8 @@
 from typing import Dict, Type
 
-from agents.agent import Agent
-from observation.global_observation import GlobalObservation
-from observation.local_observation import LocalObservation
+from smartgrid.agents import Agent
+from .global_observation import GlobalObservation
+from .local_observation import LocalObservation
 
 
 class ObservationManager:

@@ -1,12 +1,13 @@
-import gym
+import gymnasium
 import numpy as np
-from gym.vector.utils import spaces
 
-from agents.agent import Action
-from world import World
+from gymnasium.vector.utils import spaces
+
+from smartgrid.agents import Action
+from smartgrid.world import World
 
 
-class SmartGrid(gym.Env):
+class SmartGrid(gymnasium.Env):
     """
     The Smart Grid multi-agent environment is the jointure between :py:class:`Env` of Gym libraries and the simulator.
     The Simulator work like an environment Gym, please note that the key feature is multi-agent handling physically \

@@ -1,6 +1,6 @@
-from agents.agent import Agent
-from rewards.reward import Reward
-from world import World
+from smartgrid.agents.agent import Agent
+from smartgrid.rewards.reward import Reward
+from smartgrid.world import World
 
 
 class OverConsumption(Reward):

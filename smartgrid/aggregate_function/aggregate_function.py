@@ -2,10 +2,10 @@ from abc import ABC
 from typing import List, Dict
 
 import numpy as np
-from gym import RewardWrapper
+from gymnasium import RewardWrapper
 from numpy import ndarray
 
-from environment import SmartGrid
+from smartgrid.environment import SmartGrid
 
 
 class AggregateFunction(ABC, RewardWrapper):

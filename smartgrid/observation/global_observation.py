@@ -2,7 +2,7 @@ from collections import namedtuple
 
 import numpy as np
 
-from util import hoover
+from smartgrid.util import hoover
 
 global_fields = [
     'hour',

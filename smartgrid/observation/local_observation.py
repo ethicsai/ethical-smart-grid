@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-from agents.agent import Agent
+from smartgrid.agents import Agent
 
 local_field = [
     'personal_storage',

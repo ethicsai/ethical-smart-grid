@@ -57,7 +57,7 @@ w.r.t. the consumption and need, for each of the implemented functions.
 
     import matplotlib.pyplot as plt
     import numpy as np
-    from agents.profile.comfort import (flexible_comfort_profile,
+    from smartgrid.agents.profile.comfort import (flexible_comfort_profile,
                                                   neutral_comfort_profile,
                                                   strict_comfort_profile)
     x = np.linspace(0, 1, 100)

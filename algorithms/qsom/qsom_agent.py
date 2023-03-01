@@ -8,7 +8,7 @@ States and Actions.
 """
 
 import numpy as np
-from gym.spaces import Box
+from gymnasium.spaces import Box
 
 from algorithms.qsom.som import SOM
 from algorithms.util.action_perturbator import ActionPerturbator

@@ -1,4 +1,7 @@
-from gym.envs.registration import register
+from gymnasium.envs.registration import register
+
+from .environment import SmartGrid
+from .world import World
 
 register(
     id='SmartGrid-v0',

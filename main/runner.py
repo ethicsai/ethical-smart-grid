@@ -3,7 +3,7 @@ from typing import Type
 from torch.types import Device
 from tqdm import trange
 
-from agents.agent import Action
+from smartgrid.agents import Action
 from algorithms.model import Model
 from watchers import Collector
 

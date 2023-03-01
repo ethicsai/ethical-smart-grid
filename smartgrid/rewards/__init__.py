@@ -14,3 +14,6 @@ be found in the :py:mod:`smartgrid.rewards.numeric` package.
 
 Other functions can also be based on symbolic reasoning. (Work in progress)
 """
+
+from .reward import Reward
+from .reward_collection import RewardCollection
