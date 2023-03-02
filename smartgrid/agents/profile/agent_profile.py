@@ -1,7 +1,7 @@
 from typing import Callable
 
 import numpy as np
-from gymnasium.vector.utils import spaces
+from gymnasium import spaces
 
 from .need import NeedProfile
 from .production import ProductionProfile
@@ -37,7 +37,7 @@ class AgentProfile:
 
     action_space: spaces.Box
     """
-    The space in which :py:class:`.Action` s live.
+    The space in which :py:class:`.Action`\\ s live.
     
     We briefly recall that Actions are composed of parameters for consuming
     and exchanging energy. Different *profiles* thus have different domains
@@ -65,7 +65,7 @@ class AgentProfile:
     """
 
     observation_space: spaces.Dict
-    """The space in which :py:class:`.LocalObservation`s live.
+    """The space in which :py:class:`.LocalObservation`\\ s live.
     
     Agents receive local observations that are individual to them. The profile
     determines the domain of these dimensions.
@@ -142,12 +142,6 @@ class AgentProfile:
     and :py:meth:`.World.max_needed_energy` for more details).
     """
 
-    need: float
-    """Need generated at the current time step."""
-
-    production: float
-    """Production generated at the current time step."""
-
     def __init__(self,
                  name: str,
                  need_profile: NeedProfile,
@@ -179,6 +173,9 @@ class AgentProfile:
             The bounds may also be different between dimensions, e.g.,
             ``[1000, 1200, 800, 400, 2000, 1500]``.
         :param action_dim: Deprecated, unused.
+        :param comfort_fn: The comfort function to use. See
+            :py:mod:`smartgrid.agents.profile.comfort` for more details on
+            comfort functions.
         """
         if action_space_low.shape != action_space_high.shape:
             raise Exception('action_space_low and action_space_high must '
@@ -197,34 +194,42 @@ class AgentProfile:
         )
 
         # create observation_space for an agent
-        space_dict = {
+        self.observation_space = spaces.Dict({
             'personal_storage': spaces.Box(low=0, high=1, shape=(1,), dtype=int),
             'comfort': spaces.Box(0, 1, (1,), dtype=float),
             'payoff': spaces.Box(0, 1, (1,), dtype=float)
-        }
-        self.observation_space = spaces.Dict(space_dict)
+        })
 
         self.need_fn = need_profile
         self.production_fn = production_profile
         self.comfort_fn = comfort_fn
 
-        self.production = None
-        self.need = None
         self.max_storage = max_storage
         self.max_energy_needed = self.need_fn.max_energy_needed
 
-    def update(self, step: int) -> None:
+    def need(self, step: int) -> float:
         """
-        Generate new need and production for the new time step.
+        Generate a new need at a given time step for a single agent.
 
-        :param step: The new (current) time step.
-        """
-        self.need = self.need_fn.compute(step)
-        self.production = self.production_fn.compute(step)
+        :param step: The new time step.
 
-    def reset(self):
+        :return: The new value of need. Different agents may get different
+            needs, even when using the same profile (depending on the
+            implementation details of the :py:class:`NeedProfile`).
         """
-        Reset need and production for the initial (t=0) time step.
+        return self.need_fn.compute(step)
+
+    def production(self, step: int) -> float:
         """
-        self.production = self.production_fn.compute(0)
-        self.need = self.need_fn.compute(0)
+        Generate a new production at a given time step for a single agent.
+
+        :param step: The new time step.
+
+        :return: The new value of production. Different agents may get
+            different needs, even when using the same profile (depending on
+            the implementation details of the :py:class:`ProductionProfile`).
+        """
+        return self.production_fn.compute(step)
+
+    def __str__(self):
+        return '<AgentProfile name={}>'.format(self.name)

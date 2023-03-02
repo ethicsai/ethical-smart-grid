@@ -13,10 +13,11 @@ class AgentState(object):
         self.payoff = 0
         self.storage = 0
         self.need = 0
+        self.production = 0
 
     def __str__(self):
-        return '<AgentState comfort={} payoff={} storage={} need={}' \
-            .format(self.comfort, self.payoff, self.storage, self.need)
+        return '<AgentState comfort={} payoff={} storage={} need={} production={}' \
+            .format(self.comfort, self.payoff, self.storage, self.need, self.production)
 
     def reset(self):
         self.__init__()
@@ -91,28 +92,40 @@ class Agent(object):
 
     def update(self, step: int) -> None:
         """
-        Function for updating all metric for our agent
-        :param step: the current step
+        Update the agent's current state (production, need, comfort).
+
+        :param step: The current time step.
         """
+        # Compute comfort (using the previous need)
         consumption = self.enacted_action.grid_consumption + self.enacted_action.storage_consumption
-        self.profile.update(step)
-        self.increase_storage(self.profile.production)
-        self.state.comfort = self.profile.comfort_fn(consumption, self.need)
+        self.state.comfort = self.profile.comfort_fn(consumption, self.state.need)
+
+        # Compute a new need
+        self.state.need = self.profile.need(step)
+
+        # Compute a new production and increase the storage accordingly
+        self.state.production = self.profile.production(step)
+        self.increase_storage(self.state.production)
 
     def reset(self):
+        # Reset all state values to 0
         self.state.reset()
-        self.profile.reset()
-        self.state.need = self.need
+
+        # Create a fake action (0 for all parameters)
         self.intended_action = Action(*[0.0] * len(Action._fields))
         self.enacted_action = self.intended_action
 
+        # Update state for the 1st step (need, production, storage, ...)
+        # Note that comfort will most likely remain at 0 since action does nothing
+        self.update(0)
+
     @property
     def need(self):
-        return self.profile.need
+        return self.state.need
 
     @property
     def production(self):
-        return self.profile.production
+        return self.state.production
 
     @property
     def comfort(self):
@@ -126,7 +139,7 @@ class Agent(object):
     @property
     def payoff_ratio(self) -> float:
         """Return the current payoff scaled to [0,1]"""
-        return np.interp(self.state.payoff, Agent.payoff_range, (0, 1))
+        return np.interp(self.state.payoff, self.payoff_range, (0, 1))
 
     def __str__(self):
         return '<Agent {}>'.format(self.name)
