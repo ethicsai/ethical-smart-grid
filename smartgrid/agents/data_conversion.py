@@ -1,126 +1,133 @@
+import random
 from abc import ABC, abstractmethod
 from typing import Dict
 
 import numpy as np
 
 from .agent import Action
-from .profile import AgentProfile
-from .profile import NeedProfile
-from .profile import ProductionProfile
+from .profile import (AgentProfile,
+                      NeedProfile,
+                      ProductionProfile)
 
 
 class DataConversion(ABC):
-    memorized_profiles: Dict[str, AgentProfile]
-    name: str
-    max_step: int
+    """
+    Convert raw data into usable :py:class:`AgentProfile`\\ s.
 
-    def __init__(self, name: str):
-        self.name = name
-        self.max_step = 0
+    To improve re-usability and because they may contain important amounts of
+    data (e.g., quantity of energy needed for each step), profiles are usually
+    stored as data files, using some specific format.
+    DataConversion classes are responsible for translating such data files
+    and loading them into tangible (instantiated) profiles.
+
+    New DataConversion classes can be created to handle different file formats
+    and structures, so that the simulator itself is agnostic to the data source.
+    """
+
+    profiles: Dict[str, AgentProfile]
+    """Profiles already loaded by the DataConversion, to speed up next calls."""
+
+    def __init__(self):
+        self.profiles = {}
 
     def __str__(self):
-        return self.name
+        return type(self).__name__
 
     @abstractmethod
-    def load(self, name: str, config: tuple) -> None:
-        pass
+    def load(self, name: str, data_path: str, **kwargs):
+        """
+        Load a profile from a data file for further use.
 
-    @property
-    def profiles(self) -> Dict[str, AgentProfile]:
-        return self.memorized_profiles
+        :param name: The desired profile name. This can be seen as the
+            profile's ID, as the name must be used to later retrieve the
+             profile from the :py:attribute:`profiles` dict.
+
+        :param data_path: The path to the data file from which the profile
+            should be loaded. This path must exist and be readable.
+
+        :param kwargs: Additional arguments.
+            These arguments can serve any purpose, depending on the
+            implementation details of the DataConversion itself.
+        """
+        pass
 
 
 class DataOpenEIConversion(DataConversion):
-    # Assert that we have all necessary data
-    expected_keys = ['needs', 'action_limit',
-                     'max_storage']
+    """
+    DataConversion specialized for data coming from the OpenEI dataset.
 
-    def __init__(self):
-        super().__init__("OpenEI")
-        self.memorized_profiles = {}
+    Data that were extracted from the OpenEI dataset have been transformed
+    as NPZ files for easier and faster loading from Python. They should all
+    have the same structure:
 
-    def load(self, name: str, config: tuple) -> None:
-        # TODO change commentary
+    - `needs`: A NumPy array describing the quantity of energy needed each step.
+    - `action_limit`: The upper bound of the agent's action.
+    - `max_storage`: The capacity of the agent's personal storage.
+
+    Note that OpenEI-based profiles do not contain production or comfort:
+    we must generate them ourselves.
+    As such, the :py:meth:`load` method requires an additional `comfort_fn`
+    argument (keyworded, e.g., `comfort_fn=...`).
+    """
+
+    expected_keys = ['needs', 'action_limit', 'max_storage']
+    """Keys that are expected in the NpzFile loaded from the data file."""
+
+    def load(self, name, data_path, comfort_fn=None) -> None:
         """
-        This module offers helper functions to instantiate Agents profiles.
+        Load a profile from an OpenEI-based data file.
 
-        Data are loaded from the `.npz` files in the `data/` folder.
-        Npz files are archives that contain multiple NumPy arrays.
-        In this case, they must contain:
+        These data files can be found in the `data/openei` directory.
 
-        action_space_low
-            an array of lower bounds for the agents' actions
-            (e.g., the 1st value is the lower bound of the 1st action dimension, etc.)
-        action_space_high
-            an array of upper bounds for agents' actions
-            (must have the same shape as `action_space_low`)
-        max_storage
-            a single value array, which is the maximum battery capacity
-            (note: we would like `max_storage` to be a scalar value... but npz files
-            can only contain arrays, so we make it an array of a single value)
-        need_per_hour
-            an array of "needs" for each hour of a year
-            (needs to represent the amount the agent wants to consume)
-        production_per_hour
-            an array of "production" for each hour of a year
-            (the amount of energy produced by the agent's personal solar panel)
+        :param name: The desired profile name. This can be seen as the profile's
+            ID, as it will be used to later retrieve it from the
+            :py:attribute:`memorized_profiles` dict.
 
-        An example of how to create such files::
+        :param data_path: The path to the data file from which the profile
+            should be loaded. This path must exist and be readable.
 
-            np.savez(filepath,
-                     action_space_low=[0, 0, 0, 0, 0, 0],
-                     action_space_high=[100, 100, 100, 100, 100, 100],
-                     max_storage=[500],
-                     need_per_hour=[123, 456, 789, ...],
-                     production_per_hour=[321, 654, 987, ...])
-
-        (Alternatively, `np.savez_compressed` can be used to reduce the file size)
-
-        This module offers the following functions:
-
-        _load_profile
-            automates parsing and validating profiles from `.npz` files
-        _compute_need
-            a helper function, that returns a need from a time step,
-            and an array of needs per hour. However, the Agent's `compute_need` signature
-            takes only the time step as input, so we apply a partial on `_compute_need`
-            to bind the `need_per_hour` argument to the desired array when we instantiate
-            Agents.
-        _compute_production
-            similar to `_compute_need`, but for the production.
-
+        :param comfort_fn: The comfort function that should be used. See
+            :py:mod:`smartgrid.agents.profile.comfort` for details on comfort
+            functions.
         """
-        check = np.load(config[0])
-        missing_keys = [k for k in self.expected_keys if k not in check.files]
+
+        # Load the NPZ file
+        content = np.load(data_path)
+
+        # Check that the file's structure is correct
+        missing_keys = [k for k in self.expected_keys if k not in content.files]
         if len(missing_keys) > 0:
-            raise Exception(f'Profile {config} incorrectly formatted! '
-                            f'Missing elements: {missing_keys}')
+            raise Exception(f'Profile {name} in file {data_path} incorrectly '
+                            f'formatted! Missing elements: {missing_keys}')
 
-        if len(check['max_storage'].shape) > 1:
-            raise Exception('max_storage should be a 0d or 1d array, '
-                            f'found {check["max_storage"].shape}')
+        # Parse data from the file
 
+        # - `max_storage`
         # .npz files only store arrays, we want `max_storage` a single value
-        max_storage = check['max_storage']
-        if len(max_storage.shape) == 0:
-            # If `max_storage` is a 0d array, we cannot index it directly
-            # But we can use an empty tuple (i.e., a tuple of 0d)
-            max_storage = max_storage[()]
-        elif len(check['max_storage'].shape) == 1:
-            # A simple 1d array. Get the first (and single?) value
-            max_storage = max_storage[0]
+        max_storage = content['max_storage']
+        max_storage = self._get_ndarray_single_value(max_storage)
 
-        # loading needs into profile
-        need_profile = NeedProfile(np.asarray(check["needs"]))
+        # - `needs`
+        needs = np.asarray(content['needs'])
+        need_profile = NeedProfile(needs)
 
-        # generate production data from needs
-        # todo put production
-        productions = [0] * len(check["needs"])
+        # - `production`
+        # OpenEI does not contain data about production, so we must generate it
+        # from the needs. Let it be a random amount between 0% and 10% of the
+        # max_storage for each step.
+        production_upper_bound = int(0.1 * max_storage)
+        productions = [
+            random.randint(0, production_upper_bound)
+            for _ in range(len(needs))
+        ]
         production_profile = ProductionProfile(np.asarray(productions))
 
-        # searching low and high action
+        # - `action_limit`
         low = np.int64(0)
-        high = max(check["needs"])
+        high = self._get_ndarray_single_value(content['action_limit'])
+
+        if comfort_fn is None:
+            raise Exception('The comfort function `comfort_fn` must be specified!')
 
         # Create the profile (will also check for correct shapes)
         profile = AgentProfile(
@@ -131,9 +138,21 @@ class DataOpenEIConversion(DataConversion):
             need_profile=need_profile,
             production_profile=production_profile,
             action_dim=len(Action._fields),
-            comfort_fn=config[1]
+            comfort_fn=comfort_fn
         )
 
-        self.memorized_profiles[name] = profile
+        self.profiles[name] = profile
 
-        self.max_step = len(need_profile.need_per_hour)
+    def _get_ndarray_single_value(self, array: np.ndarray):
+        """Internal method to get the single value of a 0d or 1d ndarray."""
+        if len(array.shape) == 0:
+            # If it is a 0d array, we cannot index it directly
+            # But we can use an empty tuple (i.e., a tuple of 0d)
+            value = array[()]
+        elif len(array.shape) == 1:
+            # A simple 1d array. Get the first (and single?) value
+            value = array[0]
+        else:
+            raise Exception('The array should be a 0d or 1d ndarray, '
+                            f'found {array.shape}')
+        return value
