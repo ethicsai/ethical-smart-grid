@@ -1,11 +1,6 @@
-from typing import List, Type
-
-import numpy as np
-from gymnasium.vector.utils import spaces
+from typing import List
 
 from smartgrid.agents import Agent
-from smartgrid.observation import Observation, ObservationManager
-from smartgrid.rewards import Reward, RewardCollection
 from smartgrid.util import EnergyGenerator
 
 
@@ -84,77 +79,21 @@ class World(object):
     See :py:class:`.EnergyGenerator` for more details.
     """
 
-    observation_manager: ObservationManager
-    """
-    Responsible for generating Observations.
-    
-    The type of observations that are sent can be changed by specifying an
-    instance of a subclass here. See also :py:attr:`.observation`.
-    """
-
-    observation: Type[Observation]
-    """
-    The type of Observations that are sent.
-    
-    This object (a class, not an instance) is used to get the shape of
-    Observations, i.e., their domain.
-    """
-
-    reward_calculator: RewardCollection
-    """
-    Responsible for generating rewards.
-    
-    This class can be used to collect and aggregate several rewards functions, 
-    as most algorithms expect a single (scalar) value.
-    Reward functions may target different ethical considerations, see their
-    implementations in :py:mod:`.rewards` for more details.
-    """
-
-    def __init__(self, observation_manager: ObservationManager, agents: List[Agent],
-                 rewards: List[Reward], observation: Type[Observation], max_step: int,
+    def __init__(self,
+                 agents: List[Agent],
                  energy_generator: EnergyGenerator):
         """
         Create a new simulated world.
 
-        :param observation_manager: An instance of ObservationManager to
-            create observations.
         :param agents: The list of agents that partake in this smart grid.
-        :param rewards: The list of reward functions that are used.
-        :param observation: The type (class) of Observations that are used.
-        :param max_step: The maximum number of steps.
+
         :param energy_generator: The generator used to produce energy at
             each time step, based on the agents in the world and their needs.
         """
-        self.observation = observation
         self.current_step = 0
         self.agents = agents
-        self.observation_manager = observation_manager
         self.available_energy = 0
         self.energy_generator = energy_generator
-        self.reward_calculator = RewardCollection(rewards)
-
-        # calculate global_observation_space
-        available_energy_per_step = [0] * max_step
-        for a in self.agents:
-            available_energy_per_step += a.profile.need_fn.need_per_hour
-
-        low = min(available_energy_per_step) * self.energy_generator.lower
-        high = max(available_energy_per_step) * self.energy_generator.upper
-
-        global_space = {'available_energy': spaces.Box(low=low, high=high, shape=(1,), dtype=int),
-                        'equity': spaces.Box(0, 1, (1,), dtype=np.float64),
-                        'energy_loss': spaces.Box(0, 1, (1,), dtype=np.float64),
-                        'autonomy': spaces.Box(0, 1, (1,), dtype=np.float64),
-                        'exclusion': spaces.Box(0, 1, (1,), dtype=np.float64),
-                        'well_being': spaces.Box(0, 1, (1,), dtype=np.float64),
-                        'over_consumption': spaces.Box(0, 1, (1,), dtype=np.float64),
-                        'hour': spaces.Box(0, 1, (1,), dtype=np.float64),
-                        }
-
-        # agglomerate local_observation_space
-        local_space = {a.name: a.profile.observation_space for a in self.agents}
-        space = {'local': spaces.Dict(local_space), 'global': spaces.Dict(global_space)}
-        self.observation_space = spaces.Dict(space)
 
     def step(self):
         """
@@ -200,7 +139,6 @@ class World(object):
         This function must be called when initializing the world.
         """
         self.current_step = 0
-        self.observation_manager.reset()
         for agent in self.agents:
             agent.reset()
         self.available_energy = self.energy_generator.generate_available_energy(
@@ -242,72 +180,3 @@ class World(object):
 
     def __str__(self):
         return '<World t={}>'.format(self.current_step)
-
-    def get_info(self, reward_n):
-        """
-        Return additional information on the world (for the current time step).
-
-        Information contain the rewards, for each agent.
-
-        :param reward_n: The list of rewards, one for each agent.
-        :return: A dict, containing an element with key ``rewards``.
-            This element is itself a dict, indexed by the agents' names, and
-            whose value is their reward.
-        """
-        info_n = {"rewards": {}}
-
-        for i, agent in enumerate(self.agents):
-            info_n["rewards"][agent.name] = reward_n[i]
-
-        return info_n
-
-    def get_observation_agent(self, agent):
-        """
-        Return the local observations for a single agent.
-
-        See :py:class:`.ObservationManager` and :py:class:`.LocalObservation`
-        for details.
-
-        :param agent: The Agent for which we want to get local observations.
-        :return: A LocalObservation instance corresponding to the agent's
-            current state.
-        :rtype: LocalObservation
-        """
-        return self.observation_manager.compute_agent(self, agent)
-
-    def get_observation_global(self):
-        """
-        Return the global observations for the whole world.
-
-        See :py:class:`.ObservationManager` and :py:class:`.GlobalObservation`
-        for details.
-
-        :return: A GlobalObservation instance corresponding to the world's
-            current state, i.e., the entire society of agents.
-        :rtype: GlobalObservation
-        """
-        return self.observation_manager.compute_global(self)
-
-    @property
-    def observation_shape(self):
-        """
-        The shape (i.e., domain) of observations.
-        """
-        return self.observation_manager.shape
-
-    def get_reward(self, agent):
-        """
-        Compute and return the reward for an agent.
-
-        This reward describes to which degree the agent's action was appropriate
-        w.r.t. moral values. These moral values are encoded in the reward
-        function, see :py:mod:`smartgrid.rewards` for details on reward functions.
-
-        Reward functions may comprise multiple objectives. In such cases, they
-        can be aggregated so that the result is a single float (which is used
-        by most of the decision algorithms).
-        This behaviour (whether to aggregate, and how to aggregate) is controlled
-        by the :py:attr:`.reward_calculator`, see :py:class:`.RewardCollection`
-        for details.
-        """
-        return self.reward_calculator.compute(self, agent)
