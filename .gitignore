@@ -13,6 +13,10 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+# Built packages
+dist/
+# Jupyter checkpoints
+.ipynb_checkpoints/
 
 ### JetBrains files
 .idea
@@ -27,6 +31,3 @@ gen
 .LSOverride
 # Thumbnails
 ._*
-
-### Sphinx documentation
-docs/build
