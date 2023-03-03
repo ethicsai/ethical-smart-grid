@@ -139,7 +139,12 @@ class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
         hour = (world.current_step % 24) / 24
         available_energy = np.interp(
             world.available_energy,
-            world.energy_generator.available_energy_bounds(world.max_needed_energy),
+            world.energy_generator.available_energy_bounds(
+                world.current_need,
+                world.current_step,
+                world.min_needed_energy,
+                world.max_needed_energy
+            ),
             (0, 1)
         )
         equity = 1.0 - hoover(comforts)

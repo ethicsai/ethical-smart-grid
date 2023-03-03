@@ -173,15 +173,22 @@ class World(object):
         3. A new ``available_energy`` is generated, based on the (new) agents'
         needs.
         """
-        # Integrate all agents' actions
+        # 1. Integrate all agents' actions
         for i, agent in enumerate(self.agents):
             agent.enacted_action = agent.handle_action()
 
-        # Compute next state
+        # 2. Update agents
         self.current_step += 1
         for agent in self.agents:
             agent.update(self.current_step)
-        self.available_energy = self.energy_generator.compute_available_energy(sum([a.need for a in self.agents]))
+
+        # 3. Generate new "available energy"
+        self.available_energy = self.energy_generator.generate_available_energy(
+            self.current_need,
+            self.current_step,
+            self.min_needed_energy,
+            self.max_needed_energy
+        )
 
     def reset(self):
         """
@@ -196,7 +203,31 @@ class World(object):
         self.observation_manager.reset()
         for agent in self.agents:
             agent.reset()
-        self.available_energy = self.energy_generator.compute_available_energy(sum([a.need for a in self.agents]))
+        self.available_energy = self.energy_generator.generate_available_energy(
+            self.current_need,
+            self.current_step,
+            self.min_needed_energy,
+            self.max_needed_energy
+        )
+
+    @property
+    def current_need(self):
+        """
+        The total energy that agents currently need, for this time step.
+
+        For now computed on-demand, but may be stored as an attribute in
+        the future, to avoid computations.
+        """
+        return sum([a.need for a in self.agents])
+
+    @property
+    def min_needed_energy(self):
+        """
+        The minimum sum of energy that all agents need, for all time steps.
+
+        Currently simplified to return 0, may be more accurate in the future.
+        """
+        return 0
 
     @property
     def max_needed_energy(self):
