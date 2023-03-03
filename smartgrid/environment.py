@@ -77,12 +77,24 @@ class SmartGrid(gymnasium.Env):
 
         return obs, reward_n, done_n, info_n
 
-    def reset(self):
+    def reset(self, seed=None, options=None):
         """
-        Reset the SmartGrid, all intern class call his reset method. Like that all components will reset.
-        After that, the observation is construct.
-        :return: the first observation after resetting.
+        Reset the SmartGrid to its initial state.
+
+        This method will call the `reset` method on the internal objects,
+        e.g., the :class:`World`, the :class:`Agent`\\ s, etc.
+        Despite its name, it **must** be used first and foremost to get the
+        initial observations.
+
+        :param seed: An optional seed (int) to configure the random generators
+            and ensure reproducibility.
+
+        :param options: An optional dictionary of arguments to further
+            configure the simulator. Currently unused.
+
+        :return: The first (initial) observations for each agent in the World.
         """
+        super().reset(seed=seed)
         self.world.reset()
 
         obs = self._get_obs()
