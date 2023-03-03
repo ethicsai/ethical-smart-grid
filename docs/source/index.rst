@@ -11,6 +11,12 @@ distribution, using the OpenAI Gym framework.
    usage
    generated/modules
 
+.. autosummary::
+   :toctree: _autosummary
+   :recursive:
+
+   smartgrid
+
 Indices and tables
 ==================
 
