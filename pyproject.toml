@@ -14,8 +14,8 @@ readme = "Readme.md"
 license = { file = "LICENSE.md" }
 requires-python = ">=3.7"
 dependencies = [
-    "gym >= 0.20.0",
-    "numpy >= 1.22.3",
+    "gymnasium >= 0.26.3",
+    "numpy >= 1.24.2",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -48,4 +48,8 @@ extra = [
 exclude = [
     "/.github",
     "/docs",
+    "/.ipynb_checkpoints",
+    "/*.patch",
+    "/*.csv",
+    "/*.ipynb",
 ]
