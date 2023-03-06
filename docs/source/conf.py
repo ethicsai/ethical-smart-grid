@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..',
 
 # -- Project information -----------------------------------------------------
 
-project = 'EthicalSmartGrid-Gym'
+project = 'EthicalSmartGrid'
 copyright = '2022, Clément Scheirlinck & Rémy Chaput'
 author = 'Clément Scheirlinck & Rémy Chaput'
 
@@ -53,8 +53,13 @@ exclude_patterns = []
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
     'numpy': ('https://numpy.org/doc/stable/', None),
-    'gym': ('https://www.gymlibrary.dev/', None),
+    'gymnasium': ('https://gymnasium.farama.org/', None),
+    # gymnasium is often used as `gym`, so we alias it here
+    'gym': ('https://gymnasium.farama.org/', None),
 }
+
+# Allow to automatically place the project name in ReST documents
+rst_epilog = '.. |project_name| replace:: {}'.format(project)
 
 
 # -- Options for HTML output -------------------------------------------------
