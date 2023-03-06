@@ -8,6 +8,41 @@ from smartgrid.util.bounded import (increase_bounded, decrease_bounded)
 
 
 class AgentState(object):
+
+    comfort: float
+    """
+    The agent's current comfort, a float that *should* be in [0,1].
+    """
+
+    payoff: float
+    """
+    The agent's current payoff, i.e., the cumulated sum of benefits and losses.
+    
+    .. note::
+        The payoff should be within the 
+        :py:attr:`smartgrid.agents.agent.Agent.payoff_range` .
+    """
+
+    storage: float
+    """
+    The agent's current amount of energy stored in its personal battery.
+    """
+
+    need: float
+    """
+    The agent's current need, i.e., energy that it would like to consume.
+    """
+
+    production: float
+    """
+    The agent's energy produced at the current step, and put in its storage.
+    
+    .. note::
+        As the storage is limited, it may happen that the difference between
+        the new storage and the storage at the previous step is smaller than
+        the `production`.
+    """
+
     def __init__(self):
         self.comfort = 0
         self.payoff = 0
@@ -58,12 +93,12 @@ class Agent(object):
         # Constant attributes
         self.name = name
 
-        # Callbacks (for parametrizing agent profiles)
+        # Agent profile (contains "callbacks" to compute needs, productions, ...)
         self.profile = profile
+        # The agent's (current) state, updated every time step in `update`.
         self.state = AgentState()
-
-        # State and action are updated throughout the simulation
-        self.reset()
+        # Note: the (intended/enacted) actions are initialized in `reset` to
+        # avoid setting them twice.
 
     def increase_storage(self, amount: float) -> (float, float, float):
         """
@@ -92,7 +127,7 @@ class Agent(object):
 
     def update(self, step: int) -> None:
         """
-        Update the agent's current state (production, need, comfort).
+        Update the agent's current state (production, need, storage, comfort).
 
         :param step: The current time step.
         """
@@ -148,8 +183,17 @@ class Agent(object):
 
     def handle_action(self) -> Action:
         """
-        handle_action is used to transform an intended_action into an enacted_action.
-        It performs some computation for updating state of our Agent.
+        Perform the intended action and transform it into the enacted action.
+
+        The *intended* action represents the action the agent intends to do,
+        if possible, but it may happen that, due to some constraint, e.g.,
+        battery capacity, it is not possible as-is.
+        This method thus transforms the *intended* action into an *enacted*
+        action, taking into account these constraints, and updates the Agent's
+        state according to the *enacted* action.
+
+        :return: The *enacted* action that truly happened, after the Agent's
+            state was updated.
         """
         # Temporary storage (without upper limit, but still a lower ;
         # we consider that energy is exchanged more or less at the
@@ -164,8 +208,9 @@ class Agent(object):
         # limit price by current payoff
         self.state.payoff, price, _ = decrease_bounded(self.state.payoff,
                                                        price,
-                                                       -1_000_000)
+                                                       self.payoff_range[0])
         # actually bought quantity
+        # TODO: limit the quantity of bought energy to the payoff AND the battery capacity?
         bought = int(math.floor(price / rate))
         new_storage += bought
 
@@ -180,7 +225,8 @@ class Agent(object):
                                                 0)
         price = math.floor(rate * sold)
         self.state.payoff, _, _ = increase_bounded(self.state.payoff,
-                                                   price, 1_000_000)
+                                                   price,
+                                                   self.payoff_range[1])
 
         # 4. Agent consumes from storage
         # (may be limited by the storage)
