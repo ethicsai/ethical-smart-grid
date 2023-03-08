@@ -9,12 +9,21 @@ from smartgrid.observation import ObservationManager
 
 class SmartGrid(gymnasium.Env):
     """
-    The Smart Grid multi-agent environment is the jointure between :py:class:`Env` of Gym libraries and the simulator.
-    The Simulator work like an environment Gym, please note that the key feature is multi-agent handling physically \
-    inside the environment. Key methods for advancing and resetting are :py:meth:`step` and :py:meth:`reset`.
+    The SmartGrid environment is the main entrypoint.
 
-    Contains :py:attr:`world`, an instance of :py:class:`World`, a class defining how to handle the physical component \
-    of a SmartGrid, like energy flow in the network and the inner flow of entity by the :py:class:`Agent`.
+    It simulates a smart grid containing multiple agents (prosumers: producers
+    and consumers) who must learn to distribute and exchange energy between
+    them, to satisfy their comfort while taking into account various ethical
+    considerations.
+
+    This class extends the standard :py:class:`gym.Env <gymnasium.core.Env>`
+    in order to be easily used with different learning algorithms.
+    However, a key feature of this environment is that multiple agents co-exist,
+    hence some changes have been made to the standard Gym API.
+    Notably: the :py:attr:`.action_space` and :py:attr:`.observation_space`
+    are list of :py:class:Space <gymnasium.spaces.Space>` instead of just a
+    Space; the :py:meth:`.step` method returns list and dicts instead of single
+    elements.
     """
 
     metadata = {
@@ -25,16 +34,36 @@ class SmartGrid(gymnasium.Env):
 
     def __init__(self,
                  world: World,
-                 obs_manager: ObservationManager,
-                 rewards):
+                 rewards,
+                 obs_manager: ObservationManager = None):
         """
-        Initialization of the Smartgrid. It constructs gym attributes :py:attr:`action_space` and \
-        :py:attr:`observation_space` for generalize all agent attributes.
+        Create the SmartGrid environment.
 
-        :param world: the physical :py:class:`World` of the Smart Grid, it is constructed before with multiple field \
-        (refers to :py:class:`Scenario` class). the instance is handled by the Smart Grid for standardisation (by Gym).
+        This sets most attributes of the environment, including the
+        :py:attr:`.action_space` and :py:attr:`.observation_space`.
+
+        .. warning::
+            Remember that the env is not usable until you call :py:meth:`.reset` !
+
+        :param world: The "physical" :py:class:`.World` of the Smart Grid
+            in which the simulation happens. The world contains the agents,
+            the energy generator, and handles the agents' actions.
+
+        :param rewards: The list of reward functions that should be used.
+            Usually, a list of a single element (for single-objective RL),
+            but multiple reward functions can be used.
+
+        :param obs_manager: (Optional) The :py:class:`.ObservationManager` that
+            will be used to determine :py:class:`.Observation`\\ s at each
+            time step. This parameter can be used to extend this process, and
+            generate different observations. It can (and will in most cases)
+            be left to its default value.
+
+        :return: An instance of SmartGrid.
         """
         self.world = world
+        if obs_manager is None:
+            obs_manager = ObservationManager()
         self.observation_manager = obs_manager
         self.reward_calculator = RewardCollection(rewards)
 
@@ -50,14 +79,31 @@ class SmartGrid(gymnasium.Env):
 
     def step(self, action_n):
         """
-        Methods that compute the next phase of the simulation.
-        :param action_n: all action choose by external intelligence (need a corresponding amount with number of agent).
-        :return: All information for deciding and learning. Returns in total four field:
-            - obs: a dict that contains the 'global' observation of the network and all 'local' information \
-            of physical agent.
-            - reward_n: the list of reward of an intelligent agent decision (can be multiple).
-            - done_n: not really used in the SmartGrid, can be expanded for future need of prevent failure.
-            - info_n: information concerning all agent. Can be expanded by the :py:class:`Agent`.
+        Advance the simulation to the next step.
+
+        This method takes the actions' decided by agents (learning algorithms),
+        and sends them to the :py:class:`.World` so it can update itself based
+        on these actions.
+        Then, the method computes the new observations and rewards, and returns
+        them so that agents can decide the next action.
+
+        :param action_n: The list of actions (vectors of parameters that must
+            be coherent with the agent's action space), one action for each
+            agent.
+
+        :return: A tuple containing information about the next (new) state:
+            - ``obs_n``: A dict that contains the observations about the next
+                state, please see :py:meth:`._get_obs` for details about the
+                dict contents.
+            - ``reward_n``: A list containing the rewards for each agent,
+                please see :py:meth:`.get_reward` for details about its content.
+            - ``done_n``: A list of boolean values, one for each agent,
+                indicating whether the agent is "done" (i.e., does not act
+                anymore). Currently, always return ``True``, as the agents
+                cannot quit the simulation.
+            - ``info_n``: A dict containing additional information about the
+                next state, please see :py:meth:`.get_info` for details about
+                its content.
         """
         done_n = [False] * len(self.world.agents)
 
@@ -179,20 +225,15 @@ class SmartGrid(gymnasium.Env):
 
     @property
     def n_agent(self):
-        """
-        Property that reduce indirection.
-        :return: number of instance of :py:class:`Agent` in :py:class:`World`.
-        """
+        """Number of agents contained in the environment (world)."""
         return len(self.world.agents)
 
     @property
     def observation_shape(self):
+        """The shape, i.e., number of dimensions, of the observation space."""
         return self.observation_manager.shape
 
     @property
     def agents(self):
-        """
-        Property that reduce indirection.
-        :return: instance of :py:class:`Agent` in :py:class:`World`.
-        """
+        """The list of agents contained in the environment (world)."""
         return self.world.agents
