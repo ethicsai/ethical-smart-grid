@@ -12,5 +12,6 @@ They come in two variations:
   has degraded the environment.
 
 - Local or "per agent" rewards focus on a single agent. They do not compare
-  to the society of agents.
+  to the society of agents. They can be useful when the learning algorithm
+  itself already tries to learn "difference" rewards (e.g., COMA).
 """

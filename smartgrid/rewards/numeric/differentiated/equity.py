@@ -1,17 +1,15 @@
-from smartgrid.agents.agent import Agent
 from smartgrid.rewards.reward import Reward
 from smartgrid.util.equity import hoover
-from smartgrid.world import World
 
 
-class EquityRewardOne(Reward):
+class Equity(Reward):
     """
     Reward based on the equity of comforts.
 
     We first get the comfort of all agents in the society, and we compute the
-    equity of these comforts (see the :py:mod:`.util.equity` and especially
-    :py:func:`.util.equity.hoover` for details). This gives us a *global*
-    component (the current environment).
+    equity of these comforts (see the :py:mod:`smartgrid.util.equity` and
+    especially :py:func:`smartgrid.util.equity.hoover` for details). This gives
+    us a *global* component (the current environment).
 
     Then, we compute the equity only for the *others*' comforts, i.e., all
     agents except the one being currently judged. This gives us a *local*
@@ -22,9 +20,9 @@ class EquityRewardOne(Reward):
     """
 
     def __init__(self):
-        super().__init__("EquityOne")
+        super().__init__()
 
-    def calculate(self, world: World, agent: Agent):
+    def calculate(self, world, agent):
         # Comforts of all other agents (excluding the current `agent`)
         other_comforts = [a.state.comfort for a in world.agents if a != agent]
         # Comfort of the current agent

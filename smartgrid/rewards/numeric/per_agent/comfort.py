@@ -5,12 +5,16 @@ from smartgrid.world import World
 
 class Comfort(Reward):
     """
-    Comfort is the metric compute by the function field attach to :py:class:`.AgentProfile`, after that the comfort is
-    stored in :py:class:`.AgentState`.
+    Uses the agent's comfort directly as a reward.
+
+    This reward function simply encourages the agent to increase its comfort.
+    It is best used in addition with other functions that encourage other
+    moral values, such as equity or preventing over-consumption, to avoid the
+    agent optimizing its comfort by consuming as much as allowed.
     """
 
     def __init__(self):
-        super().__init__("Comfort")
+        super().__init__()
 
     def calculate(self, world: World, agent: Agent):
         return agent.state.comfort

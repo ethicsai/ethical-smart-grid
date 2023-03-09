@@ -1,22 +1,21 @@
-from smartgrid.agents.agent import Agent
 from smartgrid.rewards.reward import Reward
 from smartgrid.util.equity import hoover
-from smartgrid.world import World
 
 
-class EquityRewardPerAgent(Reward):
+class EquityPerAgent(Reward):
     """
     Reward based on the equity of comforts measure.
 
     It's a measure of statical dispersion of the Comfort metrics of all agents.
-    The Comfort metric compute by the function field attach to :py:class:`.AgentProfile`, after that the comfort is
-    stored in :py:class:`.AgentState`.
+    Instead of comparing the *actual* and *hypothetical* environments (as in
+    :py:class:`smartgrid.rewards.numeric.differentiated.equity.Equity`),
+    it simply computes the equity (Hoover index) of all agents' comfort.
     """
 
     def __init__(self):
-        super().__init__("EquityRewardPerAgent")
+        super().__init__()
 
-    def calculate(self, world: World, agent: Agent):
+    def calculate(self, world, agent):
         # Comforts of all agents
         comforts = [a.state.comfort for a in world.agents]
 
