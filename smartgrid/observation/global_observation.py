@@ -70,6 +70,10 @@ class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
         The proportion of agents that have a comfort lower than half the median
         of agents' comforts. Such agents are said to be *excluded*.
 
+    well_being
+        The median of all agents' comfort. Using a median rather than an average
+        reduces the impact of outliers.
+
     over_consumption
         The quantity of energy that agents have consumed, but was not
         originally available in the grid. We assume that the grid automatically
