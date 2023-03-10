@@ -18,7 +18,12 @@ generate-autodoc:
 	mkdir -p "$(SOURCEDIR)/generated"
 	sphinx-apidoc --force --module-first --private --output-dir "$(SOURCEDIR)/generated" "../smartgrid"
 
-.PHONY: help Makefile generate-autodoc
+# "Hot reload": generate the doc automatically when a modification is detected.
+# This command should be called in the directory where this Makefile lives.
+preview: generate-autodoc
+	sphinx-reload --build-dir "$(BUILDDIR)" .
+
+.PHONY: help Makefile generate-autodoc preview
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
