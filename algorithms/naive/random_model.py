@@ -1,33 +1,18 @@
-from random import random
-
 from algorithms.model import Model
-
-rand_experiment = {  # change: gamma
-    "name": "random",
-}
 
 
 class RandomModel(Model):
 
-    def __init__(self, agent_num, env, hyper_parameters: dict, device):
-        super().__init__(agent_num, env, hyper_parameters, device)
-        self.agent_num = agent_num
-
-        self.action_spaces = env.action_space
+    def __init__(self, env, hyper_parameters: dict):
+        super().__init__(env, hyper_parameters)
 
     def forward(self, observations_per_agent):
         actions = []
-        for i in range(self.agent_num):
-            action = [random() for _ in range(self.action_spaces[i].shape[0])]
+        for i in range(self.env.n_agent):
+            action = self.env.action_space[i].sample()
             actions.append(action)
 
         return actions
 
     def backward(self, observations_per_agent, reward_per_agent):
-        pass
-
-    def save(self, path):
-        pass
-
-    def load(self, path):
         pass

@@ -15,11 +15,27 @@ from smartgrid.environment import SmartGrid
 
 
 class QSOM(Model):
+    """
+    The Q-SOM learning algorithm: based on Q-Learning + Self-Organizing Maps.
 
-    # todo add Memory
-    def __init__(self, agent_num: int, env: SmartGrid, hyper_parameters: dict, device: str):
-        super().__init__(agent_num, env, hyper_parameters, device)
-        self.n_agents = env.n_agent
+    List of hyperparameters that this model expects:
+
+    - ``initial_tau``
+    - ``tau_decay``
+    - ``tau_decay_coeff``
+    - ``noise``
+    - ``sigma_state``
+    - ``lr_state``
+    - ``sigma_action``
+    - ``lr_action``
+    - ``q_learning_rate``
+    - ``q_discount_factor``
+    - ``update_all``
+    - ``use_neighborhood``
+    """
+
+    def __init__(self, env: SmartGrid, hyper_parameters: dict):
+        super().__init__(env, hyper_parameters)
         self.qsom_agents = []
 
         action_selector = BoltzmannActionSelector(self.hyper_parameters["initial_tau"],
@@ -27,7 +43,7 @@ class QSOM(Model):
                                                   self.hyper_parameters["tau_decay_coeff"])
         action_perturbator = EpsilonActionPerturbator(self.hyper_parameters["noise"])
 
-        for num_agent in range(self.n_agents):
+        for num_agent in range(env.n_agent):
             obs_space = env.observation_space[num_agent]
             assert len(obs_space.shape) == 1, 'Observation space must be 1D'
             action_space = env.action_space[num_agent]
@@ -57,43 +73,31 @@ class QSOM(Model):
 
     def forward(self, observations_per_agent):
         """Choose an action for each agent, based on their observations."""
-        observations_per_agent = [list(observations_per_agent['local'][i]) + list(observations_per_agent['global']) for
-                                  i in range(self.agent_num)]
-        assert len(observations_per_agent) == self.n_agents
+        observations_per_agent = [
+            np.concatenate((
+                observations_per_agent['local'][i],
+                observations_per_agent['global'],
+            ))
+            for i in range(self.env.n_agent)
+        ]
+        assert len(observations_per_agent) == len(self.qsom_agents)
         actions = [
             self.qsom_agents[i].forward(observations_per_agent[i])
-            for i in range(self.n_agents)
+            for i in range(len(self.qsom_agents))
         ]
         return actions
 
     def backward(self, new_observations_per_agent, reward_per_agent):
         """Make each agent learn, based on their rewards and observations."""
         new_observations_per_agent = [
-            list(new_observations_per_agent['local'][i]) + list(new_observations_per_agent['global']) for i in
-            range(self.agent_num)]
-        assert len(reward_per_agent) == self.n_agents
-        assert len(new_observations_per_agent) == self.n_agents
+            np.concatenate((
+                new_observations_per_agent['local'][i],
+                new_observations_per_agent['global'],
+            ))
+            for i in range(self.env.n_agent)
+        ]
+        assert len(reward_per_agent) == len(self.qsom_agents)
+        assert len(new_observations_per_agent) == len(self.qsom_agents)
         for i, agent in enumerate(self.qsom_agents):
             agent.backward(new_observations_per_agent[i],
                            reward_per_agent[i])
-        return []
-
-    def save(self, path):
-        args = {}
-        for i in range(len(self.qsom_agents)):
-            dict = self.qsom_agents[i].save(i)
-            for key in dict.keys():
-                args[key] = dict[key]
-
-        np.savez(path, **args)
-
-    def load(self, path):
-        # load agent
-        weights = np.load(path + '.npz')
-        for i in range(self.n_agents):
-            weight = {
-                "state" : weights[f"state_%i" % (i)],
-                "action" : weights[f"action_%i" % (i)],
-                "qtable" : weights[f"qtable_%i" % (i)],
-            }
-            self.qsom_agents[i].load(weight)

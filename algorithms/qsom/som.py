@@ -74,12 +74,6 @@ class SOM(object):
         # Keep track of how many steps each unit is the Best Matching Unit (BMU)
         self.bmu_count = np.zeros(self.shape).astype(int)
 
-    def save(self):
-        return self.units
-
-    def load(self, units):
-        self.units = units
-
     def compute_winner_node(self, data):
         """
         Compute the Best Matching Unit to the input vector `data`.
