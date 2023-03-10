@@ -88,7 +88,7 @@ def flexible_comfort_profile(consumption: float, need: float) -> float:
     :return: The agent's comfort, based on the ratio between consumption and
         need. The comfort is guaranteed to be within [0,1].
     """
-    ratio = consumption / need
+    ratio = consumption / (need + 10E-300)
     return richard_curve(ratio, q=0.1, b=20, v=2, m=1 / 2)
 
 
@@ -106,7 +106,7 @@ def neutral_comfort_profile(consumption: float, need: float) -> float:
     :return: The agent's comfort, based on the ratio between consumption and
         need. The comfort is guaranteed to be within [0,1].
     """
-    ratio = consumption / need
+    ratio = consumption / (need + 10E-300)
     return richard_curve(ratio, q=1, b=10, v=1, m=1 / 2)
 
 
@@ -123,7 +123,7 @@ def strict_comfort_profile(consumption: float, need: float) -> float:
     :return: The agent's comfort, based on the ratio between consumption and
         need. The comfort is guaranteed to be within [0,1].
     """
-    ratio = consumption / need
+    ratio = consumption / (need + 10E-300)
     return richard_curve(ratio, q=10, b=16, v=0.7, m=1 / 2)
 
 
