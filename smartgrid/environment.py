@@ -1,5 +1,4 @@
 import gymnasium
-import numpy as np
 
 from smartgrid.agents import Action
 from smartgrid.rewards import RewardCollection
@@ -74,8 +73,6 @@ class SmartGrid(gymnasium.Env):
         for agent in self.world.agents:
             self.action_space.append(agent.profile.action_space)
             self.observation_space.append(obs_space)
-
-        self.action_space = np.array(self.action_space)
 
     def step(self, action_n):
         """
