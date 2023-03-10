@@ -25,6 +25,7 @@ simulator.
    use_case
    usage
    custom_scenario
+   adding_model
 
 .. toctree::
    :hidden:
