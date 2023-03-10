@@ -1,3 +1,5 @@
+import warnings
+
 import gymnasium
 
 from smartgrid.agents import Action
@@ -34,6 +36,7 @@ class SmartGrid(gymnasium.Env):
     def __init__(self,
                  world: World,
                  rewards,
+                 max_step=None,
                  obs_manager: ObservationManager = None):
         """
         Create the SmartGrid environment.
@@ -52,6 +55,13 @@ class SmartGrid(gymnasium.Env):
             Usually, a list of a single element (for single-objective RL),
             but multiple reward functions can be used.
 
+        :param max_step: The maximal number of steps allowed in the environment.
+            By default, the environment never terminates on its own: the
+            interaction loop must be stopped from the outside. If this value
+            is set, the :py:meth:`.step` method will return ``truncated=True``
+            when ``max_step`` steps have been done. Subsequent calls will raise
+            a warning.
+
         :param obs_manager: (Optional) The :py:class:`.ObservationManager` that
             will be used to determine :py:class:`.Observation`\\ s at each
             time step. This parameter can be used to extend this process, and
@@ -61,6 +71,7 @@ class SmartGrid(gymnasium.Env):
         :return: An instance of SmartGrid.
         """
         self.world = world
+        self.max_step = max_step
         if obs_manager is None:
             obs_manager = ObservationManager()
         self.observation_manager = obs_manager
@@ -94,15 +105,26 @@ class SmartGrid(gymnasium.Env):
                 dict contents.
             - ``reward_n``: A list containing the rewards for each agent,
                 please see :py:meth:`.get_reward` for details about its content.
-            - ``done_n``: A list of boolean values, one for each agent,
-                indicating whether the agent is "done" (i.e., does not act
-                anymore). Currently, always return ``True``, as the agents
-                cannot quit the simulation.
+            - ``terminated_n``: A list of boolean values indicating, for each
+                agent, whether the agent is "terminated", e.g., completed its
+                task or failed. Currently, always set to ``False``: agents
+                cannot complete nor fail (this is not an episodic environment).
+            - ``truncated_n``: A list of boolean values indicating, for each
+                agent, whether the agent should stop acting, because, e.g., the
+                environment has run out of time. See :py:attr:`.max_step` for
+                details.
             - ``info_n``: A dict containing additional information about the
                 next state, please see :py:meth:`.get_info` for details about
                 its content.
+
+            .. note:
+                ``terminated_n`` and ``truncated_n`` replace the previous
+                (pre-Gym-v26) ``done_n`` return value. The ``done`` value
+                can be obtained with ``all(terminated_n) or all(truncated_n)``.
         """
-        done_n = [False] * len(self.world.agents)
+        if self.max_step is not None and self.world.current_step >= self.max_step:
+            warnings.warn(f'max_step was set to {self.max_step}, but step'
+                          f'{self.world.current_step} was requested.')
 
         # Set action for each agent (will be performed in `world.step()`)
         for i, agent in enumerate(self.world.agents):
@@ -115,10 +137,18 @@ class SmartGrid(gymnasium.Env):
         obs = self._get_obs()
         reward_n = self._get_reward()
 
+        n_agent = self.n_agent
+        terminated_n = [False] * n_agent
+        if self.max_step is None:
+            truncated_n = [False] * n_agent
+        else:
+            # We use `-1` because the first step is the `0th`.
+            truncated_n = [self.world.current_step >= self.max_step - 1] * n_agent
+
         # Only used for visualization, performance metrics, ...
         info_n = self._get_info(reward_n)
 
-        return obs, reward_n, done_n, info_n
+        return obs, reward_n, terminated_n, truncated_n, info_n
 
     def reset(self, seed=None, options=None):
         """
