@@ -1,6 +1,7 @@
 from typing import Dict, Type
 
 from smartgrid.agents import Agent
+from smartgrid.world import World
 from .observations import Observation
 from .global_observation import GlobalObservation
 from .local_observation import LocalObservation
@@ -52,11 +53,11 @@ class ObservationManager:
         self.local_observation = local_observation
         self.observation = observation
 
-    def compute_agent(self, world: 'World', agent: Agent) -> LocalObservation:
+    def compute_agent(self, world: World, agent: Agent) -> LocalObservation:
         """
         Create the local observation for an Agent.
         """
-        return self.local_observation.compute(agent)
+        return self.local_observation.compute(world, agent)
 
     def compute_global(self, world) -> GlobalObservation:
         """
@@ -87,3 +88,4 @@ class ObservationManager:
         :py:class:`.GlobalObservation`.
         """
         self.global_observation.reset()
+        self.local_observation.reset()

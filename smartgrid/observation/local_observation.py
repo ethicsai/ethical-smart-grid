@@ -1,6 +1,7 @@
 from collections import namedtuple
 
 from smartgrid.agents import Agent
+from smartgrid.world import World
 
 local_field = [
     'personal_storage',
@@ -42,7 +43,7 @@ class LocalObservation(namedtuple('LocalObservation', local_field)):
     """
 
     @classmethod
-    def compute(cls, agent: Agent):
+    def compute(cls, world: World, agent: Agent):
         """
         Return local observations for a single agent.
 
@@ -50,7 +51,9 @@ class LocalObservation(namedtuple('LocalObservation', local_field)):
         Most of the computing has already been done in the
         :py:meth:`.Agent.update` and :py:meth:`.Agent.handle_action` methods.
 
-        :type agent: smartgrid.agent.Agent
+        :param world: The World in which the Agent is contained, for eventual
+            data stored outside the agent.
+
         :param agent: The Agent for which we want to compute the local
             observations.
 
@@ -66,3 +69,14 @@ class LocalObservation(namedtuple('LocalObservation', local_field)):
             comfort=comfort,
             payoff=payoff,
         )
+
+    @classmethod
+    def reset(cls):
+        """
+        Reset the LocalObservation class.
+
+        This method currently does nothing but is implemented to mirror the
+        behaviour of :py:class:`.GlobalObservation`, and to allow extensions
+        to use complex mechanisms that require a ``reset``.
+        """
+        pass
