@@ -7,3 +7,4 @@ from .available_energy import (EnergyGenerator, RandomEnergyGenerator,
                                RealisticEnergyGenerator)
 from .bounded import increase_bounded, decrease_bounded
 from .equity import hoover
+from .interpolate import interpolate

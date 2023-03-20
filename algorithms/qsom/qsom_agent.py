@@ -13,7 +13,7 @@ from gymnasium.spaces import Box
 from algorithms.qsom.som import SOM
 from algorithms.util.action_perturbator import ActionPerturbator
 from algorithms.util.action_selector import ActionSelector
-from algorithms.utils import interpolate
+from smartgrid.util import interpolate
 
 
 class QsomAgent(object):
