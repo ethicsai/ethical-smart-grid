@@ -28,6 +28,8 @@ keywords = [
     "Reinforcement Learning",
     "Machine Ethics",
     "OpenAI Gym",
+    "Gym",
+    "Gymnasium",
     "Smart Grid",
     "Multi-Agent System",
 ]
@@ -35,8 +37,6 @@ keywords = [
 [project.optional-dependencies]
 extra = [
     "tqdm >= 4.61.2",
-    "aim >= 3.13.4",
-    "torch >= 1.11.0",
 ]
 
 [project.urls]

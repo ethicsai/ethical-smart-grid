@@ -19,10 +19,32 @@ Agents receive rewards as feedback that guide them towards a better behaviour.
 
 ## Quick usage
 
-Clone this repository and execute the `main.py` entrypoint file:
+Clone this repository, open a Python shell (3.7+), and execute the following
+instructions:
 
-```shell
-python main.py --experiment="qsom_1" --model="QSOM" --scenario="ScenarioOne"
+```python
+from smartgrid import make_basic_smartgrid
+from algorithms.qsom import QSOM
+
+env = make_basic_smartgrid()
+model = QSOM(env)
+
+done = False
+obs = env.reset()
+while not done:
+    actions = model.forward(obs)
+    obs, rewards, terminated, truncated, _ = env.step(actions)
+    model.backward(obs, rewards)
+    done = all(terminated) or all(truncated)
+env.close()
 ```
 
-[Gym]: https://github.com/openai/gym
+## License
+
+The source code is licensed under the [MIT License].
+Some included data may be protected by other licenses, please refer to the
+[LICENSE.md] file for details.
+
+[Gym]: https://gymnasium.farama.org/
+[MIT License]: https://choosealicense.com/licenses/mit/
+[LICENSE.md]: LICENSE.md
