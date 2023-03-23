@@ -53,3 +53,9 @@ exclude = [
     "/*.csv",
     "/*.ipynb",
 ]
+
+# Also include the `data` folder, and move it to `smartgrid/data` when installed.
+[tool.hatch.build.targets.wheel]
+only-include = ["smartgrid", "data"]
+[tool.hatch.build.targets.wheel.sources]
+"data" = "smartgrid/data"

@@ -11,6 +11,63 @@ from smartgrid.rewards import Reward
 from smartgrid.rewards.numeric.differentiated import AdaptabilityThree
 from smartgrid.wrappers import SingleRewardAggregator
 
+import os
+
+
+def find_profile_data(dataset, filename):
+    """
+    Finds a data file from the data folder.
+
+    The ``data`` folder can be either:
+
+    - accessible through a relative path, e.g., because the source code was
+      cloned (``./data/path/to/the/desired/file``).
+    - accessible through imports, e.g., because the package was installed.
+
+    How to access files in this folder depends on the actual case; this function
+    (hopefully) solves this problem, by checking first whether the files are
+    directly accessible (through relative paths). If they cannot, ``importlib``
+    is used to get a path to the file through the package.
+
+    :param dataset: The name of the folder containing the desired file, within
+        the ``data`` folder. For example, ``openei`` to access the OpenEI
+        dataset.
+
+    :param filename: The name of the desired file, within the ``dataset``
+        folder.
+
+    :return: A path to the desired file.
+    :rtype: str
+
+    .. warning:
+        This function currently supports only 1 nested level, i.e.,
+        ``data/<dataset>/<filename>``. More nested files, e.g.,
+        ``data/<dataset>/<sub-dataset>/<filename>`` will not work.
+    """
+    # Equivalent to `./data/dataset/filename`, but OS-agnostic.
+    relative_path = os.path.join('data', dataset, filename)
+    if os.path.isfile(relative_path):
+        # Easy mode: the file is directly accessible through a relative path!
+        return relative_path
+    else:
+        # Hard mode: need to access it through the package (importlib).
+        # Also, importlib returns a context, so we need to get the path
+        # and exit the context when Python terminates.
+        import importlib_resources
+        from contextlib import ExitStack
+        import atexit
+        # Handle the context
+        file_manager = ExitStack()
+        # Close the context when Python terminates
+        atexit.register(file_manager.close)
+        # `path` is deprecated since Python3.9, but we support up to 3.7,
+        # so we still use `path`. There is not much benefit to check whether
+        # the new `files` API is available and use it instead.
+        ctx = importlib_resources.path(f'smartgrid.data.{dataset}', filename)
+        path = file_manager.enter_context(ctx)
+        # Convert the PosixPath to a simple str for easier usage.
+        return str(path)
+
 
 def make_basic_smartgrid(
     rewards: List[Reward] = None,
@@ -62,16 +119,14 @@ def make_basic_smartgrid(
 
     # 1. Load the data (Agents' Profiles)
     converter = DataOpenEIConversion()
-    # FIXME: what happens when the package is imported?
-    #  This relative path will certainly not work.
     converter.load('Household',
-                   './data/openei/profile_residential_annually.npz',
+                   find_profile_data('openei', 'profile_residential_annually.npz'),
                    comfort.flexible_comfort_profile)
     converter.load('Office',
-                   './data/openei/profile_residential_annually.npz',
+                   find_profile_data('openei', 'profile_office_annually.npz'),
                    comfort.neutral_comfort_profile)
     converter.load('School',
-                   './data/openei/profile_residential_annually.npz',
+                   find_profile_data('openei', 'profile_school_annually.npz'),
                    comfort.strict_comfort_profile)
 
     # 2. Create Agents
