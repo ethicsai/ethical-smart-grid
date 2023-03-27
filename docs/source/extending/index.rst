@@ -19,5 +19,8 @@ extended, what are their role in the simulator, and how they can be extended.
    * - Element
      - Role
 
+   * - :doc:`Reward <rewards>`
+     - Determine the reward signal for each agent, i.e., to which degree they performed correctly. Important to extend to encourage new behaviours.
+
    * - :doc:`Observations <observations>`
      - Describe the current state of the environment to agents. Important to extend to provide different observations to agents, change the definition of a state.

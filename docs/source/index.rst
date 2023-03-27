@@ -32,6 +32,7 @@ simulator.
    :caption: Extending the environment
 
    extending/index
+   extending/rewards
    extending/observations
 
 .. toctree::
