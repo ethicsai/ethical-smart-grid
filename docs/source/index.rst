@@ -29,6 +29,13 @@ simulator.
 .. toctree::
    :hidden:
    :maxdepth: 2
+   :caption: Extending the environment
+
+   extending/index
+
+.. toctree::
+   :hidden:
+   :maxdepth: 2
    :caption: API
 
    generated/modules
