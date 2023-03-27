@@ -43,10 +43,4 @@ simulator.
    :maxdepth: 2
    :caption: API
 
-   generated/modules
-
-.. autosummary::
-   :toctree: _autosummary
-   :recursive:
-
-   smartgrid
+   api

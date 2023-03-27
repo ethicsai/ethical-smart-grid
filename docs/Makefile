@@ -12,20 +12,14 @@ BUILDDIR      = build
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-# Generate .rst files that contain "autodoc" directives for each module
-# (and submodules).
-generate-autodoc:
-	mkdir -p "$(SOURCEDIR)/generated"
-	sphinx-apidoc --force --module-first --private --output-dir "$(SOURCEDIR)/generated" "../smartgrid"
-
 # "Hot reload": generate the doc automatically when a modification is detected.
 # This command should be called in the directory where this Makefile lives.
-preview: generate-autodoc
+preview:
 	sphinx-reload --build-dir "$(BUILDDIR)" .
 
-.PHONY: help Makefile generate-autodoc preview
+.PHONY: help Makefile preview
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile generate-autodoc
+%: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
