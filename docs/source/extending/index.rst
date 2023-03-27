@@ -18,3 +18,6 @@ extended, what are their role in the simulator, and how they can be extended.
 
    * - Element
      - Role
+
+   * - :doc:`Observations <observations>`
+     - Describe the current state of the environment to agents. Important to extend to provide different observations to agents, change the definition of a state.
