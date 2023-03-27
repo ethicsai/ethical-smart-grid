@@ -34,5 +34,8 @@ extended, what are their role in the simulator, and how they can be extended.
    * - :ref:`Comfort functions <extend_comfort_function>`
      - Determine the comfort of an agent based on its consumption and need, at each step. Important to extend to provide different kinds of agents that have a more "flexible" or "strict" comfort.
 
+   * - :doc:`EnergyGenerator <energy_generator>`
+     - Generate amounts of available energy each step. Important to extend to control these amounts, hence the "difficulty" of agents to consume and satisfy their need.
+
    * - :doc:`Observations <observations>`
      - Describe the current state of the environment to agents. Important to extend to provide different observations to agents, change the definition of a state.
