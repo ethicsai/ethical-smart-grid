@@ -34,6 +34,7 @@ simulator.
 
    extending/index
    extending/rewards
+   extending/agent_profile
    extending/observations
 
 .. toctree::

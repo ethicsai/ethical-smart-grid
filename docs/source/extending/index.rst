@@ -22,5 +22,17 @@ extended, what are their role in the simulator, and how they can be extended.
    * - :doc:`Reward <rewards>`
      - Determine the reward signal for each agent, i.e., to which degree they performed correctly. Important to extend to encourage new behaviours.
 
+   * - :ref:`DataConversion <extend_data_conversion>`
+     - Provide agents' profiles from raw data files. Important to extend to use new profiles.
+
+   * - :ref:`NeedProfile <extend_need_profile>`
+     - Determine the agents' need at each step. Important to extend to use new distributions (random, realistic, ...).
+
+   * - :ref:`ProductionProfile <extend_production_profile>`
+     - Determine the agents' personal production at each step. Important to extend to use new distributions (random, realistic, ...).
+
+   * - :ref:`Comfort functions <extend_comfort_function>`
+     - Determine the comfort of an agent based on its consumption and need, at each step. Important to extend to provide different kinds of agents that have a more "flexible" or "strict" comfort.
+
    * - :doc:`Observations <observations>`
      - Describe the current state of the environment to agents. Important to extend to provide different observations to agents, change the definition of a state.
