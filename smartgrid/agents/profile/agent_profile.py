@@ -13,7 +13,7 @@ class AgentProfile:
 
     Agents are separate entities, e.g., they have their own state, although
     some of their characteristics can be shared.
-    For example, :py:class:`.Agent`s have a need at each time step, i.e., a
+    For example, :py:class:`.Agent`\\ s have a need at each time step, i.e., a
     quantity of energy that they want to consume. Two different Agents, e.g.,
     two Households, may share the same need distribution, i.e., they draw
     their need from the same distribution.
@@ -46,8 +46,8 @@ class AgentProfile:
     a *Household*. That is why the action space is determined by the *profile*
     (instead of fixed for all agents).
     
-    It is represented as gym :py:class:`spaces.Box`, which contains lower
-    and upper bounds for each dimension of the :py:class:`.Action`.
+    It is represented as a Gym :py:class:`~gymnasium.spaces.Box`, which contains
+    lower and upper bounds for each dimension of the :py:class:`.Action`.
     For example, a ``Box(0.0, 8500.0, (6,), int64)`` instance means that
     the action space comprises 6 dimensions, all of which are limited to
     the ``[0,8500]`` range, and values are int64 variables.
@@ -117,9 +117,10 @@ class AgentProfile:
     *Household* profiles could be derived, e.g., a *Flexible Household* or a
     *Strict Household*, etc.
     
-    See the :py:mod:`.comfort` module for more details and implementations of
-    *comfort functions*. Other comfort functions can be created, provided that
-    they respect the same signature, and used in *profiles*.
+    See the :py:mod:`~smartgrid.agents.profile.comfort` module for more details
+    and implementations of *comfort functions*. Other comfort functions can be
+    created, and used in *profiles*, provided that they respect the same
+    signature.
     """
 
     max_storage: int

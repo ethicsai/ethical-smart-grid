@@ -1,11 +1,14 @@
 import warnings
 
 import gymnasium
+from gymnasium import Space
 
 from smartgrid.agents import Action
 from smartgrid.rewards import RewardCollection
 from smartgrid.world import World
 from smartgrid.observation import ObservationManager
+
+from typing import List, Optional
 
 
 class SmartGrid(gymnasium.Env):
@@ -21,15 +24,73 @@ class SmartGrid(gymnasium.Env):
     in order to be easily used with different learning algorithms.
     However, a key feature of this environment is that multiple agents co-exist,
     hence some changes have been made to the standard Gym API.
-    Notably: the :py:attr:`.action_space` and :py:attr:`.observation_space`
-    are list of :py:class:Space <gymnasium.spaces.Space>` instead of just a
-    Space; the :py:meth:`.step` method returns list and dicts instead of single
-    elements.
+    Notably: the :py:attr:`~smartgrid.environment.SmartGrid.action_space` and
+    :py:attr:`~smartgrid.environment.SmartGrid.observation_space` are lists of
+    :py:class:`~gymnasium.spaces.Space` instead of just a Space; the
+    :py:meth:`~smartgrid.environment.SmartGrid.step` method returns list and
+    dicts instead of single elements.
     """
 
     metadata = {
         'render.modes': ['text'],
     }
+
+    action_space: List[Space]
+    """
+    The list of action spaces for all Agents.
+    """
+
+    observation_space: List[Space]
+    """
+    The list of observation spaces for all Agents.
+    
+    Because the observation space is in practice split between *global* and
+    *local* observations, this might not exactly correspond, please see
+    the :py:meth:`~smartgrid.environment.SmartGrid._get_obs` for details.
+    """
+
+    observation_manager: ObservationManager
+    """
+    The observation manager, responsible for creating observations each step.
+    
+    Can be configured (extended) to return different observations.
+    """
+
+    max_step: Optional[int]
+    """
+    The maximum number of steps allowed in the environment (or None by default).
+    
+    As the environment is not episodic, it does not have a way to terminate
+    (i.e., agents cannot "solve" their task nor "die"). The maximum number
+    of steps is a way to limit the simulation and force the environment to
+    terminate. In practice, it simply determines the ``truncated`` return value
+    of :py:meth:`~smartgrid.environment.SmartGrid.step`. This return value, in
+    turn, acts as a signal for the external *interaction loop*.
+    By default, or when sent to ``None``, ``truncated`` will always return
+    ``false``, which means that the environment can be used forever.
+    """
+
+    reward_calculator: RewardCollection
+    """
+    The RewardCollection, responsible for determining agents' rewards each step.
+    
+    This environment has a (partial) support for *multi-objective* use-cases,
+    i.e., multiple reward functions can be used at the same time. The
+    :py:class:`~smartgrid.rewards.reward_collection.RewardCollection` is used
+    to hold all these functions, and compute the rewards for all functions, and
+    for all agents, at each time step. It returns a list of dicts (multiple
+    rewards for each agent), which can be scalarized to a list of floats
+    (single reward for each agent) by using a wrapper over this environment.
+    See the :py:mod:`~smartgrid.wrappers.reward_aggregator` module for details.
+    """
+
+    world: World
+    """
+    The simulated world in which the SmartGrid exists.
+    
+    The world is responsible for handling all agents and "physical" interactions
+    between the smart grid elements.
+    """
 
     # reward_range = (0.0, +1.0)
 
@@ -42,7 +103,8 @@ class SmartGrid(gymnasium.Env):
         Create the SmartGrid environment.
 
         This sets most attributes of the environment, including the
-        :py:attr:`.action_space` and :py:attr:`.observation_space`.
+        :py:attr:`~smartgrid.environment.SmartGrid.action_space` and
+        :py:attr:`~smartgrid.environment.SmartGrid.observation_space`.
 
         .. warning::
             Remember that the env is not usable until you call :py:meth:`.reset` !
@@ -100,27 +162,27 @@ class SmartGrid(gymnasium.Env):
             agent.
 
         :return: A tuple containing information about the next (new) state:
-            - ``obs_n``: A dict that contains the observations about the next
-                state, please see :py:meth:`._get_obs` for details about the
-                dict contents.
-            - ``reward_n``: A list containing the rewards for each agent,
-                please see :py:meth:`.get_reward` for details about its content.
-            - ``terminated_n``: A list of boolean values indicating, for each
-                agent, whether the agent is "terminated", e.g., completed its
-                task or failed. Currently, always set to ``False``: agents
-                cannot complete nor fail (this is not an episodic environment).
-            - ``truncated_n``: A list of boolean values indicating, for each
-                agent, whether the agent should stop acting, because, e.g., the
-                environment has run out of time. See :py:attr:`.max_step` for
-                details.
-            - ``info_n``: A dict containing additional information about the
-                next state, please see :py:meth:`.get_info` for details about
-                its content.
 
-            .. note:
-                ``terminated_n`` and ``truncated_n`` replace the previous
-                (pre-Gym-v26) ``done_n`` return value. The ``done`` value
-                can be obtained with ``all(terminated_n) or all(truncated_n)``.
+            - ``obs_n``: A dict that contains the observations about the next
+              state, please see :py:meth:`._get_obs` for details about the
+              dict contents.
+            - ``reward_n``: A list containing the rewards for each agent,
+              please see :py:meth:`._get_reward` for details about its content.
+            - ``terminated_n``: A list of boolean values indicating, for each
+              agent, whether the agent is "terminated", e.g., completed its
+              task or failed. Currently, always set to ``False``: agents
+              cannot complete nor fail (this is not an episodic environment).
+            - ``truncated_n``: A list of boolean values indicating, for each
+              agent, whether the agent should stop acting, because, e.g., the
+              environment has run out of time. See :py:attr:`.max_step` for
+              details.
+            - ``info_n``: A dict containing additional information about the
+              next state, please see :py:meth:`._get_info` for details about
+              its content.
+
+        .. note: ``terminated_n`` and ``truncated_n`` replace the previous
+            (pre-Gym-v26) ``done_n`` return value. The ``done`` value
+            can be obtained with ``all(terminated_n) or all(truncated_n)``.
         """
         if self.max_step is not None and self.world.current_step >= self.max_step:
             warnings.warn(f'max_step was set to {self.max_step}, but step'
@@ -154,8 +216,8 @@ class SmartGrid(gymnasium.Env):
         """
         Reset the SmartGrid to its initial state.
 
-        This method will call the `reset` method on the internal objects,
-        e.g., the :class:`World`, the :class:`Agent`\\ s, etc.
+        This method will call the ``reset`` method on the internal objects,
+        e.g., the :py:class:`.World`, the :py:class:`.Agent`\\ s, etc.
         Despite its name, it **must** be used first and foremost to get the
         initial observations.
 
@@ -180,7 +242,7 @@ class SmartGrid(gymnasium.Env):
 
         .. note:: No render have been configured for now.
             Metrics' values can be observed directly through the object
-            returned by :py:meth:`step`.
+            returned by :py:meth:`.step`.
 
         :param mode: Not used
 
@@ -195,10 +257,11 @@ class SmartGrid(gymnasium.Env):
         .. note:: As a large part of the observations are shared ("global"),
             we use instead of the traditional list (1 obs per agent) a dict,
             containing:
-            - `global` the global observations, shared by all agents;
-            - `local` a list of local observations, one item for each agent.
 
-        :return: A dictionary containing `global` and `local`.
+            - ``global`` the global observations, shared by all agents;
+            - ``local`` a list of local observations, one item for each agent.
+
+        :return: A dictionary containing ``global`` and ``local``.
         """
         return {
             "global": self.observation_manager.compute_global(self.world),

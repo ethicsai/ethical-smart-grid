@@ -12,7 +12,7 @@ from .profile import (AgentProfile,
 
 class DataConversion(ABC):
     """
-    Convert raw data into usable :py:class:`AgentProfile`\\ s.
+    Convert raw data into usable :py:class:`.AgentProfile`\\ s.
 
     To improve re-usability and because they may contain important amounts of
     data (e.g., quantity of energy needed for each step), profiles are usually
@@ -40,7 +40,7 @@ class DataConversion(ABC):
 
         :param name: The desired profile name. This can be seen as the
             profile's ID, as the name must be used to later retrieve the
-             profile from the :py:attribute:`profiles` dict.
+            profile from the :py:attr:`.profiles` dict.
 
         :param data_path: The path to the data file from which the profile
             should be loaded. This path must exist and be readable.
@@ -60,14 +60,14 @@ class DataOpenEIConversion(DataConversion):
     as NPZ files for easier and faster loading from Python. They should all
     have the same structure:
 
-    - `needs`: A NumPy array describing the quantity of energy needed each step.
-    - `action_limit`: The upper bound of the agent's action.
-    - `max_storage`: The capacity of the agent's personal storage.
+    - ``needs``: A NumPy array describing the quantity of energy needed each step.
+    - ``action_limit``: The upper bound of the agent's action.
+    - ``max_storage``: The capacity of the agent's personal storage.
 
     Note that OpenEI-based profiles do not contain production or comfort:
     we must generate them ourselves.
-    As such, the :py:meth:`load` method requires an additional `comfort_fn`
-    argument (keyworded, e.g., `comfort_fn=...`).
+    As such, the :py:meth:`.load` method requires an additional ``comfort_fn``
+    argument (keyworded, e.g., ``comfort_fn=...``).
     """
 
     expected_keys = ['needs', 'action_limit', 'max_storage']
@@ -81,13 +81,13 @@ class DataOpenEIConversion(DataConversion):
 
         :param name: The desired profile name. This can be seen as the profile's
             ID, as it will be used to later retrieve it from the
-            :py:attribute:`memorized_profiles` dict.
+            :py:attr:`.profiles` dict.
 
         :param data_path: The path to the data file from which the profile
             should be loaded. This path must exist and be readable.
 
         :param comfort_fn: The comfort function that should be used. See
-            :py:mod:`smartgrid.agents.profile.comfort` for details on comfort
+            :py:mod:`~smartgrid.agents.profile.comfort` for details on comfort
             functions.
         """
 

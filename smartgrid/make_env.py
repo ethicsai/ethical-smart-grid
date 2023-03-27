@@ -1,3 +1,8 @@
+"""
+Functions that can be used to create a "basic" (or standard) environment.
+"""
+
+
 from typing import List
 
 from gymnasium import Env
@@ -14,7 +19,7 @@ from smartgrid.wrappers import SingleRewardAggregator
 import os
 
 
-def find_profile_data(dataset, filename):
+def find_profile_data(dataset: str, filename: str) -> str:
     """
     Finds a data file from the data folder.
 

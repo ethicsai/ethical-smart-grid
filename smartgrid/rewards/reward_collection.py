@@ -13,6 +13,13 @@ class RewardCollection:
     """
 
     def __init__(self, rewards: List[Reward]):
+        """
+        Create a RewardCollection based on a list of "reward functions".
+
+        :param rewards: The list of "reward functions" (actually instances of
+            the :py:class:`~smartgrid.rewards.reward.Reward` class). This
+            list must contain at least 1 element.
+        """
         assert len(rewards) > 0, "You need to specify at least one Reward."
         self.rewards = rewards
 

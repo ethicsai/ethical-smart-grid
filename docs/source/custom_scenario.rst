@@ -252,8 +252,8 @@ are targeted, the env may be wrapped in a specific class that returns a single
 
 This simplifies the usage of the environment for most cases. When dealing with
 multiple reward functions, other aggregators such as the
-:py:class:`~smartgrid.wrappers.reward_aggregator.WeightedSumAggregator`,
-or the :py:class:`~smartgrid.wrappers.reward_aggregator.MinAggregator`
+:py:class:`~smartgrid.wrappers.reward_aggregator.WeightedSumRewardAggregator`,
+or the :py:class:`~smartgrid.wrappers.reward_aggregator.MinRewardAggregator`
 can be used instead. To use *multi-objective* learning algorithms, which
 receive several rewards each step, simply avoid wrapping the base environment.
 

@@ -15,9 +15,9 @@ class ProductionProfile:
     This production may differ:
 
     - between Agents, some of them may have more surface, and thus a bigger
-    PV panel, which produces more energy;
+      PV panel, which produces more energy;
     - between time steps, as the production can fluctuate. A realistic PV panel
-    should produce less at night, for example.
+      should produce less at night, for example.
 
     The *ProductionProfile* is introduced to offer a common structure that
     Agents can rely upon while offering variety between different types of

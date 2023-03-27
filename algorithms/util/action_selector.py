@@ -6,6 +6,7 @@ to return a single identifier, which is considered the selected action.
 They target the exploration-exploitation dilemma.
 
 We consider 2 selectors:
+
 - the Epsilon-Greedy selector selects the maximum interest action with a
   `(1-ε)` probability, e.g., 95%. Otherwise, it selects a random action.
 - the Boltzmann selector applies a Boltzmann distribution over the interests.

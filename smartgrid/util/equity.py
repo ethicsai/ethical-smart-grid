@@ -2,6 +2,7 @@
 This file defines helper function(s) to compute an "Equity" measure.
 
 These measures include:
+
 * Gini (https://en.wikipedia.org/wiki/Gini_coefficient)
 * Hoover (https://en.wikipedia.org/wiki/Hoover_index)
 """

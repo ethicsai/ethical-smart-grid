@@ -64,26 +64,26 @@ class EnergyGenerator(ABC):
         :param current_need: The total energy needed by all agents at the
             current step. This value can be used to effectively scale the
             generator to the current agent population. This value can also
-            be ignored by the generator. The `current_need` should be
-            comprised between `min_need` and `max_need`.
+            be ignored by the generator. The ``current_need`` should be
+            comprised between ``min_need`` and ``max_need``.
 
         :param current_step: The current time step. Mostly used by "realistic"
             or data-based generators that need to know the current date/hour.
 
         :param min_need: The minimum energy needed by all agents, for all time
             steps. It does not need to be exact, and only serve as a lower
-            bound, e.g., `0` is a perfectly sane value. However, the more
+            bound, e.g., ``0`` is a perfectly sane value. However, the more
             accurate this value is, the more accurate the scaling of the
-            :py:class:`Observation` space will be.
+            :py:class:`.Observation` space will be.
 
         :param max_need: The maximum energy needed by all agents, for all time
             steps. It does not need to be exact, and only serves as an upper
             bound, e.g., any sufficiently high value can be used. However,
             the more accurate this value is, the more accurate the scaling of
-            the :py:class:`Observation` space will be.
+            the :py:class:`.Observation` space will be.
 
         :return: The amount of available energy, a value in :math:`\\mathbb{R}`.
-            For example, returning `40_000` means that 40,000Wh are available
+            For example, returning ``40_000`` means that 40,000Wh are available
             for the current time step.
         """
         pass
@@ -98,10 +98,10 @@ class EnergyGenerator(ABC):
         Determine the possible min and max bounds for the energy generation.
 
         This method is used to provide a range (a domain), which is important
-        for specifying the :py:class:`Observation` space of :py:class:`Agent`\\ s.
-        This also allows scaling the generated amount to `[0,1`]. For example,
-        assuming the bounds are `[0, 10_000]`, a generated amount of `8_000`
-        can be scaled to `0.8`, which is easier to use by learning algorithms.
+        for specifying the :py:class:`.Observation` space of :py:class:`.Agent`\\ s.
+        This also allows scaling the generated amount to ``[0,1]``. For example,
+        assuming the bounds are ``[0, 10_000]``, a generated amount of ``8_000``
+        can be scaled to ``0.8``, which is easier to use by learning algorithms.
 
         :param current_need: The total energy needed by all agents at the
             current step.
@@ -109,25 +109,25 @@ class EnergyGenerator(ABC):
         :param current_step: The current time step.
 
         :param min_need: The minimum energy needed by all agents, for all time
-            steps. This value is used for the same objective as `max_need`,
-            but it does not need to be accurate, e.g., `0` can be used as a
+            steps. This value is used for the same objective as ``max_need``,
+            but it does not need to be accurate, e.g., ``0`` can be used as a
             safe default.
 
         :param max_need: The maximum energy needed by all agents, for all time
             steps. This value can be used to accurately determine the bounds
-            for all time steps, instead of a single time step. The `need_at_step`
-            should always be lower or equal to the `max_need`.
+            for all time steps, instead of a single time step. The ``need_at_step``
+            should always be lower or equal to the ``max_need``.
 
         :return: The min and max bounds of the energy generator, i.e., the
             minimum and maximum possible values that
-            :py:method:`generate_available_energy` may return. It is important
+            :py:meth:`.generate_available_energy` may return. It is important
             that these bounds are coherent with the method, otherwise scaling
             may not work properly, and Agents may receive incorrect observations.
 
         .. note: To avoid changing the Observation space, the available energy
             bounds *should not* shift from a time step to another. In other
             words, this method *should* return the same bounds for any value
-            of `current_need` and `current_step`. However, the code structure
+            of ``current_need`` and ``current_step``. However, the code structure
             intentionally allows not respecting this, to avoid restricting
             potential experiments. It can be considered as a "not recommended"
             setup.
@@ -139,16 +139,16 @@ class RandomEnergyGenerator(EnergyGenerator):
     """
     Generate a random amount, with respect to the agents' current energy needed.
 
-    Assuming that the total maximum energy needed is `M`, that we want at least
+    Assuming that the total maximum energy needed is ``M``, that we want at least
     a lower bound of L=80% (i.e., L=0.8), and an upper bound of U=120% (i.e.,
-    U=1.2), this class returns amounts in the interval `[L*M, U*M]`.
+    U=1.2), this class returns amounts in the interval ``[L*M, U*M]``.
 
-    Knowing the minimum sum of energy needed by all agents `minM`, we derive
+    Knowing the minimum sum of energy needed by all agents ``minM``, we derive
     that the lowest amount of energy that can be produced by this generator
-    is `L*minM`, for any time step.
-    Similarly, assuming the maximum sum is `maxM`, the highest amount that
-    can be produced is `U*maxM`.
-    Thus, this generator's possible bounds are `[L*minM, U*maxM]`.
+    is ``L*minM``, for any time step.
+    Similarly, assuming the maximum sum is ``maxM``, the highest amount that
+    can be produced is ``U*maxM``.
+    Thus, this generator's possible bounds are ``[L*minM, U*maxM]``.
 
     Lower and upper bounds are configurable.
     """
@@ -192,7 +192,7 @@ class RandomEnergyGenerator(EnergyGenerator):
 
 class ScarceEnergyGenerator(RandomEnergyGenerator):
     """
-    Similar to the `RandomEnergyGenerator`, but simulating scarcity.
+    Similar to the :py:class:`.RandomEnergyGenerator`, but simulating scarcity.
 
     In practice, the bounds are set to [60%, 80%].
     Note that, as the upper bound is set to less 100% of the max, we
@@ -208,7 +208,7 @@ class ScarceEnergyGenerator(RandomEnergyGenerator):
 
 class GenerousEnergyGenerator(RandomEnergyGenerator):
     """
-    Similar to the `RandomEnergyGenerator`, but simulating a generous env.
+    Similar to the :py:class:`.RandomEnergyGenerator`, but simulating a generous env.
 
     In practice, the bounds are set to [100%, 120%].
     Note that, as the lower bound is set to 100% of the max, we always
@@ -226,11 +226,11 @@ class RealisticEnergyGenerator(EnergyGenerator):
     """
     A realistic generator that generates energy based on real-world data.
 
-    The `data` parameter should be a NumPy ndarray giving the ratio of
+    The ``data`` parameter should be a NumPy ndarray giving the ratio of
     energy for each step, with respect to the maximum amount of energy
     needed by the agents.
 
-    For example, `[0.3, 0.8, 0.7]` means that at the 1st step, we should make
+    For example, ``[0.3, 0.8, 0.7]`` means that at the 1st step, we should make
     30% of the agents' maximum need available ; 80% at the 2nd step, and 70%
     at the 3rd step.
     """

@@ -8,6 +8,9 @@ from smartgrid.util.bounded import (increase_bounded, decrease_bounded)
 
 
 class AgentState(object):
+    """
+    The (mutable) state of an Agent.
+    """
 
     comfort: float
     """
@@ -66,17 +69,27 @@ Action = namedtuple('Action', [
     'buy_energy',
     'sell_energy'
 ])
+Action.__doc__ = """
+    An immutable (named) tuple containing action parameters.
+    
+    Actions may be either *intended* (i.e., what the learning algorithm or
+    agent's policy would like to do) or *enacted* (i.e., what truly happened
+    considering the physical constraints of the world).
+"""
 
 
 class Agent(object):
     """
-    An agent represent the physical entity in the world. He contains:
-     - name for differencing
-     - the state of our Agent
-     - the max battery storage possible
-     - an intended action for a step, this represents the purpose of an Actor.
-     - an enacted action for a step, this represents the realist action.
+    An agent represents a physical entity in the world.
+
+    It contains:
+     - a (unique) name for identifying the agent;
+     - a (current) state;
+     - an intended action for a step, what the Agent wanted to do;
+     - an enacted action for a step, what the Agent really did;
+     - an agent profile, the common characteristics shared by multiple agents.
     """
+
     name: str
     state: AgentState
     intended_action: Action
@@ -103,9 +116,11 @@ class Agent(object):
     def increase_storage(self, amount: float) -> (float, float, float):
         """
         Function for adding some energy in the storage.
+
         :param amount: energy for charging the battery.
+
         :returns: a tuple of float with the quantity in the battery,
-                  the energy added and the energy that cannot be stocked.
+            the energy added and the energy that cannot be stocked.
         """
         new, added, overhead = increase_bounded(self.state.storage,
                                                 amount,
@@ -116,8 +131,11 @@ class Agent(object):
     def decrease_storage(self, amount: float) -> (float, float, float):
         """
         Function for adding some energy in the storage.
+
         :param amount: energy for charging the battery.
-        :returns: a tuple of float with the quantity in the battery, the energy took and the energy that missed.
+
+        :returns: a tuple of float with the quantity in the battery, the energy
+            took and the energy that was missing.
         """
         new, subtracted, missing = decrease_bounded(self.state.storage,
                                                     amount,
@@ -173,7 +191,7 @@ class Agent(object):
 
     @property
     def payoff_ratio(self) -> float:
-        """Return the current payoff scaled to [0,1]"""
+        """Return the current payoff scaled to [0,1]."""
         return np.interp(self.state.payoff, self.payoff_range, (0, 1))
 
     def __str__(self):

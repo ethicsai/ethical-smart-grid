@@ -30,8 +30,9 @@ class LocalObservation(namedtuple('LocalObservation', local_field)):
         close to its need, the closer the comfort will be to 1. Conversely,
         if an agent does not consume, its comfort will tend towards 0.
         Comfort is computed through the Agent's comfort function; we describe
-        several examples in the :py:mod:`.comfort` module, which rely on
-        *generalized logistic curves* (similar to a sigmoid).
+        several examples in the :py:mod:`~smartgrid.agents.profile.comfort`
+        module, which rely on *generalized logistic curves* (similar to a
+        sigmoid).
 
     payoff
         The agent's current amount of money. Money can be won by selling
