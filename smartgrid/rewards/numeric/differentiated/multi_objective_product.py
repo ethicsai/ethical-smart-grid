@@ -19,6 +19,8 @@ class MultiObjectiveProduct(Reward):
         ``-0.9``, although both rewards were very low.
     """
 
+    name: str
+
     def __init__(self):
         super().__init__()
         self.comfort = Comfort()

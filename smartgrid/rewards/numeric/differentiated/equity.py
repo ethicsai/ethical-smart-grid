@@ -19,6 +19,8 @@ class Equity(Reward):
     component minus the local component.
     """
 
+    name: str
+
     def __init__(self):
         super().__init__()
 

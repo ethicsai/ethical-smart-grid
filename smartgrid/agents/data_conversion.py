@@ -73,6 +73,11 @@ class DataOpenEIConversion(DataConversion):
     expected_keys = ['needs', 'action_limit', 'max_storage']
     """Keys that are expected in the NpzFile loaded from the data file."""
 
+    # We have to redefine the profiles here, otherwise, Sphinx complains that
+    # it does not exist, when building the documentation, although it *is*
+    # in the parent class... *sigh*
+    profiles: Dict[str, AgentProfile]
+
     def load(self, name, data_path, comfort_fn=None) -> None:
         """
         Load a profile from an OpenEI-based data file.

@@ -19,9 +19,10 @@ class Reward(ABC):
     function could be used instead, but using classes allows for easier
     extensions, and using attributes for complex computations.
 
-    A reward function is identified by its :py:attr:`.name` (by default,
-    the class name); this name is particularly used when multiple reward
-    functions are used (multi-objective reinforcement learning).
+    A reward function is identified by its
+    :py:attr:`~smartgrid.rewards.reward.Reward.name` (by default, the class
+    name); this name is particularly used when multiple reward functions are
+    used (multi-objective reinforcement learning).
     """
 
     name: str

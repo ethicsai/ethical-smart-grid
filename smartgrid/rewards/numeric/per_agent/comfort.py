@@ -13,6 +13,8 @@ class Comfort(Reward):
     agent optimizing its comfort by consuming as much as allowed.
     """
 
+    name: str
+
     def __init__(self):
         super().__init__()
 

@@ -31,6 +31,8 @@ class AdaptabilityOne(Reward):
     able to "completely" change their behaviour.
     """
 
+    name: str
+
     def __init__(self):
         super().__init__()
         self.equity = Equity()
@@ -64,6 +66,8 @@ class AdaptabilityTwo(Reward):
     (which uses 3 phases instead of 2).
     """
 
+    name: str
+
     def __init__(self):
         super().__init__()
         self.equity = Equity()
@@ -95,6 +99,8 @@ class AdaptabilityThree(Reward):
     able to change their behaviour by taking into account new objectives
     in addition to previous ones.
     """
+
+    name: str
 
     def __init__(self):
         super().__init__()

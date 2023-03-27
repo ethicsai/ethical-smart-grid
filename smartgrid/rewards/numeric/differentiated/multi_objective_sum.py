@@ -16,6 +16,8 @@ class MultiObjectiveSum(Reward):
     in order to have a weighted average, but this is not strictly mandatory.
     """
 
+    name: str
+
     def __init__(self, coefficients=None):
         super().__init__()
         if coefficients is None:

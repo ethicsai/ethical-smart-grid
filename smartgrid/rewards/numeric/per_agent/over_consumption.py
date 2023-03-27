@@ -6,6 +6,8 @@ class OverConsumptionPerAgent(Reward):
     Reward representing the overConsumption percentage of an Agent.
     """
 
+    name: str
+
     def __init__(self):
         super().__init__()
 

@@ -21,6 +21,8 @@ class AdaptabilityOnePerAgent(Reward):
     able to "completely" change their behaviour.
     """
 
+    name: str
+
     def __init__(self):
         super().__init__()
         self.equity = EquityPerAgent()
@@ -53,6 +55,8 @@ class AdaptabilityTwoPerAgent(Reward):
     :py:class:`.AdaptabilityThreePerAgent` (which uses 3 phases instead of 2).
     """
 
+    name: str
+
     def __init__(self):
         super().__init__()
         self.equity = EquityPerAgent()
@@ -84,6 +88,8 @@ class AdaptabilityThreePerAgent(Reward):
     able to change their behaviour by taking into account new objectives
     in addition to previous ones.
     """
+
+    name: str
 
     def __init__(self):
         super().__init__()

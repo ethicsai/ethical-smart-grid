@@ -199,6 +199,9 @@ class ScarceEnergyGenerator(RandomEnergyGenerator):
     force conflicts between agents by not giving them enough.
     """
 
+    lower: float
+    upper: float
+
     def __init__(self):
         super(ScarceEnergyGenerator, self).__init__(
             lower_proportion=0.6,
@@ -214,6 +217,9 @@ class GenerousEnergyGenerator(RandomEnergyGenerator):
     Note that, as the lower bound is set to 100% of the max, we always
     have enough energy available for all agents.
     """
+
+    lower: float
+    upper: float
 
     def __init__(self):
         super(GenerousEnergyGenerator, self).__init__(
@@ -233,6 +239,11 @@ class RealisticEnergyGenerator(EnergyGenerator):
     For example, ``[0.3, 0.8, 0.7]`` means that at the 1st step, we should make
     30% of the agents' maximum need available ; 80% at the 2nd step, and 70%
     at the 3rd step.
+    """
+
+    data: np.ndarray
+    """
+    Data representing how much of the maximum need should be available each step.
     """
 
     def __init__(self, data):

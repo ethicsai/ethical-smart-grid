@@ -12,6 +12,8 @@ class EquityPerAgent(Reward):
     it simply computes the equity (Hoover index) of all agents' comfort.
     """
 
+    name: str
+
     def __init__(self):
         super().__init__()
 
