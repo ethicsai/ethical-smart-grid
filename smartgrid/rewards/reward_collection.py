@@ -32,8 +32,13 @@ class RewardCollection:
 
         return to_return
 
-    def __str__(self):
-        to_return = []
+    def reset(self):
+        """
+        Reset the reward functions.
+        """
         for reward in self.rewards:
-            to_return.append(str(reward))
-        return '_'.join(to_return)
+            reward.reset()
+
+    def __repr__(self):
+        rewards = ' ; '.join(map(str, self.rewards))
+        return 'RewardCollection{' + rewards + '}'

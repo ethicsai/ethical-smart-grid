@@ -49,6 +49,16 @@ class Reward(ABC):
         """
         pass
 
+    def reset(self):
+        """
+        Reset the reward function.
+
+        This function *must be* overridden by reward functions that use a state,
+        so that the state is reset with the environment.
+        By default, does nothing, as most reward functions do not use a state.
+        """
+        pass
+
     def __str__(self):
         return 'Reward<{}>'.format(self.name)
 
