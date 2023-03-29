@@ -1,3 +1,8 @@
+"""
+Per-agent reward functions directly look at the agent itself (and its action)
+to determine its contribution.
+"""
+
 from .adaptability import (AdaptabilityOnePerAgent,
                            AdaptabilityTwoPerAgent,
                            AdaptabilityThreePerAgent)

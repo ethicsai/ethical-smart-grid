@@ -1,3 +1,7 @@
+"""
+Observations that are local (individual) to a single Agent.
+"""
+
 from collections import namedtuple
 
 from smartgrid.agents import Agent

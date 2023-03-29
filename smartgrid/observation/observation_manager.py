@@ -1,3 +1,7 @@
+"""
+The ObservationManager is responsible for computing observations.
+"""
+
 from typing import Dict, Type
 
 from smartgrid.agents import Agent

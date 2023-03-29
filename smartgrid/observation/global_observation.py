@@ -1,3 +1,7 @@
+"""
+Global observations of the World, shared by all Agents in the smart grid.
+"""
+
 from collections import namedtuple
 
 import numpy as np

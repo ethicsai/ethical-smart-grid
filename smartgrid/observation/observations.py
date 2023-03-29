@@ -1,3 +1,7 @@
+"""
+Observations are information that agents receive about the environment.
+"""
+
 from __future__ import annotations
 
 from collections import namedtuple

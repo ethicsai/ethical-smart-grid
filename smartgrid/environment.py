@@ -1,3 +1,7 @@
+"""
+The SmartGrid environment is the main entrypoint.
+"""
+
 import warnings
 
 import gymnasium

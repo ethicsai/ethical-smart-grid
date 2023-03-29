@@ -1,3 +1,7 @@
+"""
+The smartgrid package defines the Smart Grid simulator.
+"""
+
 from gymnasium.envs.registration import register
 
 from .make_env import make_basic_smartgrid

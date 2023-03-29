@@ -1,3 +1,7 @@
+"""
+Determine the energy needed by an Agent for each step of the simulation.
+"""
+
 from typing import List
 
 

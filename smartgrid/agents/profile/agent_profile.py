@@ -1,3 +1,7 @@
+"""
+AgentProfiles describe a few common characteristics of agents.
+"""
+
 from typing import Callable
 
 import numpy as np

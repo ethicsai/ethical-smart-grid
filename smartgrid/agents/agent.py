@@ -1,3 +1,7 @@
+"""
+This module contains the Agent class, its state (AgentState) and Action.
+"""
+
 import math
 from collections import namedtuple
 

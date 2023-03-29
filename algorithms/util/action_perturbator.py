@@ -8,6 +8,7 @@ the perturbation, is often implemented as a random noise, and allows exploring
 the action space.
 
 We have implemented 4 perturbators:
+
 - Epsilon applies a uniform random noise to all dimensions.
 - Gaussian applies a gaussian random noise to all dimensions.
 - MultiDim has a probability to apply a uniform noise to each dimension.

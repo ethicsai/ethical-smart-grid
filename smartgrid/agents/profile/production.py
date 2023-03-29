@@ -1,3 +1,7 @@
+"""
+Determines the energy produced by an Agent for each step of the simulation.
+"""
+
 from typing import List
 
 

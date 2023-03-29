@@ -1,3 +1,8 @@
+"""
+RewardAggregators wrap the multi-objective env into a single-objective by
+aggregating rewards (e.g., using an average, min, weighted sum, ...).
+"""
+
 import warnings
 from abc import ABC, abstractmethod
 from typing import List, Dict

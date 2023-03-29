@@ -1,3 +1,7 @@
+"""
+The World represents the "physical" (simulated) smart grid.
+"""
+
 from typing import List
 
 from smartgrid.agents import Agent

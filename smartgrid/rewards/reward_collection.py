@@ -1,3 +1,7 @@
+"""
+The RewardCollection is responsible for computing rewards from reward functions.
+"""
+
 from typing import List, Dict
 
 from smartgrid.agents import Agent
@@ -6,10 +10,16 @@ from .reward import Reward
 
 class RewardCollection:
     """
-    Reward Collection is responsible for keeping reward used in memory and compute it.
+    The RewardCollection holds all desired reward functions, and computes the rewards.
 
-    Multiple reward used an :py:class:`.AggregateFunction` that can be extended.
-    Mono reward used :py:class:`.BasicAggregateFunction`.
+    This class allows for multi-objective reinforcement learning, by holding
+    several reward functions, and returning dicts of rewards (names -> values),
+    instead of using a single reward function.
+
+    The multiple reward functions can be aggregated (scalarized) to adapt to
+    single-objective learning algorithms, by using a
+    :py:class:`~smartgrid.wrappers.reward_aggregator.RewardAggregator` wrapper
+    over the environment.
     """
 
     def __init__(self, rewards: List[Reward]):
@@ -30,8 +40,8 @@ class RewardCollection:
         :param world: reference on the world for global information.
         :param agent: reference on the agent for local information.
 
-        :rtype: dict
-        :return: The name of the reward with his value.
+        :return: A dictionary mapping the rewards' name to their value, for
+            each reward function in this Reward Collection.
         """
         to_return = {}
         for reward in self.rewards:

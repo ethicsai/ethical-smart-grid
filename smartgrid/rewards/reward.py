@@ -1,3 +1,7 @@
+"""
+The Reward abstract class defines a common (standard) API for reward functions.
+"""
+
 from abc import ABC, abstractmethod
 
 from smartgrid.world import World
