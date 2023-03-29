@@ -18,20 +18,63 @@ class QSOM(Model):
     """
     The Q-SOM learning algorithm: based on Q-Learning + Self-Organizing Maps.
 
+    Two SOMs are used, a State-SOM that learns to handle the observation (state)
+    space, i.e., to map continuous observations to discrete space identifiers;
+    and an Action-SOM that learns to handle the action space, i.e., to map
+    discrete actions identifiers to continuous action parameters.
+
+    A Q-Table learns the interests of (discrete) actions in (discrete) states.
+
     List of hyperparameters that this model expects:
 
-    - ``initial_tau``
-    - ``tau_decay``
-    - ``tau_decay_coeff``
-    - ``noise``
-    - ``sigma_state``
-    - ``lr_state``
-    - ``sigma_action``
-    - ``lr_action``
-    - ``q_learning_rate``
-    - ``q_discount_factor``
-    - ``update_all``
-    - ``use_neighborhood``
+    initial_tau
+        Initial value of the Boltzmann temperature, which controls the
+        exploration-exploitation trade-off.
+
+    tau_decay
+        Whether to decrease (decay) the Boltzmann temperature over the time
+        steps, so as to encourage exploitation rather than exploration in
+        later time steps. See also the ``tau_decay_coeff`` below.
+
+    tau_decay_coeff
+        Coefficient of reduction of the Boltzmann temperature, each step,
+        if the decay is enabled. Applied multiplicatively to the current
+        tau each time step, i.e., ``tau = tau * tau_decay_coeff``.
+
+    noise
+        The noise parameter that controls the random distribution when
+        perturbing actions. The higher the noise, the more the action will
+        be perturbed (i.e., far from its original, unperturbed version).
+
+    sigma_state
+        Size of the neighborhood for the State-SOM.
+
+    sigma_action
+        Size of the neighborhood for the Action-SOM.
+
+    lr_state
+        Learning rate for the State-SOM.
+
+    lr_action
+        Learning rate for the Action-SOM.
+
+    q_learning_rate
+        Learning rate for the Q-Table.
+
+    q_discount_factor
+        The gamma value controls the horizon of expected rewards: the higher
+        it is, the more the agent will take into account the future states,
+        and rewards that can be expected from these future states, when
+        determining its policy. If set to 0, the agent will simply maximize
+        the current expected reward (greedy policy).
+
+    update_all
+        Whether to update all Q-Values (Smith's optimization) at each step.
+        This speeds up the learning of interests.
+
+    use_neighborhood
+        Whether to use the State- and Action-SOMs neighborhoods when updating
+        the Q-Values.
     """
 
     def __init__(self, env: SmartGrid, hyper_parameters: dict):
