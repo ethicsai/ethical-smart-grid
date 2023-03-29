@@ -61,6 +61,62 @@ For example:
 You can use the converter object to load any profile you desire, and use these
 profiles to instantiate :py:class:`~smartgrid.agents.agent.Agent`\ s.
 
+.. note::
+   If the package was installed through ``pip`` instead of cloning the repository,
+   accessing the files through a relative path will not work. Instead, the files
+   must be accessed from the installed package itself. In this case, the
+   :py:mod:`importlib.resources` module can be used.
+
+To access files from an installed package:
+
+.. code-block:: Python
+
+    converter = DataOpenEIConversion()
+
+    # Before Python 3.9:
+    from importlib_resources import path
+    # `path` returns a context manager that must be used in a `with`.
+    # The first argument is the path of the dataset, using `.` instead of `/`.
+    # The `data/` folder is moved within the `smartgrid` package when installing.
+    # The second argument is the name of the requested file, within the dataset.
+    with path('smartgrid.data.openei', 'profile_office_daily.npz') as f:
+        converter.load(
+            'Office',
+            f,
+            comfort.neutral_comfort_profile
+        )
+
+    # Since Python3.9:
+    from importlib_resources import files, as_file
+    # `as_file` returns a context manager that must be used in a `with`.
+    # You may use the `smartgrid` module directly as an argument, or `'smartgrid'`
+    # (i.e., a string).
+    with as_file(files(smartgrid).joinpath('data/openei/profile_office_daily.npz')) as f:
+        converter.load(
+            'Office',
+            f,
+            comfort.neutral_comfort_profile
+        )
+
+To simplify getting the path to data files, the :py:func:`~smartgrid.make_env.find_profile_data`
+function may be used, although it has some limitations. In particular, it
+only works with a single level of nesting (e.g., ``data/dataset/sub-dataset/file``
+will not work), and it relies on the :py:func:`importlib.resources.path` function,
+which is deprecated since Python3.11 (but still usable, for now).
+
+.. code-block:: Python
+
+    from smartgrid.make_env import find_profile_data
+
+    converter = DataOpenEIConversion()
+
+    f = find_profile_data('openei', 'profile_office_daily.npz')
+    converter.load(
+        'Office',
+        f,
+        comfort.neutral_comfort_profile
+    )
+
 Energy generator
 ----------------
 

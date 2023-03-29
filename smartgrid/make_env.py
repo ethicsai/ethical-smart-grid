@@ -31,23 +31,26 @@ def find_profile_data(dataset: str, filename: str) -> str:
 
     How to access files in this folder depends on the actual case; this function
     (hopefully) solves this problem, by checking first whether the files are
-    directly accessible (through relative paths). If they cannot, ``importlib``
-    is used to get a path to the file through the package.
+    directly accessible (through relative paths). If they are not,
+    :py:mod:`importlib.resources` is used to get a path to the file through the
+    package.
+
+    This function may raise a ``DeprecationWarning`` when accessing
+    files through the package on Python3.11+. It is due to relying on the
+    :py:func:`importlib.resources.path` function, which is deprecated since
+    Python 3.11. As we support up to Python 3.7, and as the function is
+    only available since Python 3.9, it is still used instead of the more
+    recent :py:func:`importlib.resources.files`.
 
     :param dataset: The name of the folder containing the desired file, within
         the ``data`` folder. For example, ``openei`` to access the OpenEI
-        dataset.
+        dataset. This dataset cannot be nested, e.g., ``dataset/subdataset``
+        or ``dataset.subdataset`` will not work.
 
     :param filename: The name of the desired file, within the ``dataset``
         folder.
 
     :return: A path to the desired file.
-    :rtype: str
-
-    .. warning:
-        This function currently supports only 1 nested level, i.e.,
-        ``data/<dataset>/<filename>``. More nested files, e.g.,
-        ``data/<dataset>/<sub-dataset>/<filename>`` will not work.
     """
     # Equivalent to `./data/dataset/filename`, but OS-agnostic.
     relative_path = os.path.join('data', dataset, filename)
