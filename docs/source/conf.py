@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..',
 # -- Project information -----------------------------------------------------
 
 project = 'EthicalSmartGrid'
-copyright = '2022, Clément Scheirlinck & Rémy Chaput'
+copyright = '2023, Clément Scheirlinck & Rémy Chaput'
 author = 'Clément Scheirlinck & Rémy Chaput'
 
 
