@@ -38,7 +38,7 @@ class DataConversion(ABC):
         return type(self).__name__
 
     @abstractmethod
-    def load(self, name: str, data_path: str, **kwargs):
+    def load(self, name: str, data_path: str, **kwargs) -> AgentProfile:
         """
         Load a profile from a data file for further use.
 
@@ -52,6 +52,8 @@ class DataConversion(ABC):
         :param kwargs: Additional arguments.
             These arguments can serve any purpose, depending on the
             implementation details of the DataConversion itself.
+
+        :return: The loaded AgentProfile for direct use.
         """
         pass
 
@@ -82,7 +84,7 @@ class DataOpenEIConversion(DataConversion):
     # in the parent class... *sigh*
     profiles: Dict[str, AgentProfile]
 
-    def load(self, name, data_path, comfort_fn=None) -> None:
+    def load(self, name, data_path, comfort_fn=None) -> AgentProfile:
         """
         Load a profile from an OpenEI-based data file.
 
@@ -98,6 +100,8 @@ class DataOpenEIConversion(DataConversion):
         :param comfort_fn: The comfort function that should be used. See
             :py:mod:`~smartgrid.agents.profile.comfort` for details on comfort
             functions.
+
+        :return: The loaded AgentProfile for direct use.
         """
 
         # Load the NPZ file
@@ -151,6 +155,7 @@ class DataOpenEIConversion(DataConversion):
         )
 
         self.profiles[name] = profile
+        return profile
 
     def _get_ndarray_single_value(self, array: np.ndarray):
         """Internal method to get the single value of a 0d or 1d ndarray."""
