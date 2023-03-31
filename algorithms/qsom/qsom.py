@@ -77,7 +77,24 @@ class QSOM(Model):
         the Q-Values.
     """
 
-    def __init__(self, env: SmartGrid, hyper_parameters: dict):
+    default_hyperparameters = {
+        "q_learning_rate": 0.7,
+        "q_discount_factor": 0.9,
+        "update_all": True,
+        "use_neighborhood": True,
+        "sigma_state": 1.0,
+        "lr_state": 0.8,
+        "sigma_action": 1.0,
+        "lr_action": 0.7,
+        "initial_tau": 0.5,
+        "tau_decay": False,
+        "tau_decay_coeff": 1.0,
+        "noise": 0.08
+    }
+
+    def __init__(self, env: SmartGrid, hyper_parameters: dict = None):
+        if hyper_parameters is None:
+            hyper_parameters = QSOM.default_hyperparameters
         super().__init__(env, hyper_parameters)
         self.qsom_agents = []
 
