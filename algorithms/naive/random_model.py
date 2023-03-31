@@ -1,3 +1,7 @@
+"""
+Model that returns purely random actions.
+"""
+
 from algorithms.model import Model
 
 

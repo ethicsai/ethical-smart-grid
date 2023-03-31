@@ -107,6 +107,7 @@ The following code loads such a CSV into a usable agent profile:
             # The profile must be registered in the `profiles` dict to be
             # reused later.
             self.profiles[name] = profile
+            return profile
 
 This ``CSVDataConversion`` can then be used as follows:
 
@@ -149,6 +150,7 @@ example:
             # The profile must be registered in the `profiles` dict to be
             # reused later.
             self.profiles[name] = profile
+            return profile
 
 To further customize the resulting agent profile, new classes can also be
 created for the :py:class:`~smartgrid.agents.profile.need.NeedProfile`

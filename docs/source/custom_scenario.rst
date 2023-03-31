@@ -79,7 +79,7 @@ To access files from an installed package:
     # The first argument is the path of the dataset, using `.` instead of `/`.
     # The `data/` folder is moved within the `smartgrid` package when installing.
     # The second argument is the name of the requested file, within the dataset.
-    with path('smartgrid.data.openei', 'profile_office_daily.npz') as f:
+    with path('smartgrid.data.openei', 'profile_office_annually.npz') as f:
         converter.load(
             'Office',
             f,
@@ -91,7 +91,7 @@ To access files from an installed package:
     # `as_file` returns a context manager that must be used in a `with`.
     # You may use the `smartgrid` module directly as an argument, or `'smartgrid'`
     # (i.e., a string).
-    with as_file(files(smartgrid).joinpath('data/openei/profile_office_daily.npz')) as f:
+    with as_file(files(smartgrid).joinpath('data/openei/profile_office_annually.npz')) as f:
         converter.load(
             'Office',
             f,
@@ -110,10 +110,9 @@ which is deprecated since Python3.11 (but still usable, for now).
 
     converter = DataOpenEIConversion()
 
-    f = find_profile_data('openei', 'profile_office_daily.npz')
     converter.load(
         'Office',
-        f,
+        find_profile_data('openei', 'profile_office_annually.npz'),
         comfort.neutral_comfort_profile
     )
 
@@ -143,7 +142,7 @@ For example, using a random generator:
     # at each step.
     generator = RandomEnergyGenerator(
         lower_proportion=0.75,
-        upper_proportion=1.1
+        upper_proportion=1.10
     )
 
     # Example with current_need = 10_000 Wh.
@@ -170,7 +169,7 @@ Another example, using the realistic generator:
     data = [0.80, 0.66, 0.45]
     generator = RealisticEnergyGenerator(data=data)
 
-    # Example with current_need = 10_000 Wh.
+    # Example with max_need = 100_000 Wh.
     amount = generator.generate_available_energy(
         max_need=100_000,
         current_step=0,

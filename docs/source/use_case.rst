@@ -37,7 +37,9 @@ smart grid, and must take *Actions* that determine how much they consume, buy,
 etc.
 
 They also each possess a (small) personal storage ("battery"), whose capacity
-depends on the agent's profile (a school has a greater battery than a household).
+depends on the agent's profile (a school has a larger battery than a household).
+This personal storage is slightly filled each time step by their personal
+production of energy (e.g., a small solar panel).
 
 Actions
 -------
@@ -59,6 +61,12 @@ Each parameter represents a quantity of energy in Wh:
   to store in its personal battery.
 - ``sell_energy``: how much energy the agent should sell from its personal
   battery to the national grid.
+
+In other words, the action parameters define how to distribute, or transfer,
+energy between the smart grid, the national grid, and the agent's storage
+and consumption.
+
+.. image:: /images/energy_transfers.drawio.png
 
 Observations
 ------------
@@ -135,9 +143,9 @@ If an agent consumes too much, they risk preventing another agent from
 satisfying its own comfort, thus betraying the *inclusiveness* moral value.
 Instead, it may buy energy to compensate, but this would betray the
 *environmental sustainability* value, and potentially the *affordability* as
-well (if the agent does not enough money). Finally, the agent may simply
+well (if the agent does not have enough money). Finally, the agent may simply
 choose to consume less, thus reducing its comfort and betraying the
-*Security of Supply* value.
+*security of supply* value.
 
 These (potential) conflicts between values make this Smart Grid environment
 a suitable playground for learning "ethical behaviours".

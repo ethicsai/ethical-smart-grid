@@ -10,7 +10,7 @@ Thus, extending observations can be done in several parts of the architecture:
 
 - :py:class:`~smartgrid.observation.global_observation.GlobalObservation` is
   responsible for computing the shared observations.
-- :py:class:`~smargrid.observation.local_observation.LocalObservation` is
+- :py:class:`~smartgrid.observation.local_observation.LocalObservation` is
   responsible for computing the individual observations.
 - :py:class:`~smartgrid.observation.observation_manager.ObservationManager` is
   the main entrypoint for all things related to observations, and is used by the
@@ -91,7 +91,9 @@ difference between the agents' comfort and the average of others' comfort.
     from collections import namedtuple
     import numpy as np
 
-    class ComfortDiffLocalObservation(namedtuple('ComfortDiffLocalObservation', ['comfort_diff'])):
+    fields = ['comfort_diff']
+
+    class ComfortDiffLocalObservation(namedtuple('ComfortDiffLocalObservation', fields)):
 
         @classmethod
         def compute(cls, world, agent):

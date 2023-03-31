@@ -10,7 +10,7 @@ This includes:
 - :py:class:`~smartgrid.agents.profile.agent_profile.AgentProfile`
    * :py:class:`~smartgrid.agents.profile.need.NeedProfile`
    * :py:class:`~smartgrid.agents.profile.production.ProductionProfile`
-   * :py:mod:`Comfort functions <smartgrid.agents.profile.comfort`
+   * :py:mod:`Comfort functions <smartgrid.agents.profile.comfort>`
 - :py:class:`~smartgrid.agents.data_conversion.DataConversion`
 """
 

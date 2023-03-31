@@ -5,7 +5,7 @@ Usage
 environment for multi-agent reinforcement learning of *ethically-aligned*
 behaviours, i.e., behaviours that take into account ethical considerations.
 
-The environment is available as a Python package, and follows the Gymnasium
+The environment is available as a Python package, and follows the Gymnasium API
 as close as possible, such that it can be used with any Gymnasium-compliant
 learning algorithm with little to no modification.
 
@@ -20,8 +20,8 @@ To use this simulator, you may either:
 Cloning is the recommended way to get the up-to-date version, and is easier if
 you intend to implement new algorithms and/or extend the simulator.
 Cloning also allows you to refer to data files by relative paths, whereas
-downloading the package from PyPi requires to refer to data files as resources
-of the package.
+downloading the package from PyPi requires to refer to data files as package
+resources.
 
 Running a simulation
 --------------------
