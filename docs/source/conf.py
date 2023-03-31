@@ -36,6 +36,8 @@ extensions = [
     'sphinx.ext.intersphinx',
     # Matplotlib plot in documentation
     'matplotlib.sphinxext.plot_directive',
+    # Automatically add a 'copy button' to our code blocks
+    'sphinx_copybutton',
 ]
 
 # Enable autosummary
@@ -67,7 +69,7 @@ rst_epilog = '.. |project_name| replace:: {}'.format(project)
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'furo'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
