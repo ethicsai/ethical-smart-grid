@@ -57,7 +57,7 @@ class AgentState(object):
         self.need = 0
         self.production = 0
 
-    def __str__(self):
+    def __repr__(self):
         return '<AgentState comfort={} payoff={} storage={} need={} production={}' \
             .format(self.comfort, self.payoff, self.storage, self.need, self.production)
 
@@ -219,12 +219,15 @@ class Agent(object):
         """
         # Temporary storage (without upper limit, but still a lower ;
         # we consider that energy is exchanged more or less at the
-        # same instant)
+        # same instant). This allows, e.g., to buy more energy than the capacity
+        # allows, and to instantly consume this energy.
+        # For example, assuming that the max storage is 500Wh, we can buy 1000Wh,
+        # immediately consume 500Wh, give 150Wh, and store the remaining 350Wh.
         action = self.intended_action
         new_storage = self.state.storage
 
         # 1. Agent buys energy
-        # (may be limited by the current payoff)
+        # (can be limited by the current payoff)
         rate = 0.1
         price = math.ceil(rate * action.buy_energy)
         # limit price by current payoff
@@ -232,15 +235,17 @@ class Agent(object):
                                                        price,
                                                        self.payoff_range[0])
         # actually bought quantity
-        # TODO: limit the quantity of bought energy to the payoff AND the battery capacity?
         bought = int(math.floor(price / rate))
         new_storage += bought
 
         # 2. Agent stores energy
-        # TODO see with Rémy if this need to be bounded (max cap on battery)
+        # (agent can store as much as desired)
         new_storage += action.store_energy
 
         # 3. Agent sells energy
+        # (can be limited by the current storage, including bought and stored)
+        # Note: agent could sell for more than it can really gain, because the
+        # payoff is bounded. In this case, the money is "lost".
         rate = 0.1
         new_storage, sold, _ = decrease_bounded(new_storage,
                                                 action.sell_energy,
@@ -251,13 +256,13 @@ class Agent(object):
                                                    self.payoff_range[1])
 
         # 4. Agent consumes from storage
-        # (may be limited by the storage)
+        # (can be limited by the storage)
         new_storage, storage_consumed, _ = decrease_bounded(new_storage,
                                                             action.storage_consumption,
                                                             0)
 
         # 5. Agent gives to the grid
-        # (may be limited by the storage)
+        # (can be limited by the storage)
         new_storage, given, _ = decrease_bounded(new_storage,
                                                  action.give_energy,
                                                  0)
@@ -266,9 +271,18 @@ class Agent(object):
         # (we assume that agent can consume as much as wanted)
         grid_consumed = action.grid_consumption
 
-        # Increase the storage consumption by the overflow on battery
+        # At this point, the new storage can be greater than the capacity
+        # (overflow). This is by design (see comment at the top of the method),
+        # but we now need to fix this. Possible ways include:
+        # - Overflow energy could be wasted ("disappear") => not realistic.
+        # - Reduce the quantity of stored energy, and/or bought energy => which
+        #   should we reduce first? Is it possible that we cannot reduce them
+        #   enough? What happens in this case?
+        # - Increase the storage consumption => seems more realistic (energy
+        #   *must* be consumed), and easier to implement than reducing other
+        #   parameters. => This is the chosen way to deal with overflow.
         if new_storage > self.profile.max_storage:
-            storage_consumed += self.profile.max_storage - new_storage
+            storage_consumed += (new_storage - self.profile.max_storage)
             new_storage = self.profile.max_storage
 
         # Set the new storage
