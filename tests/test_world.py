@@ -70,21 +70,27 @@ class TestWorld(unittest.TestCase):
         agent1.intended_action = Action(*agent1.profile.action_space.sample())
         agent2.intended_action = Action(*agent2.profile.action_space.sample())
 
-        # Update the world to get to the next time step
-        world.step()
-        # Test again the current/min/max need
-        current_need = world.current_need
-        self.assertGreaterEqual(current_need, world.min_needed_energy)
-        self.assertLessEqual(current_need, world.max_needed_energy)
-        # Test that agent's comfort is coherent
-        self.assertAlmostEqual(agent1.comfort, simple_comfort(
-            agent1.enacted_action.grid_consumption + agent1.enacted_action.storage_consumption,
-            agent1.need
-        ))
-        self.assertAlmostEqual(agent2.comfort, simple_comfort(
-            agent2.enacted_action.grid_consumption + agent2.enacted_action.storage_consumption,
-            agent2.need
-        ))
+        for step in range(10):
+            with self.subTest(step=step):
+                # We need to memorize the agents' needs (because `world.step()`
+                # will update them).
+                agent1_need = agent1.state.need
+                agent2_need = agent2.state.need
+                # Update the world to get to the next time step
+                world.step()
+                # Test again the current/min/max need
+                current_need = world.current_need
+                self.assertGreaterEqual(current_need, world.min_needed_energy)
+                self.assertLessEqual(current_need, world.max_needed_energy)
+                # Test that agent's comfort is coherent
+                self.assertAlmostEqual(agent1.comfort, simple_comfort(
+                    agent1.enacted_action.grid_consumption + agent1.enacted_action.storage_consumption,
+                    agent1_need
+                ))
+                self.assertAlmostEqual(agent2.comfort, simple_comfort(
+                    agent2.enacted_action.grid_consumption + agent2.enacted_action.storage_consumption,
+                    agent2_need
+                ))
 
 
 if __name__ == '__main__':
