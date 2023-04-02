@@ -1,2 +1,2 @@
 gymnasium>=0.26.3
-numpy>=1.24.2
+numpy>=1.19.0

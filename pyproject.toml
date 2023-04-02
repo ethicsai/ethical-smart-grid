@@ -13,12 +13,20 @@ description = "A RL environment for learning ethically-aligned behaviours in a S
 readme = "Readme.md"
 license = { file = "LICENSE.md" }
 requires-python = ">=3.7"
+# NumPy 1.19 still supports Python3.7, which is not the case for later versions.
+# Users with a more recent Python version are encouraged to use the latest
+# NumPy version. See also https://numpy.org/neps/nep-0029-deprecation_policy.html
 dependencies = [
     "gymnasium >= 0.26.3",
-    "numpy >= 1.24.2",
+    "numpy >= 1.19.0",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Intended Audience :: Science/Research",
