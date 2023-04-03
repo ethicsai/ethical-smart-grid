@@ -3,11 +3,13 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "ethical-smart-grid-simulator"
+name = "ethical-smart-grid"
 version = "0.0.2"
 authors = [
-    { name = "Clément Scheirlinck" },
-    { name = "Rémy Chaput", email = "rchaput.pro@gmail.com" }
+    { name = "Clément Scheirlinck", email = "clement.scheirlinck@etu.univ-lyon1.fr" },
+]
+maintainers = [
+    { name = "Rémy Chaput", email = "rchaput.pro@gmail.com" },
 ]
 description = "A RL environment for learning ethically-aligned behaviours in a Smart Grid simulator."
 readme = "Readme.md"
@@ -46,20 +48,27 @@ keywords = [
 extra = [
     "tqdm >= 4.61.2",
 ]
+test = [
+    "pytest ~= 7.2.2"
+]
 
 [project.urls]
 "Source code" = "https://github.com/ethicsai/ethical-smart-grid"
 "Bug Tracker" = "https://github.com/ethicsai/ethical-smart-grid/issues"
+"Documentation" = "https://ethicsai.github.io/ethical-smart-grid/"
 
 # Ignore some files when building with hatchling
 [tool.hatch.build.targets.sdist]
 exclude = [
     "/.github",
+    "/.gitignore",
     "/docs",
     "/.ipynb_checkpoints",
     "/*.patch",
     "/*.csv",
     "/*.ipynb",
+    "/.pytest_cache",
+    "/.ruff_cache",
 ]
 
 # Also include the `data` folder, and move it to `smartgrid/data` when installed.
