@@ -2,6 +2,13 @@
 
 > Authors: Clément Scheirlinck, Rémy Chaput
 
+<!-- Badges -->
+![](https://img.shields.io/pypi/pyversions/ethical-smart-grid)
+[![](https://img.shields.io/github/actions/workflow/status/ethicsai/ethical-smart-grid/docs.yml?label=Docs)](https://github.com/ethicsai/ethical-smart-grid/actions/workflows/docs.yml)
+[![](https://img.shields.io/github/actions/workflow/status/ethicsai/ethical-smart-grid/testing.yml?label=Automatic%20testing)](https://github.com/ethicsai/ethical-smart-grid/actions/workflows/testing.yml)
+![](https://img.shields.io/pypi/l/ethical-smart-grid)
+![](https://img.shields.io/github/v/release/ethicsai/ethical-smart-grid)
+
 ## Description
 
 This is a third-party [Gym] environment, focusing on learning ethically-aligned
@@ -53,9 +60,9 @@ in the public API, and thus worthy of a "major" update.
 
 ## Building and testing locally
 
-This GitHub repository includes actions that automatically [test](actions-test)
-the package and [build](actions-docs) the documentation on each commit, and 
-[publish](actions-publish) the package to [PyPi] on each release.
+This GitHub repository includes actions that automatically [test][actions-test]
+the package and [build][actions-docs] the documentation on each commit, and 
+[publish][actions-publish] the package to [PyPi] on each release.
 
 Instructions to perform these steps locally are given here, for potential
 new contributors or forks:
@@ -106,6 +113,7 @@ Some included data may be protected by other licenses, please refer to the
 [actions-test]: https://github.com/ethicsai/ethical-smart-grid/actions/workflows/testing.yml
 [actions-docs]: https://github.com/ethicsai/ethical-smart-grid/actions/workflows/docs.yml
 [actions-publish]: https://github.com/ethicsai/ethical-smart-grid/actions/workflows/package.yml
+[Sphinx]: https://www.sphinx-doc.org/
 [hatch]: https://hatch.pypa.io/latest/
 [MIT License]: https://choosealicense.com/licenses/mit/
 [LICENSE.md]: LICENSE.md
