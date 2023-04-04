@@ -1,0 +1,30 @@
+{
+  "@context": "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [
+    {
+      "@id": "0000-0002-2233-7566",
+      "@type": "Person",
+      "email": "rchaput.pro@gmail.com",
+      "name": "Rémy Chaput",
+      "affiliation": "Univ Lyon, UCBL, CNRS, INSA Lyon, Centrale Lyon, Univ Lyon 2, LIRIS, UMR5205, F-69622 Villeurbanne, France"
+    },
+    {
+      "@id": "",
+      "@type": "Person",
+      "email": "",
+      "name": "Clément Scheirlinck",
+      "affiliation": "Univ Lyon, UCBL, CNRS, INSA Lyon, Centrale Lyon, Univ Lyon 2, LIRIS, UMR5205, F-69622 Villeurbanne, France"
+    }
+  ],
+  "identifier": "",
+  "codeRepository": "https://github.com/ethicsai/ethical-smart-grid",
+  "datePublished": "2023-04-04",
+  "dateModified": "2023-04-04",
+  "dateCreated": "2023-04-04",
+  "description": "Reinforcement learning environment for learning ethical behaviours in a SmartGrid use-case. ",
+  "keywords": "python, reinforcement learning, artificial intelligence, smart grid, gymnasium, machine ethics",
+  "license": "MIT",
+  "title": "ethical-smart-grid",
+  "version": "v1.0.0"
+}
