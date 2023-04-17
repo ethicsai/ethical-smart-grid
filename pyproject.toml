@@ -67,6 +67,7 @@ exclude = [
     "/*.patch",
     "/*.csv",
     "/*.ipynb",
+    "/notebooks",
     "/.pytest_cache",
     "/.ruff_cache",
 ]
