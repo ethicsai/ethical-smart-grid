@@ -14,7 +14,7 @@ an instance of the environment. These pages describe what elements can be
 extended, what are their role in the simulator, and how they can be extended.
 
 .. image:: /images/architecture.drawio.png
-   :target: /images/architecture.drawio.png
+   :target: ../_images/architecture.drawio.png
    :alt: Simplified class diagram representing the links between the important classes. Attributes and methods are not shown.
 
 .. list-table:: Extension points
