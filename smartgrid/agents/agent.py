@@ -50,16 +50,22 @@ class AgentState(object):
         the `production`.
     """
 
+    previous_storage: float
+    """
+    The previous amount of energy stored, at the previous time step.
+    """
+
     def __init__(self):
         self.comfort = 0
         self.payoff = 0
         self.storage = 0
         self.need = 0
         self.production = 0
+        self.previous_storage = 0
 
     def __repr__(self):
-        return '<AgentState comfort={} payoff={} storage={} need={} production={}' \
-            .format(self.comfort, self.payoff, self.storage, self.need, self.production)
+        return '<AgentState comfort={} payoff={} storage={} need={} production={} previous_storage={}' \
+            .format(self.comfort, self.payoff, self.storage, self.need, self.production, self.previous_storage)
 
     def reset(self):
         self.__init__()
@@ -217,6 +223,8 @@ class Agent(object):
         :return: The *enacted* action that truly happened, after the Agent's
             state was updated.
         """
+        # Remember the storage before we go on to the next time step
+        self.state.previous_storage = self.state.storage
         # Temporary storage (without upper limit, but still a lower ;
         # we consider that energy is exchanged more or less at the
         # same instant). This allows, e.g., to buy more energy than the capacity
