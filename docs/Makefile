@@ -17,6 +17,10 @@ help:
 preview:
 	sphinx-reload --build-dir "$(BUILDDIR)" .
 
+# Also remove the `source/modules` directory, which is built by autosummary.
+superclean: clean
+	rm -r "$(SOURCEDIR)/modules"
+
 .PHONY: help Makefile preview
 
 # Catch-all target: route all unknown targets to Sphinx using the new
