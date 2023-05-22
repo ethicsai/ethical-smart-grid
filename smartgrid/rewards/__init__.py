@@ -12,7 +12,8 @@ Traditionally, reward functions in the Reinforcement Learning literature are
 purely numerical, i.e., based on mathematical expressions. Such functions can
 be found in the :py:mod:`smartgrid.rewards.numeric` package.
 
-Other functions can also be based on symbolic reasoning. (Work in progress)
+Other functions can also be based on symbolic reasoning, such as argumentation:
+see the :py:mod:`smartgrid.rewards.argumentation` package.
 """
 
 from .reward import Reward
