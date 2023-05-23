@@ -54,6 +54,34 @@ class Reward(ABC):
         """
         pass
 
+    def is_activated(self, world: World, agent: Agent) -> bool:
+        """
+        Determines whether the reward function should produce a reward.
+
+        This function can be used to enable/disable the reward function at
+        will, allowing for a variety of use cases (changing the reward function
+        over the time, using different reward functions for different agents,
+        etc.).
+
+        By default, it returns ``True`` to avoid forcing the definition of
+        this function. To specify when this reward function should be activated,
+        two ways are possible:
+
+        - Wrap the ``Reward`` object in a *constraint* class, e.g.,
+          :py:class:`~smartgrid.rewards.reward_constraints.TimeConstrainedReward`.
+        - Override this method in the subclass to implement the desired
+          activation mechanism.
+
+        :param world: The World in which the reward function may be activated.
+        :param agent: The Agent that should (potentially) be rewarded by this
+            reward function.
+
+        :return: A boolean indicating whether the reward function should
+            produce a reward at this moment (for this state of the world and
+            this learning agent).
+        """
+        return True
+
     def reset(self):
         """
         Reset the reward function.
