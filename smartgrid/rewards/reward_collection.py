@@ -45,7 +45,8 @@ class RewardCollection:
         """
         to_return = {}
         for reward in self.rewards:
-            to_return[reward.name] = reward.calculate(world, agent)
+            if reward.is_activated(world, agent):
+                to_return[reward.name] = reward.calculate(world, agent)
 
         return to_return
 
