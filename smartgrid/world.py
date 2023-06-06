@@ -2,7 +2,7 @@
 The World represents the "physical" (simulated) smart grid.
 """
 
-from typing import List
+from typing import Iterable, Dict
 
 import numpy as np
 
@@ -21,17 +21,22 @@ class World(object):
     dynamics (energy generation, etc.).
     """
 
-    agents: List[Agent]
+    agents_by_name: Dict[str, Agent]
     """
-    List of all agents acting in the world.
-    
-    This list can be used to access the agents, which represent prosumers
-    (buildings) and act in this world.
-    
-    There is (currently) no support for "scripted" agents, i.e., all agents
-    in the world are considered to be "policy" agents: they receive observations
-    and algorithms must decide actions for them, through the environment
-    interaction loop (see :py:class:`.SmartGrid` for more details).
+    Agents in the World, indexed by their name.
+
+    This allows efficient access to a specific :py:class:`~smartgrid.agent.Agent`
+    based on its :py:attr:`~smartgrid.agents.agent.Agent.name`.
+    Agents represent *prosumers* (buildings) that act in this World (by
+    consuming and exchanging energy).
+
+    .. note:: There is (currently) no support for "scripted" agents, i.e., all
+        agents in the world are considered to be "policy" agents: they receive
+        observations and algorithms must decide actions for them, through the
+        environment interaction loop (see :py:class:`.SmartGrid` for more
+        details).
+
+    .. note:: Adding agents is currently not supported in this version.
     """
 
     current_step: int
@@ -86,7 +91,7 @@ class World(object):
     """
 
     def __init__(self,
-                 agents: List[Agent],
+                 agents: Iterable[Agent],
                  energy_generator: EnergyGenerator):
         """
         Create a new simulated world.
@@ -97,7 +102,10 @@ class World(object):
             each time step, based on the agents in the world and their needs.
         """
         self.current_step = 0
-        self.agents = agents
+        self.agents_by_name = {
+            agent.name: agent
+            for agent in agents
+        }
         self.available_energy = 0
         self.energy_generator = energy_generator
 
@@ -119,7 +127,7 @@ class World(object):
         needs.
         """
         # 1. Integrate all agents' actions
-        for i, agent in enumerate(self.agents):
+        for agent in self.agents:
             agent.enacted_action = agent.handle_action()
 
         # 2. Update agents
@@ -162,6 +170,17 @@ class World(object):
             self.min_needed_energy,
             self.max_needed_energy
         )
+
+    @property
+    def agents(self) -> Iterable[Agent]:
+        """
+        Iterable of all agents acting in the world.
+
+        This iterable can be used to iterate on all agents, when accessing them
+        by their name is not required (see :py:attr:`.agents_by_name` for this).
+        It is internally set as a *view* on the dictionary's :py:meth:`dict.values`.
+        """
+        return self.agents_by_name.values()
 
     @property
     def current_need(self):
