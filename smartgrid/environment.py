@@ -1,22 +1,28 @@
 """
 The SmartGrid environment is the main entrypoint.
 """
-import random
 import warnings
+from typing import Optional, Dict, Tuple, Any, Iterable, List
 
-import gymnasium
 import numpy as np
 from gymnasium import Space
+import pettingzoo
+# Import a few type hints to make the documentation clearer
+from pettingzoo.utils.env import AgentID, ObsDict, ActionDict
 
-from smartgrid.agents import Action
-from smartgrid.rewards import RewardCollection
+from smartgrid.agents import Action, Agent
+from smartgrid.rewards import RewardCollection, Reward
 from smartgrid.world import World
 from smartgrid.observation import ObservationManager
 
-from typing import List, Optional
+# A few additional type hints to help (similar to PettingZoo's)
+InfoType = Dict[str, Any]
+InfoDict = Dict[AgentID, InfoType]
+RewardsType = Dict[str, float]
+RewardsDict = Dict[AgentID, RewardsType]
 
 
-class SmartGrid(gymnasium.Env):
+class SmartGrid(pettingzoo.ParallelEnv):
     """
     The SmartGrid environment is the main entrypoint.
 
@@ -40,18 +46,14 @@ class SmartGrid(gymnasium.Env):
         'render.modes': ['text'],
     }
 
-    action_space: List[Space]
+    _np_random: np.random.Generator
     """
-    The list of action spaces for all Agents.
-    """
+    The pseudo-random number generator (PRNG), for reproducibility.
 
-    observation_space: List[Space]
-    """
-    The list of observation spaces for all Agents.
-    
-    Because the observation space is in practice split between *global* and
-    *local* observations, this might not exactly correspond, please see
-    the :py:meth:`~smartgrid.environment.SmartGrid._get_obs` for details.
+    It should usually not be accessed by the user, and must be passed down to
+    elements of the SmartGrid (e.g., :py:class:`~.World`) that need it.
+    The generator is set by the :py:meth:`~.reset` method, optionally with a
+    specific seed.
     """
 
     observation_manager: ObservationManager
@@ -101,15 +103,15 @@ class SmartGrid(gymnasium.Env):
 
     def __init__(self,
                  world: World,
-                 rewards,
-                 max_step=None,
+                 rewards: List[Reward],
+                 max_step: int = None,
                  obs_manager: ObservationManager = None):
         """
         Create the SmartGrid environment.
 
         This sets most attributes of the environment, including the
         :py:attr:`~smartgrid.environment.SmartGrid.action_space` and
-        :py:attr:`~smartgrid.environment.SmartGrid.observation_space`.
+        :py:attr:`~smartgrid.environment.SmartGrid.observation_space`..
 
         .. warning::
             Remember that the env is not usable until you call :py:meth:`.reset` !
@@ -145,14 +147,21 @@ class SmartGrid(gymnasium.Env):
         self.reward_calculator = RewardCollection(rewards)
 
         # Configure spaces
-        self.action_space = []
-        self.observation_space = []
-        obs_space = self.observation_manager.observation.get_observation_space()
+        self.observation_spaces = {}
+        self.action_spaces = {}
         for agent in self.world.agents:
-            self.action_space.append(agent.profile.action_space)
-            self.observation_space.append(obs_space)
+            self.observation_spaces[agent.name] = obs_manager.observation.space(
+                self.world,
+                agent
+            )
+            self.action_spaces[agent.name] = agent.profile.action_space
 
-    def step(self, action_n):
+    def step(
+        self,
+        actions: ActionDict
+    ) -> Tuple[
+        ObsDict, RewardsDict, Dict[AgentID, bool], Dict[AgentID, bool], InfoDict
+    ]:
         """
         Advance the simulation to the next step.
 
@@ -162,22 +171,22 @@ class SmartGrid(gymnasium.Env):
         Then, the method computes the new observations and rewards, and returns
         them so that agents can decide the next action.
 
-        :param action_n: The list of actions (vectors of parameters that must
-            be coherent with the agent's action space), one action for each
-            agent.
+        :param actions: The dictionary of actions, indexed by the agent's name,
+            where each action is a vector of parameters that must be coherent
+            with the agent's action space.
 
         :return: A tuple containing information about the next (new) state:
 
             - ``obs_n``: A dict that contains the observations about the next
-              state, please see :py:meth:`._get_obs` for details about the
+              state; please see :py:meth:`._get_obs` for details about the
               dict contents.
-            - ``reward_n``: A list containing the rewards for each agent,
+            - ``reward_n``: A dict containing the rewards for each agent;
               please see :py:meth:`._get_reward` for details about its content.
-            - ``terminated_n``: A list of boolean values indicating, for each
+            - ``terminated_n``: A dict of boolean values indicating, for each
               agent, whether the agent is "terminated", e.g., completed its
               task or failed. Currently, always set to ``False``: agents
               cannot complete nor fail (this is not an episodic environment).
-            - ``truncated_n``: A list of boolean values indicating, for each
+            - ``truncated_n``: A dict of boolean values indicating, for each
               agent, whether the agent should stop acting, because, e.g., the
               environment has run out of time. See :py:attr:`.max_step` for
               details.
@@ -187,15 +196,18 @@ class SmartGrid(gymnasium.Env):
 
         .. note: ``terminated_n`` and ``truncated_n`` replace the previous
             (pre-Gym-v26) ``done_n`` return value. The ``done`` value
-            can be obtained with ``all(terminated_n) or all(truncated_n)``.
+            can be obtained with
+            ``all(terminated_n.values()) or all(truncated_n.values())``.
         """
         if self.max_step is not None and self.world.current_step >= self.max_step:
             warnings.warn(f'max_step was set to {self.max_step}, but step'
                           f'{self.world.current_step} was requested.')
 
         # Set action for each agent (will be performed in `world.step()`)
-        for i, agent in enumerate(self.world.agents):
-            agent.intended_action = Action(*(action_n[i]))
+        for agent_name, action in actions.items():
+            agent = self.world.agents_by_name.get(agent_name)
+            assert agent is not None, f'Agent {agent_name} not found'
+            agent.intended_action = Action(*action)
 
         # Next step of simulation
         self.world.step()
@@ -204,20 +216,29 @@ class SmartGrid(gymnasium.Env):
         obs = self._get_obs()
         reward_n = self._get_reward()
 
-        n_agent = self.n_agent
-        terminated_n = [False] * n_agent
+        # Agents are never "terminated" (they cannot die or stop acting)
+        terminated_n = {agent.name: False for agent in self.world.agents}
+
+        # Agents are truncated only if the `max_step` is defined, and higher
+        # than the current time step. They are either all truncated, or none
+        # of them is.
         if self.max_step is None:
-            truncated_n = [False] * n_agent
+            truncated_n = {agent.name: False for agent in self.world.agents}
         else:
             # We use `-1` because the first step is the `0th`.
-            truncated_n = [self.world.current_step >= self.max_step - 1] * n_agent
+            truncated = self.world.current_step >= self.max_step - 1
+            truncated_n = {agent.name: truncated for agent in self.world.agents}
 
         # Only used for visualization, performance metrics, ...
         info_n = self._get_info(reward_n)
 
         return obs, reward_n, terminated_n, truncated_n, info_n
 
-    def reset(self, seed=None, options=None):
+    def reset(
+        self,
+        seed: Optional[int] = None,
+        options: Dict = None
+    ) -> Tuple[ObsDict, InfoDict]:
         """
         Reset the SmartGrid to its initial state.
 
@@ -230,20 +251,29 @@ class SmartGrid(gymnasium.Env):
             and ensure reproducibility.
             Note: this does **not** change the global generators (Python
             `random` and NumPy `np.random`). SmartGrid components must rely
-            on the :py:attr:`gym.Env._np_random`.
+            on the :py:attr:`~SmartGrid._np_random` attribute.
 
         :param options: An optional dictionary of arguments to further
             configure the simulator. Currently unused.
 
-        :return: The first (initial) observations for each agent in the World.
+        :return: A tuple containing the observations and additional information
+            for the first (initial) time step, in this order. There is no
+            additional information in the current version, but an empty dict is
+            still returned to be coherent with the base API.
+            The observations is a dictionary indexed by agents' name,
+            containing their initial observations, for each agent in the
+            :py:class:`~smartgrid.world.World`.
         """
-        super().reset(seed=seed)
+        self._np_random = np.random.default_rng(seed)
         self.observation_manager.reset()
         self.world.reset(self._np_random)
         self.reward_calculator.reset()
 
         obs = self._get_obs()
-        return obs
+        # PettingZoo requires the infos to contain a dictionary for each agent,
+        # even if the dictionary itself is empty.
+        infos = {agent_name: {} for agent_name in self.agents}
+        return obs, infos
 
     def render(self, mode='text'):
         """
@@ -259,28 +289,24 @@ class SmartGrid(gymnasium.Env):
         """
         pass
 
-    def _get_obs(self):
+    def _get_obs(self) -> ObsDict:
         """
         Determine the observations for all agents.
 
-        .. note:: As a large part of the observations are shared ("global"),
-            we use instead of the traditional list (1 obs per agent) a dict,
-            containing:
-
-            - ``global`` the global observations, shared by all agents;
-            - ``local`` a list of local observations, one item for each agent.
-
-        :return: A dictionary containing ``global`` and ``local``.
+        :return: A dictionary of observations for each agent, indexed by the
+            agent's name. Each observation is a dataclass containing all
+            (global *and* local) metrics. Global and local observations
+            can also be obtained through the
+            :py:meth:`~smartgrid.observation.base_observation.Observation.get_global_observation`
+            and :py:meth:`~smartgrid.observation.base_observation.Observation.get_local_observation`
+            methods.
         """
         return {
-            "global": self.observation_manager.compute_global(self.world),
-            "local": [
-                self.observation_manager.compute_agent(self.world, agent)
-                for agent in self.world.agents
-            ]
+            agent.name: self.observation_manager.compute(self.world, agent)
+            for agent in self.world.agents
         }
 
-    def _get_reward(self):
+    def _get_reward(self) -> RewardsDict:
         """
         Determine the reward for each agent.
 
@@ -295,38 +321,35 @@ class SmartGrid(gymnasium.Env):
         controlled by the :py:attr:`.reward_calculator`, see
         :py:class:`.RewardCollection` for details.
 
-        :return: A list of rewards, one element per agent. The element itself
-            is a dict which contains at least one reward, indexed by the
+        :return: A dictionary of rewards, one element per agent. The element
+            itself is a dict which contains at least one reward, indexed by the
             reward's name.
         """
-        return [
-            self.reward_calculator.compute(self.world, agent)
+        return {
+            agent.name: self.reward_calculator.compute(self.world, agent)
             for agent in self.world.agents
-        ]
+        }
 
-    def _get_info(self, reward_n):
+    def _get_info(self, rewards: RewardsDict) -> InfoDict:
         """
         Return additional information on the world (for the current time step).
 
-        Information contain the rewards, for each agent.
+        Information (currently) contain only the rewards, for each agent.
 
-        :param reward_n: The list of rewards, one for each agent.
+        :param rewards: The dictionary of rewards, one for each agent.
+            As multiple reward functions can be used, rewards are represented
+            as dictionaries themselves, indexed by the reward function's name.
 
-        :return: A dict, containing an element with key ``rewards``.
-            This element is itself a dict, indexed by the agents' names, and
-            whose value is their reward.
+        :return: A dictionary of additional information, indexed by the agent's
+            name. Each element is itself a dictionary that currently contains
+            only the agent's reward, indexed by ``'reward'``.
         """
-        info_n = {"rewards": {}}
-
-        for i, agent in enumerate(self.agents):
-            info_n["rewards"][agent.name] = reward_n[i]
-
-        return info_n
-
-    @property
-    def n_agent(self):
-        """Number of agents contained in the environment (world)."""
-        return len(self.world.agents)
+        return {
+            agent_name: {
+                'reward': rewards[agent_name]
+            }
+            for agent_name in self.agents
+        }
 
     @property
     def observation_shape(self):
@@ -334,6 +357,55 @@ class SmartGrid(gymnasium.Env):
         return self.observation_manager.shape
 
     @property
-    def agents(self):
-        """The list of agents contained in the environment (world)."""
-        return self.world.agents
+    def agents(self) -> List[AgentID]:
+        """
+        The list of agents' *names* contained in the environment (world).
+
+        .. warning:: As per the PettingZoo API, and contrary to what the name
+            suggests, this returns the agents' *names* (IDs), not the agents
+            themselves. Please see :py:meth:`~.get_agent` to get an Agent
+            from its name.
+        """
+        # PettingZoo requires this to be a list rather than an Iterable
+        return list(self.world.agents_by_name.keys())
+
+    def get_agent(self, agent_name: AgentID) -> Agent:
+        """
+        Return an agent from its name (ID).
+
+        :param agent_name: The name of the requested agent.
+        """
+        return self.world.agents_by_name[agent_name]
+
+    @property
+    def num_agents(self) -> int:
+        """The number of agents currently living in the environment."""
+        return len(self.world.agents_by_name)
+
+    def observation_space(self, agent_name: AgentID) -> Space:
+        """
+        Return the observation space of a specific agent, identified by its name.
+
+        :param agent_name: The name of the desired :py:class:`~smartgrid.agents.agent.Agent`.
+            In practice, it does not impact the result, as all Agents use the
+            same observation space.
+
+        :return: An instance of :py:class:`gymnasium.spaces.Box` indicating
+            the number of dimensions of an observation, as well as the ``low``
+            and ``high`` bounds for each dimension.
+        """
+        return self.observation_spaces[agent_name]
+
+    def action_space(self, agent_name: AgentID) -> Space:
+        """
+        Return the action space of a specific agent, identified by its name.
+
+        :param agent_name: The name of the desired :py:class:`~smartgrid.agents.agent.Agent`.
+            It must correspond to an existing Agent in the current World, i.e.,
+            an agent in the :py:attr:`smartgrid.world.World.agents` list.
+
+        :return: An instance of :py:class:`gymnasium.spaces.Box` indicating
+            the number of dimensions of actions (parameters), as well as the
+            ``low`` and ``high`` bounds for each dimension.
+        """
+        return self.action_spaces[agent_name]

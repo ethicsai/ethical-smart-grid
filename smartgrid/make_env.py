@@ -5,8 +5,6 @@ Functions that can be used to create a "basic" (or standard) environment.
 
 from typing import List
 
-from gymnasium import Env
-
 from smartgrid.environment import SmartGrid
 from smartgrid.world import World
 from smartgrid.agents import DataOpenEIConversion, Agent, comfort
@@ -78,7 +76,7 @@ def find_profile_data(dataset: str, filename: str) -> str:
 def make_basic_smartgrid(
     rewards: List[Reward] = None,
     max_step: int = 10_000,
-) -> Env:
+) -> SmartGrid:
     """
     Defines a "basic" scenario, a helper method to instantiate a SmartGrid env.
 
