@@ -80,9 +80,13 @@ class ObservationManager:
             number of dimensions) of the corresponding observation. Note that
             ``agent_state`` refers to the merged (both local and global) case.
         """
-        return {"agent_state": len(self.local_observation._fields) + len(self.global_observation._fields),
-                "local_state": len(self.local_observation._fields),
-                "global_state": len(self.global_observation._fields)}
+        nb_local = len(self.local_observation.fields())
+        nb_global = len(self.global_observation.fields())
+        return {
+            "agent_state": nb_local + nb_global,
+            "local_state": nb_local,
+            "global_state": nb_global
+        }
 
     def reset(self):
         """

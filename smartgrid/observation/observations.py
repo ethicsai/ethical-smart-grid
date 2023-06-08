@@ -13,7 +13,7 @@ from .global_observation import GlobalObservation
 from .local_observation import LocalObservation
 
 
-class Observation(namedtuple('Observation', LocalObservation._fields + GlobalObservation._fields)):
+class Observation(namedtuple('Observation', [])):
     """
     Observations are information that agents receive about the environment.
 

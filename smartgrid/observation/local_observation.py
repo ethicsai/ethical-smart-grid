@@ -2,23 +2,22 @@
 Observations that are local (individual) to a single Agent.
 """
 
-from collections import namedtuple
+import dataclasses
+from typing import Tuple, Dict
+
+import numpy as np
+from gymnasium.spaces import Space, Box
 
 from smartgrid.agents import Agent
-from smartgrid.world import World
-
-local_field = [
-    'personal_storage',
-    'comfort',
-    'payoff',
-]
 
 
-class LocalObservation(namedtuple('LocalObservation', local_field)):
+@dataclasses.dataclass(frozen=True)
+class LocalObservation:
     """
     Observations that are local (individual) to a single Agent.
 
-    These observations are not shared with other agents, and contain the
+    Observations cannot be modified once created, to limit potential bugs.
+    Local observations are not shared with other agents, and contain the
     following measures:
 
     personal_storage
@@ -47,8 +46,24 @@ class LocalObservation(namedtuple('LocalObservation', local_field)):
         with 0.5 being the neutral value (neither win nor loss).
     """
 
+    personal_storage: float
+    """
+    The ratio of energy available in the agent's personal storage, over capacity.
+    """
+
+    comfort: float
+    """
+    The agent's comfort, a value in ``[0,1]`` based on its consumption and need.
+    """
+
+    payoff: float
+    """
+    The agent's current payoff, expressed as a ratio in ``[0,1]`` based on
+    maximal and minimal allowed values.
+    """
+
     @classmethod
-    def compute(cls, world: World, agent: Agent):
+    def compute(cls, world: 'World', agent: Agent) -> 'Self':
         """
         Return local observations for a single agent.
 
@@ -85,3 +100,60 @@ class LocalObservation(namedtuple('LocalObservation', local_field)):
         to use complex mechanisms that require a ``reset``.
         """
         pass
+
+    @classmethod
+    def fields(cls) -> Tuple[str]:
+        """
+        Returns the names fields that compose a LocalObservation, as a tuple.
+
+        :param cls: Either the class itself, or an instance of the class; this
+            method supports both. In other words, it can be used as
+            ``LocalObservation.fields()``, or
+            ``obs = LocalObservation(...); obs.fields()``.
+
+        :return: The fields' names as a tuple, in their order of definition.
+            For the basic LocalObservation, this corresponds to
+            ``('personal_storage', 'comfort', 'payoff')``.
+        """
+        fields = dataclasses.fields(cls)
+        # `fields` is a tuple of `Field` objects, we only want their names.
+        fields = tuple(field.name for field in fields)
+        return fields
+
+    @classmethod
+    def space(cls, world: 'World', agent: Agent) -> Space:
+        """
+        Returns the Space in which LocalObservations live.
+        """
+        # We currently use ratios (values in `[0,1]`) for each observation.
+        # In the future, maybe we could return the true value from the agent's
+        # state? The Space would then depend on the agent.
+        return Box(
+            low=np.asarray([0.0, 0.0, 0.0]),
+            high=np.asarray([1.0, 1.0, 1.0]),
+            # We use float64, as the (default) float32 raises a warning
+            # about the bounds' precision.
+            dtype=np.float64
+        )
+
+    def asdict(self) -> Dict[str, float]:
+        """
+        Return the LocalObservation as a dictionary.
+        """
+        return dataclasses.asdict(self)
+
+    def __array__(self) -> np.ndarray:
+        """
+        Magic method that simplifies the translation into NumPy arrays.
+
+        This method should usually not be used directly; instead, it allows
+        using the well-known :py:func:`numpy.asarray` function to transform
+        an instance of :py:class:`.LocalObservation` into a NumPy
+        :py:class:`np.ndarray`.
+
+        The resulting array's values are guaranteed to be in the same order
+        as the LocalObservation's fields, see :py:meth:`.fields`.
+        """
+        # Using `[*values()]` seems more efficient than other methods
+        # e.g., `list(values())` or `values()` directly.
+        return np.array([*self.asdict().values()])

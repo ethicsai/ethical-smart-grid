@@ -2,36 +2,32 @@
 Global observations of the World, shared by all Agents in the smart grid.
 """
 
-from collections import namedtuple
+import dataclasses
+from typing import ClassVar, Optional, Dict, Tuple
 
 import numpy as np
+from gymnasium.spaces import Space, Box
 
 from smartgrid.util import hoover
 
-global_fields = [
-    'hour',
-    'available_energy',
-    'equity',
-    'energy_loss',
-    'autonomy',
-    'exclusion',
-    'well_being',
-    'over_consumption',
-]
 
-
-class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
+@dataclasses.dataclass(frozen=True)
+class GlobalObservation:
     """
     Global observations of the World, shared by all Agents in the smart grid.
 
-    These observations are not directly linked to a particular agent, but
+    Observations cannot be modified once created, to limit potential bugs.
+    Global observations are not directly linked to a particular agent, but
     rather to the whole society of agents in the :py:class:`.World`, i.e.,
     in this smart grid. Thus, the measures are the same for all agents.
 
     To optimize computations, we thus create global observations only once
-    each step.
+    each step. This is done through the :py:attr:`.last_step_compute` and
+    :py:attr:`.computed` *class* attributes. We emphasize that they should
+    **not** be accessed through an instance, as they are not relevant as
+    observations, merely to *compute observations*.
 
-    A global observation is a vector containing the following measures:
+    A global observation contains the following measures:
 
     hour
         The current hour in the simulated world. It is computed as a ratio
@@ -89,7 +85,37 @@ class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
         If the measure is less than 0, we set it to 0.
     """
 
-    last_step_compute = -1
+    # Instance attributes = observations measures
+
+    hour: float
+    """The current hour, represented in ``[0,1]``."""
+
+    available_energy: float
+    """The ratio of available energy in the Grid, compared to the maximum possible."""
+
+    equity: float
+    """The equity, a statistical measure of dispersion, between agents' comforts."""
+
+    energy_loss: float
+    """The ratio of energy not consumed over the total energy exchanges."""
+
+    autonomy: float
+    """
+    The ratio of exchanges that are not with the national grid, over the total exchanges.
+    """
+
+    exclusion: float
+    """The proportion of agents with a comfort less than half the median."""
+
+    well_being: float
+    """The median of agents' comforts."""
+
+    over_consumption: float
+    """The ratio of energy consumed that was not available, over the total exchanges."""
+
+    # Class attributes = used to memorize observations
+
+    last_step_compute: ClassVar[int] = -1
     """
     Last time step at which global observations were computed.
     
@@ -98,7 +124,7 @@ class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
     time step.
     """
 
-    computed = None
+    computed: ClassVar[Optional['Self']] = None
     """
     Memoized global observations, computed at the time step indicated by
     :py:attr:`.last_step_compute`.
@@ -112,7 +138,7 @@ class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
         return world.current_step == cls.last_step_compute
 
     @classmethod
-    def compute(cls, world: 'World'):
+    def compute(cls, world: 'World') -> 'Self':
         """
         Return the global observations computed from the World state.
 
@@ -173,15 +199,16 @@ class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
         exclusion = len([c for c in comforts if c < threshold]) / len(comforts)
 
         cls.last_step_compute = world.current_step
-        cls.computed = cls(hour=hour,
-                           available_energy=available_energy,
-                           equity=equity,
-                           energy_loss=energy_loss,
-                           autonomy=autonomy,
-                           exclusion=exclusion,
-                           well_being=well_being,
-                           over_consumption=over_consumption,
-                           )
+        cls.computed = cls(
+            hour=hour,
+            available_energy=available_energy,
+            equity=equity,
+            energy_loss=energy_loss,
+            autonomy=autonomy,
+            exclusion=exclusion,
+            well_being=well_being,
+            over_consumption=over_consumption,
+        )
         return cls.computed
 
     @classmethod
@@ -190,4 +217,65 @@ class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
         Reset the counter of steps computed, i.e., the memoization.
         """
         cls.last_step_compute = -1
+        # We also reset the memoized value, just to make it clear that it
+        # is no longer the correct value. Since the counter is set to `-1`,
+        # it should not be used anyway...
         cls.computed = None
+
+    @classmethod
+    def fields(cls) -> Tuple[str]:
+        """
+        Returns the names fields that compose a GlobalObservation, as a tuple.
+
+        :param cls: Either the class itself, or an instance of the class; this
+            method supports both. In other words, it can be used as
+            ``GlobalObservation.fields()``, or
+            ``obs = GlobalObservation(...); obs.fields()``.
+
+        :return: The fields' names as a tuple, in their order of definition.
+            For the basic GlobalObservation, this corresponds to
+            ``('hour', 'available_energy', 'equity', 'energy_loss', 'autonomy',
+            'exclusion', 'well_being', 'over_consumption',)``.
+        """
+        fields = dataclasses.fields(cls)
+        # `fields` is a tuple of `Field` objects, we only want their names.
+        fields = tuple(field.name for field in fields)
+        return fields
+
+    @classmethod
+    def space(cls, world: 'World') -> Space:
+        """
+        Returns the Space in which LocalObservations live.
+        """
+        # We currently use ratios (values in `[0,1]`) for each observation.
+        # In the future, maybe we could return the true value from the world
+        # (e.g., by using the EnergyGenerator's bounds).
+        return Box(
+            low=np.asarray([0.0, 0.0, 0.0]),
+            high=np.asarray([1.0, 1.0, 1.0]),
+            # We use float64, as the (default) float32 raises a warning
+            # about the bounds' precision.
+            dtype=np.float64
+        )
+
+    def asdict(self) -> Dict[str, float]:
+        """
+        Return the GlobalObservation as a dictionary.
+        """
+        return dataclasses.asdict(self)
+
+    def __array__(self) -> np.ndarray:
+        """
+        Magic method that simplifies the translation into NumPy arrays.
+
+        This method should usually not be used directly; instead, it allows
+        using the well-known :py:func:`numpy.asarray` function to transform
+        an instance of :py:class:`.GlobalObservation` into a NumPy
+        :py:class:`np.ndarray`.
+
+        The resulting array's values are guaranteed to be in the same order
+        as the GlobalObservation's fields, see :py:meth:`.fields`.
+        """
+        # Using `[*values()]` seems more efficient than other methods
+        # e.g., `list(values())` or `values()` directly.
+        return np.array([*self.asdict().values()])
