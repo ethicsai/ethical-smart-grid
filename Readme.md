@@ -33,7 +33,7 @@ instructions:
 from smartgrid import make_basic_smartgrid
 from algorithms.qsom import QSOM
 
-env = make_basic_smartgrid()
+env = make_basic_smartgrid(max_step=10)
 model = QSOM(env)
 
 done = False
@@ -43,8 +43,13 @@ while not done:
     obs, rewards, terminated, truncated, _ = env.step(actions)
     model.backward(obs, rewards)
     done = all(terminated) or all(truncated)
+
 env.close()
 ```
+
+This will initialize a SmartGrid environment, learning agents that use the QSOM
+algorithm, and run the simulation for 10 steps (configurable through the `max_step=10`
+argument).
 
 ## Versioning
 
