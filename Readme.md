@@ -104,6 +104,39 @@ will create the *source distribution* (sdist) at
 
 To publish these files to [PyPi], use `hatch publish`.
 
+
+## Community
+
+The community guidelines are available in the [CONTRIBUTING.md](CONTRIBUTING.md)
+file; you can find a (short) summary below.
+
+### Getting support
+
+If you have a question (something that is not clear, how to get a specific
+result, ...), do not hesitate to create a new [Discussion under the Q&A category](https://github.com/ethicsai/ethical-smart-grid/discussions/new?category=q-a).
+
+Please do *not* use the issue tracker for support, to avoid cluttering it.
+
+### Report a bug
+
+If you found a bug (an error raised, or something not working as expected), you
+can report it on the [Issue Tracker](https://github.com/ethicsai/ethical-smart-grid/issues/new).
+
+Please try to be as *precise* as possible.
+
+### Contributing
+
+We very much welcome and appreciate contributions!
+
+For fixing bugs, or improving the documentation, you can create a
+[Pull Request](https://github.com/ethicsai/ethical-smart-grid/pulls).
+
+New features are also welcome, but larger features should be discussed first in
+a new [Discussion under the Ideas category](https://github.com/ethicsai/ethical-smart-grid/discussions/new?category=ideas).
+
+All ideas, suggestions, and requests are also welcome for discussion.
+
+
 ## License
 
 The source code is licensed under the [MIT License].
