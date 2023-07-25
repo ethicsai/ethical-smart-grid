@@ -41,6 +41,7 @@ obs = env.reset()
 while not done:
     actions = model.forward(obs)
     obs, rewards, terminated, truncated, _ = env.step(actions)
+    print(rewards)
     model.backward(obs, rewards)
     done = all(terminated) or all(truncated)
 
@@ -50,6 +51,13 @@ env.close()
 This will initialize a SmartGrid environment, learning agents that use the QSOM
 algorithm, and run the simulation for 10 steps (configurable through the `max_step=10`
 argument).
+
+To go further, please refer to the [documentation]; the [Custom scenario] and
+[Adding a new model] pages can be particularly interesting to learn,
+respectively, how to configure the environment, and how to implement a new
+learning algorithm.
+Finally, [extending the environment][Extending] allows creating new components
+(agents' profiles, reward functions, ...) to further customize the environment.
 
 ## Versioning
 
@@ -144,6 +152,10 @@ Some included data may be protected by other licenses, please refer to the
 [LICENSE.md] file for details.
 
 [Gym]: https://gymnasium.farama.org/
+[documentation]: https://ethicsai.github.io/ethical-smart-grid/
+[Custom scenario]: https://ethicsai.github.io/ethical-smart-grid/custom_scenario.html
+[Adding a new model]: https://ethicsai.github.io/ethical-smart-grid/adding_model.html
+[Extending]: https://ethicsai.github.io/ethical-smart-grid/extending/index.html
 [Semver]: https://semver.org/
 [PyPi]: https://pypi.org/project/ethical-smart-grid/
 [unittest]: https://docs.python.org/3/library/unittest.html

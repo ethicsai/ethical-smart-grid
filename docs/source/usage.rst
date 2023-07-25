@@ -63,8 +63,15 @@ Then, the environment can be used through the standard *interaction loop*:
             for agent in env.agents
         ]
         obs, reward_n, terminated_n, truncated_n, info_n = env.step(actions)
+        # Print the rewards received by the learning agents during this step
+        print(reward_n)
         done = all(terminated_n) or all(truncated_n)
 
+The rewards received by the learning agents (``reward_n``) each step can be
+useful to analyze and visualize the quality of the learned behaviours.
+In this example, we simply print them, which has the additional advantage
+of showing that "something happens" at each time step; yet, most users will
+probably want to collect them and to display them in a plot.
 
 In order to fully customize the environment setup, e.g., to control the
 number and profiles of agents, the available energy in the world, the reward
