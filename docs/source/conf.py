@@ -40,6 +40,8 @@ extensions = [
     'sphinx_copybutton',
     # Support for Jupyter Notebooks
     'myst_nb',
+    # Add a link to the source code on each of the "API pages"
+    'sphinx.ext.viewcode',
 ]
 
 # Enable autosummary
