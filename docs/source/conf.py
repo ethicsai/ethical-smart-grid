@@ -38,6 +38,8 @@ extensions = [
     'matplotlib.sphinxext.plot_directive',
     # Automatically add a 'copy button' to our code blocks
     'sphinx_copybutton',
+    # Support for Jupyter Notebooks
+    'myst_nb',
 ]
 
 # Enable autosummary

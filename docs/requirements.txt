@@ -2,3 +2,4 @@ sphinx
 furo
 sphinx-copybutton
 matplotlib
+myst-nb

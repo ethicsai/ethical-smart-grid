@@ -24,6 +24,7 @@ simulator.
 
    use_case
    usage
+   visualizing
    custom_scenario
    adding_model
 
