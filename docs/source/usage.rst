@@ -77,6 +77,9 @@ probably want to collect them and to display them in a plot. Please refer to
 In order to fully customize the environment setup, e.g., to control the
 number and profiles of agents, the available energy in the world, the reward
 function, etc., please refer to the :doc:`custom_scenario` documentation page.
+You can also see a few pre-defined :py:mod:`~smartgrid.scenarii` to quickly
+launch experiments, without having to code the setup yourself; you may also
+take inspiration from these scenarii for custom setups.
 
 The environment can also be extended to add your own components or replace
 existing ones; please refer to :doc:`/extending/index` to do so.
