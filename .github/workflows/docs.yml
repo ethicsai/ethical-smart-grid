@@ -2,7 +2,7 @@ name: "Build and deploy documentation to GitHub Pages"
 
 on:
   push:
-    branches: [master]
+    branches: [master, doc]
 
 permissions:
   contents: read
