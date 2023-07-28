@@ -150,6 +150,30 @@ choose to consume less, thus reducing its comfort and betraying the
 These (potential) conflicts between values make this Smart Grid environment
 a suitable playground for learning "ethical behaviours".
 
+These moral values are supported by reward functions and observations:
+
+- **Security of supply** is learned through the
+  :py:class:`~smartgrid.rewards.numeric.per_agent.comfort.Comfort` reward
+  function (and, in turn, all functions that use it and combine it to others),
+  and can be observed through the agent's *individual comfort* in the
+  :py:class:`~smartgrid.observation.local_observation.LocalObservation`.
+
+- **Affordability** can be observed through the agent's *individual payoff* in
+  the :py:class:`~smartgrid.observation.local_observation.LocalObservation`.
+
+- **Inclusiveness** is learned through the
+  :py:class:`~smartgrid.rewards.numeric.differentiated.equity.Equity` reward
+  function (and, in turn, all functions that use it and combine it to others),
+  and can be observed through the *equity* of comforts between inhabitants, in
+  the :py:class:`~smartgrid.observation.global_observation.GlobalObservation`.
+
+- **Environmental Sustainability** is partially learned through the
+  :py:class:`~smartgrid.rewards.numeric.differentiated.over_consumption.OverConsumption`
+  reward function (and, in turn, all functions that use it and combine it to
+  others), and can be observed through *over-consumption* and *autonomy*, in
+  the :py:class:`~smartgrid.observation.global_observation.GlobalObservation`.
+
+|
 
 .. [deWildt] Wildt, T. E. de, E. J. L. Chappin, G. van de Kaa, P. M. Herder, and I. R. van de Poel. “Conflicting Values in the Smart Electricity Grid a Comprehensive Overview.” Renewable and Sustainable Energy Reviews 111 (September 1, 2019): 184–96. https://doi.org/10.1016/j.rser.2019.05.005.
 
