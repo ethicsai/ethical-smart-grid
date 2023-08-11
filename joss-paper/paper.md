@@ -95,7 +95,7 @@ while not done:
 More complex scenarios can be created to fully customize the simulator, by configuring existing components instead of using the `make_basic_smartgrid()` function; the documentation provides a [tutorial](https://ethicsai.github.io/ethical-smart-grid/custom_scenario.html) on this subject.
 
 
-# Open to extensions
+# Open to extensions {#Open-to-extensions}
 
 Although this package is completely usable as-is, it was designed to be open to extensions, in particular by third-party researchers.
 This is particularly important within the field of Machine Ethics, in which ethical considerations are not always the same between different groups or cultural contexts.
