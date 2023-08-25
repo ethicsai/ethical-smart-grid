@@ -8,6 +8,7 @@
 [![](https://img.shields.io/github/actions/workflow/status/ethicsai/ethical-smart-grid/testing.yml?label=Automatic%20testing)](https://github.com/ethicsai/ethical-smart-grid/actions/workflows/testing.yml)
 ![](https://img.shields.io/pypi/l/ethical-smart-grid)
 ![](https://img.shields.io/github/v/release/ethicsai/ethical-smart-grid)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.05410/status.svg)](https://doi.org/10.21105/joss.05410)
 
 ## Description
 
