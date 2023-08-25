@@ -152,6 +152,30 @@ The source code is licensed under the [MIT License].
 Some included data may be protected by other licenses, please refer to the
 [LICENSE.md] file for details.
 
+
+## Citation
+
+If you use this package in your research, please cite the corresponding paper:
+
+> Scheirlinck, C., Chaput, R., & Hassas, S. (2023). Ethical Smart Grid: a Gym
+> environment for learning ethical behaviours. Journal of Open Source Software,
+> 8(88), 5410. https://doi.org/10.21105/joss.05410
+
+```bibtex
+@article{Scheirlinck_Ethical_Smart_Grid_2023,
+  author = {Scheirlinck, Clément and Chaput, Rémy and Hassas, Salima},
+  doi = {10.21105/joss.05410},
+  journal = {Journal of Open Source Software},
+  month = aug,
+  number = {88},
+  pages = {5410},
+  title = {{Ethical Smart Grid: a Gym environment for learning ethical behaviours}},
+  url = {https://joss.theoj.org/papers/10.21105/joss.05410},
+  volume = {8},
+  year = {2023}
+}
+```
+
 [Gym]: https://gymnasium.farama.org/
 [documentation]: https://ethicsai.github.io/ethical-smart-grid/
 [Custom scenario]: https://ethicsai.github.io/ethical-smart-grid/custom_scenario.html
