@@ -1,10 +1,11 @@
 """
 The SmartGrid environment is the main entrypoint.
 """
-
+import random
 import warnings
 
 import gymnasium
+import numpy as np
 from gymnasium import Space
 
 from smartgrid.agents import Action
@@ -227,6 +228,9 @@ class SmartGrid(gymnasium.Env):
 
         :param seed: An optional seed (int) to configure the random generators
             and ensure reproducibility.
+            Note: this does **not** change the global generators (Python
+            `random` and NumPy `np.random`). SmartGrid components must rely
+            on the :py:attr:`gym.Env._np_random`.
 
         :param options: An optional dictionary of arguments to further
             configure the simulator. Currently unused.
@@ -234,8 +238,8 @@ class SmartGrid(gymnasium.Env):
         :return: The first (initial) observations for each agent in the World.
         """
         super().reset(seed=seed)
-        self.world.reset()
         self.observation_manager.reset()
+        self.world.reset(self._np_random)
         self.reward_calculator.reset()
 
         obs = self._get_obs()
