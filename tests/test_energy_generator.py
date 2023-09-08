@@ -54,13 +54,13 @@ class TestEnergyGenerator(unittest.TestCase):
 
     def test_random_generator_with_seed(self):
         """Test the RandomEnergyGenerator with a fixed seed."""
-        random.seed(42)
         generator = RandomEnergyGenerator(lower_proportion=0.8,
                                           upper_proportion=1.2)
+        generator.set_random_generator(np.random.default_rng(42))
         energy = generator.generate_available_energy(
             current_need=10_000, current_step=0, min_need=0, max_need=100_000
         )
-        self.assertEqual(energy, 10_619)
+        self.assertEqual(energy, 8357)
 
     def test_realistic_generator(self):
         """Test the RealisticEnergyGenerator."""
