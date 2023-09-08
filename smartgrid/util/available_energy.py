@@ -32,7 +32,6 @@ and the other to return the bounds.
 
 from __future__ import annotations
 
-import random
 import warnings
 from abc import ABC, abstractmethod
 from typing import Tuple
@@ -44,6 +43,26 @@ class EnergyGenerator(ABC):
     """
     An *EnergyGenerator* is responsible for the production of energy each step.
     """
+
+    _random_generator: np.random.Generator
+    """
+    The pseudo-random number generator (PRNG).
+
+    EnergyGenerators that are purely deterministic can safely ignore this
+    attribute; those that rely on random generation *must* use exclusively
+    this attribute, to ensure reproducibility.
+
+    To set this attribute (and thus, to set the random seed), use the
+    :py:meth:`.set_random_generator` method.
+    It is initialized by default, so the EnergyGenerator can be used as-is
+    without needing to configure.
+    """
+
+    def __init__(self):
+        self._random_generator = np.random.default_rng()
+
+    def set_random_generator(self, random_generator: np.random.Generator):
+        self._random_generator = random_generator
 
     def __str__(self):
         return type(self).__name__
@@ -163,6 +182,7 @@ class RandomEnergyGenerator(EnergyGenerator):
                  lower_proportion=0.8,
                  upper_proportion=1.2,
                  ):
+        super().__init__()
         self.lower = lower_proportion
         self.upper = upper_proportion
 
@@ -178,7 +198,7 @@ class RandomEnergyGenerator(EnergyGenerator):
                           'may be incoherent with the possible bounds.')
         lower_bound = int(self.lower * current_need)
         upper_bound = int(self.upper * current_need)
-        return random.randint(lower_bound, upper_bound)
+        return self._random_generator.integers(lower_bound, upper_bound + 1)
 
     def available_energy_bounds(self,
                                 current_need: int,
@@ -247,6 +267,7 @@ class RealisticEnergyGenerator(EnergyGenerator):
     """
 
     def __init__(self, data):
+        super().__init__()
         data = np.asarray(data)
         assert len(data.shape) == 1
         self._data = data
