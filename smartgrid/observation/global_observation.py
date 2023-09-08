@@ -190,3 +190,4 @@ class GlobalObservation(namedtuple('GlobalObservation', global_fields)):
         Reset the counter of steps computed, i.e., the memoization.
         """
         cls.last_step_compute = -1
+        cls.computed = None

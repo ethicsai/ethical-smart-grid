@@ -235,6 +235,7 @@ class SmartGrid(gymnasium.Env):
         """
         super().reset(seed=seed)
         self.world.reset()
+        self.observation_manager.reset()
         self.reward_calculator.reset()
 
         obs = self._get_obs()
