@@ -4,6 +4,8 @@ The World represents the "physical" (simulated) smart grid.
 
 from typing import List
 
+import numpy as np
+
 from smartgrid.agents import Agent
 from smartgrid.util import EnergyGenerator
 
@@ -133,7 +135,7 @@ class World(object):
             self.max_needed_energy
         )
 
-    def reset(self):
+    def reset(self, random_generator: np.random.Generator = None):
         """
         Resets the state of the world to the initial state.
 
@@ -141,10 +143,19 @@ class World(object):
         themselves, and the available energy.
 
         This function must be called when initializing the world.
+
+        :param random_generator: The NumPy random generator, for
+            reproducibility purposes. This is automatically handled by
+            the SmartGrid :py:meth:`~smartgrid.environment.SmartGrid.reset`
+            method. By default (to facilitate using the World and to avoid
+            breaking the API), it will be set to a new Random Generator.
         """
         self.current_step = 0
         for agent in self.agents:
             agent.reset()
+        if random_generator is None:
+            random_generator = np.random.default_rng()
+        self.energy_generator.set_random_generator(random_generator)
         self.available_energy = self.energy_generator.generate_available_energy(
             self.current_need,
             self.current_step,
