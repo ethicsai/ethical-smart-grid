@@ -10,6 +10,7 @@ Amgoud, L., & Prade, H. (2009). Using arguments for making and explaining
 decisions. Artificial Intelligence, 173(3-4), 413–436.
 """
 
+from .afdm import AFDM
 from .argument import Argument
 from .attack import Attack
 from .exceptions import ArgumentNotFoundError
