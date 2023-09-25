@@ -14,6 +14,7 @@ from .afdm import AFDM
 from .argument import Argument
 from .attack import Attack
 from .exceptions import ArgumentNotFoundError
+from .judging_agent import JudgingAgent
 from .judgment import (
     j_simple,
     j_diff,
