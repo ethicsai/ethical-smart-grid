@@ -4,5 +4,6 @@ of the environment, such as reward aggregators that scalarize rewards, to
 transform the multi-objective problem into a single-objective one.
 """
 
+from .norms import NormsWrapper
 from .reward_aggregator import (RewardAggregator,
                                 SingleRewardAggregator)
