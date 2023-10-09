@@ -1,8 +1,14 @@
 name: "Build and deploy documentation to GitHub Pages"
 
+# Because we build the docs for multiple versions, this workflow should be
+# triggered when pushing to *any* branch (not just master).defaults:
+# Except the branches that begin with `wip/`, because they are not ready
+# and will not be included in the docs anyway.
 on:
   push:
-    branches: [master, doc]
+    branches:
+      - '**'
+      - "!wip/*"
 
 permissions:
   contents: read
@@ -25,25 +31,29 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       # Get the source code
+      # (We need to specify the depth to 0 to get all branches and tags)
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       # Install the (source code, not docs) dependencies (requirements.txt)
       # This is required to build the docs, as we import the source code
       - name: Install source code dependencies
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      # Build the HTML docs; we need to `cd` first to correctly import packages
+      # Install the docs dependencies
       - name: Install docs dependencies
         run: |
           if [ -f docs/requirements.txt ]; then pip install -r docs/requirements.txt; fi
+      # Build the HTML docs; we need to `cd` first to correctly import packages
       - name: Build docs with Sphinx
-        run: cd docs && make -e html
+        run: cd docs && make -e multiversion
       # Upload the docs as an artifact (required for deploying to Pages)
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: "docs/build/html"
+          path: "docs/build/html-mv"
       # Deploy the artifact (built docs) to Pages
       - name: Deploy to GitHub Pages
         id: deployment
