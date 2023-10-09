@@ -1,5 +1,6 @@
 sphinx
 furo
 sphinx-copybutton
+sphinx-multiversion
 matplotlib
 myst-nb

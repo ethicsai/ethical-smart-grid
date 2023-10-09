@@ -1,0 +1,33 @@
+{% if versions %}
+<details class="sidebar-versions sidebar-tree">
+  <summary>Select a version (v: {{ current_version.name }})</summary>
+  <p class="caption" role="heading">
+     <span class="caption-text">Branches (dev features)</span>
+  </p>
+  <ul>
+    {%- for item in versions.branches %}
+      <li class="toctree-l1">
+        {% if item.name == current_version.name %}
+          <b><a class="reference internal" href="{{ item.url }}">{{ item.name }}</a></b>
+        {% else %}
+          <a class="reference internal" href="{{ item.url }}">{{ item.name }}</a>
+        {% endif %}
+      </li>
+    {%- endfor %}
+  </ul>
+  <p class="caption" role="heading">
+     <span class="caption-text">Released versions</span>
+  </p>
+  <ul>
+    {%- for item in versions.tags | reverse %}
+      <li class="toctree-l1">
+        {% if item.name == current_version.name %}
+          <b><a class="reference internal" href="{{ item.url }}">{{ item.name }}</a></b>
+        {% else %}
+          <a class="reference internal" href="{{ item.url }}">{{ item.name }}</a>
+        {% endif %}
+      </li>
+    {%- endfor %}
+  </ul>
+</details>
+{% endif %}
