@@ -17,6 +17,23 @@ help:
 preview:
 	sphinx-reload --build-dir "$(BUILDDIR)" .
 
+# Build docs for multiple versions (based on Git branches and tags).
+# The result is placed in `build/html-mv` (for "multiversion"), with each
+# version getting its own sub-directory inside it.
+# Additionally, we place a small fake index.html that simply redirects clients
+# to the latest stable version found. If no version can be found, the build aborts.
+multiversion:
+	sphinx-multiversion "$(SOURCEDIR)" "$(BUILDDIR)/html-mv"
+	# Find the tag with the highest version (latest "stable")
+	latest=$$(ls -1 "$(BUILDDIR)/html-mv" | grep 'v[0-9]' | sort --reverse --version-sort | head -n 1) ;\
+	latest=$${latest%/} ;\
+	if [ -z "$$latest" ]; then \
+	  echo 'ERROR: Cannot find latest version in tags. Aborting...' && exit 1 ;\
+	else \
+	  echo "Found latest version: $$latest ; creating redirect..."; \
+	  sed "s/{{ version }}/$$latest/g" redirect_to_version.html > "$(BUILDDIR)/html-mv/index.html" ;\
+	fi
+
 # Also remove the `source/modules` directory, which is built by autosummary.
 superclean: clean
 	rm -r "$(SOURCEDIR)/modules"

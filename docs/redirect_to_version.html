@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!--
+  This file is used to automatically redirect clients to one of the versions,
+  which are actually stored in subdirectories when using sphinx-multiversion.
+  (In other words, the root folder contains only the subdirectories for each
+  version, no .html file, and especially not the `index.html` landing page.)
+
+  This file MUST be rendered, e.g., as a Jinja2 template, or modified through
+  sed, to specify the correct version that we want to redirect to.
+  This can be, for example, the latest tag found, or hard-coding the master
+  branch. The corresponding folder (that we redirect to) MUST exist.
+  Otherwise, the redirection will NOT WORK, and GitHub Pages will show a
+  404 error.
+-->
+<title>Redirecting to latest documentation</title>
+<meta http-equiv="refresh" content="0; URL=./{{ version }}/index.html">
+<link rel="canonical" href="https://ethicsai.github.io/ethical-smart-grid/{{ version }}/index.html">
