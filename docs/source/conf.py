@@ -42,6 +42,8 @@ extensions = [
     'myst_nb',
     # Add a link to the source code on each of the "API pages"
     'sphinx.ext.viewcode',
+    # Render the docs for multiple versions (tags, branches, ...)
+    'sphinx_multiversion',
 ]
 
 # Enable autosummary
@@ -68,6 +70,31 @@ intersphinx_mapping = {
 rst_epilog = '.. |project_name| replace:: {}'.format(project)
 
 
+# -- Options for Sphinx-multiversion
+
+# Whitelist pattern for tags (in our case, versions)
+# We ignore explicitly `v1.1.0-joss-paper` because it was used for Zenodo, it
+# is not a "real" version.
+smv_tag_whitelist = r'^(?!v1.1.0-joss-paper).*$'
+
+# Accept all branches except:
+# - `paper` specifically (only holds the JOSS paper's source)
+#    (note: the `$` is at the end of `paper` so that it matches this exact
+#     string; anything other, e.g. `papers`, can pass)
+# - any `wip/**` branch (because they are not ready)
+smv_branch_whitelist = r'^(?!wip/|paper$).*'
+
+# Allow remote branches from `origin` only (required for building all branches
+# on GitHub Actions, because they are not automatically fetched).
+smv_remote_whitelist = r'^origin$'
+
+# A version is considered "released" only if it is a tag beginning with `v`.
+smv_released_pattern = r'^tags/v.*$'
+
+# Each version gets a subdir based on its name (e.g., `master`, `v1.0.0`, ...)
+smv_outputdir_format = '{ref.name}'
+
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -79,3 +106,19 @@ html_theme = 'furo'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# Override Furo's default sidebar widgets to add our version selector
+# At some point we should be able to use `variant-selector`, when Furo will add
+# support for versions.
+html_sidebars = {
+    "**": [
+        "sidebar/brand.html",
+        "sidebar/search.html",
+        "sidebar/scroll-start.html",
+        "versioning.html",  # Our custom template
+        "sidebar/navigation.html",
+        "sidebar/ethical-ads.html",
+        "sidebar/variant-selector.html",
+        "sidebar/scroll-end.html",
+    ]
+}
