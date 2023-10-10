@@ -20,6 +20,9 @@ class NormsWrapper(gym.Wrapper):
 
     def __init__(self,
                  env: SmartGrid,
+                 # TODO: Maybe norms should take a situation (obs) and an action as params!
+                 # TODO: Maybe norms should be a class, so that we can provide a name,
+                 #  a description (?), a test function, a string representation, ...
                  norms: Iterable[Callable[[Any], bool]],
                  remove_violation_rewards: bool):
         super().__init__(env)
@@ -50,6 +53,7 @@ class NormsWrapper(gym.Wrapper):
         info['violations'] = violates
         if self.remove_violation_rewards:
             # Replace all rewards from violating agents with `None`
+            # TODO: This would have a better type if we could switch to PettingZoo...
             reward = [
                 reward[i] if not violates[i] else None
                 for i in range(len(reward))
@@ -96,6 +100,11 @@ class NormsWrapper(gym.Wrapper):
             ``False`` otherwise (i.e., if at least one norm is violated).
         """
         for norm in self.norms:
+            # TODO: Maybe a norm should return an object Violation which
+            #  could optionally describe why/how the action violates it. Then
+            #  this action would return an Optional[Violation], None meaning
+            #  that there is no violation. The info object could collect all
+            #  violations instances for each action, instead of simply True/False.
             if not norm(action):
                 return False
         return True
