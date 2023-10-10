@@ -159,5 +159,8 @@ class QSOM(Model):
         assert len(reward_per_agent) == len(self.qsom_agents)
         assert len(new_observations_per_agent) == len(self.qsom_agents)
         for i, agent in enumerate(self.qsom_agents):
-            agent.backward(new_observations_per_agent[i],
-                           reward_per_agent[i])
+            # Special case: if the reward is None, the agent violated a norm
+            # and should not learn.
+            if reward_per_agent[i] is not None:
+                agent.backward(new_observations_per_agent[i],
+                               reward_per_agent[i])
