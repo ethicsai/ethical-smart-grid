@@ -64,6 +64,7 @@ intersphinx_mapping = {
     'gymnasium': ('https://gymnasium.farama.org/', None),
     # gymnasium is often used as `gym`, so we alias it here
     'gym': ('https://gymnasium.farama.org/', None),
+    'ajar': ('https://ethicsai.github.io/ajar/', None),
 }
 
 # Allow to automatically place the project name in ReST documents
