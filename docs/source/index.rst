@@ -25,8 +25,15 @@ simulator.
    use_case
    usage
    visualizing
+
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :caption: Advanced
+
    custom_scenario
    adding_model
+   argumentation
 
 .. toctree::
    :hidden:
