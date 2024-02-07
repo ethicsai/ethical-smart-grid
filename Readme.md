@@ -25,9 +25,23 @@ Moral values are encoded in the reward functions, which determine the
 "correctness" of an agent's action, with respect to these moral values.
 Agents receive rewards as feedback that guide them towards a better behaviour.
 
+## Installation
+
+You may install **Ethical Smart Grid** through:
+
+- [PyPi], using `pip install ethical-smart-grid` (latest stable version);
+- pip and GitHub, using `pip install git+https://github.com/ethicsai/ethical-smart-grid.git`
+  (you may specify the version at the end of the URL);
+- GitHub, using `git clone https://github.com/ethicsai/ethical-smart-grid`
+  (development version, not stable).
+
+If you also wish to use argumentation-based reward functions, please install
+[AJAR] through `pip install git+https://github.com/ethicsai/ajar.git@v1.0.0`,
+or `pip install -r requirements.txt` if you cloned this repository.
+
 ## Quick usage
 
-Clone this repository, open a Python shell (3.7+), and execute the following
+After installing, open a Python shell (3.7+), and execute the following
 instructions:
 
 ```python
@@ -177,6 +191,7 @@ If you use this package in your research, please cite the corresponding paper:
 ```
 
 [Gym]: https://gymnasium.farama.org/
+[AJAR]: https://github.com/ethicsai/ajar/
 [documentation]: https://ethicsai.github.io/ethical-smart-grid/
 [Custom scenario]: https://ethicsai.github.io/ethical-smart-grid/custom_scenario.html
 [Adding a new model]: https://ethicsai.github.io/ethical-smart-grid/adding_model.html
