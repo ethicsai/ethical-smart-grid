@@ -7,20 +7,22 @@ on:
   release:
     types: [published]
 
-permissions:
-  contents: read
+
 
 jobs:
   deploy:
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       # Get the source code
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # Install a recent version of Python
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
       # Install the build dependencies (we use hatch)
@@ -34,8 +36,7 @@ jobs:
       # Use the official PyPa GH Action to publish the release
       # (we could also use hatch directly with a `run` command, but the Action
       # is cleaner and safer.)
+      # We do not specify the token, this workflow is registered as a Trusted Publisher
+      # on PyPi, which means it will automatically get a short-lived token.
       - name: Publish package
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
