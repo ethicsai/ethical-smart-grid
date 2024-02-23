@@ -3,7 +3,7 @@ This package handles the Observations, which are information that the agent
 knows about its environment. Observations are used by agents to assume in which
 state they are, and, based on this, to decide which action should be taken.
 
-In this Smart Grid environment, an Observation is a vector (list) of several
+In this Smart Grid environment, an Observation is a dataclass of several
 measures that are split into:
 
 - **local** observations that are individual for each agent ;
@@ -33,13 +33,15 @@ They are then merged into :py:class:`.Observation`, which is sent to the
 agents.
 
 .. note::
-    :py:class:`.Observation` does not differentiate between **local** and
-    **global** observations: they are all merged into a single vector.
-    Algorithms that require a distinction should therefore use
-    :py:class:`.LocalObservation` and :py:class:`.GlobalObservation` instead.
+    :py:class:`.Observation` contains both **local** and **global** values:
+    they are all merged into a single dataclass.
+    Algorithms that require a distinction should therefore get the original
+    **global** and **local** observation dataclasses through the
+    :py:meth:`.Observation.get_global_observation` and
+    :py:meth:`.Observation.get_local_observation` methods instead.
 """
 
 from .global_observation import GlobalObservation
 from .local_observation import LocalObservation
 from .observation_manager import ObservationManager
-from .observations import Observation
+from .base_observation import BaseObservation, Observation

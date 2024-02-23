@@ -1,14 +1,64 @@
 """
 The ObservationManager is responsible for computing observations.
 """
-
+import dataclasses
 from typing import Dict, Type
 
 from smartgrid.agents import Agent
 from smartgrid.world import World
-from .observations import Observation
+from .base_observation import BaseObservation, Observation
 from .global_observation import GlobalObservation
 from .local_observation import LocalObservation
+
+
+def _create_observation_type(
+        global_observation_type: Type[GlobalObservation],
+        local_observation_type: Type[LocalObservation]
+) -> Type[Observation]:
+    """
+    Create a new class that represents an Observation.
+
+    An Observation merges data from both Global and Local observations.
+    """
+    @dataclasses.dataclass(frozen=True)
+    class _Observation(
+        global_observation_type,
+        local_observation_type,
+        Observation
+    ):
+        # Add specific "fields" to get the original "global_obs" and "local_obs"
+        # objects. They should not be used in object representation, nor in
+        # comparisons, nor in `fields` and `asdict`, ... Basically, not anywhere.
+        _global_obs: global_observation_type = dataclasses.field(
+            repr=False,
+            compare=False,
+            metadata={'include': False}
+        )
+        _local_obs: local_observation_type = dataclasses.field(
+            repr=False,
+            compare=False,
+            metadata={'include': False}
+        )
+
+        @classmethod
+        def create(cls,
+                   global_observation: global_observation_type,
+                   local_observation: local_observation_type):
+            obj = cls(
+                **global_observation.asdict(),
+                **local_observation.asdict(),
+                _global_obs=global_observation,
+                _local_obs=local_observation,
+            )
+            return obj
+
+        def get_global_observation(self):
+            return self._global_obs
+
+        def get_local_observation(self):
+            return self._local_obs
+
+    return _Observation
 
 
 class ObservationManager:
@@ -46,16 +96,24 @@ class ObservationManager:
 
     observation: Type[Observation]
     """
-    The class that will be used as the "complete" observation.
+    The class that represents the "whole" observation (local and global).
+
+    It combines fields from the :py:attr:`.global_observation` and
+    :py:attr:`.local_observation` dataclasses. Because these two attributes
+    are set at runtime, this class is dynamically created. To simplify usage,
+    it supports the methods defined in :py:class:`.BaseObservation` (``fields``,
+    ``asdict``, and transformation to NumPy array with ``np.asarray``).
     """
 
-    def __init__(self,
-                 local_observation: Type[LocalObservation] = LocalObservation,
-                 global_observation: Type[GlobalObservation] = GlobalObservation,
-                 observation: Type[Observation] = Observation):
+    def __init__(
+            self,
+            local_observation: Type[LocalObservation] = LocalObservation,
+            global_observation: Type[GlobalObservation] = GlobalObservation,
+    ):
         self.global_observation = global_observation
         self.local_observation = local_observation
-        self.observation = observation
+        self.observation = _create_observation_type(global_observation,
+                                                    local_observation)
 
     def compute_agent(self, world: World, agent: Agent) -> LocalObservation:
         """
@@ -68,6 +126,11 @@ class ObservationManager:
         Create the global observation for the World.
         """
         return self.global_observation.compute(world)
+
+    def compute(self, world: World, agent: Agent) -> BaseObservation:
+        global_obs = self.compute_global(world)
+        local_obs = self.compute_agent(world, agent)
+        return self.observation.create(global_obs, local_obs)
 
     @property
     def shape(self) -> Dict[str, int]:

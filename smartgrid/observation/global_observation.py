@@ -3,16 +3,16 @@ Global observations of the World, shared by all Agents in the smart grid.
 """
 
 import dataclasses
-from typing import ClassVar, Optional, Dict, Tuple
+from typing import ClassVar, Optional
 
 import numpy as np
-from gymnasium.spaces import Space, Box
 
+from smartgrid.observation.base_observation import BaseObservation
 from smartgrid.util import hoover
 
 
 @dataclasses.dataclass(frozen=True)
-class GlobalObservation:
+class GlobalObservation(BaseObservation):
     """
     Global observations of the World, shared by all Agents in the smart grid.
 
@@ -221,61 +221,3 @@ class GlobalObservation:
         # is no longer the correct value. Since the counter is set to `-1`,
         # it should not be used anyway...
         cls.computed = None
-
-    @classmethod
-    def fields(cls) -> Tuple[str]:
-        """
-        Returns the names fields that compose a GlobalObservation, as a tuple.
-
-        :param cls: Either the class itself, or an instance of the class; this
-            method supports both. In other words, it can be used as
-            ``GlobalObservation.fields()``, or
-            ``obs = GlobalObservation(...); obs.fields()``.
-
-        :return: The fields' names as a tuple, in their order of definition.
-            For the basic GlobalObservation, this corresponds to
-            ``('hour', 'available_energy', 'equity', 'energy_loss', 'autonomy',
-            'exclusion', 'well_being', 'over_consumption',)``.
-        """
-        fields = dataclasses.fields(cls)
-        # `fields` is a tuple of `Field` objects, we only want their names.
-        fields = tuple(field.name for field in fields)
-        return fields
-
-    @classmethod
-    def space(cls, world: 'World') -> Space:
-        """
-        Returns the Space in which LocalObservations live.
-        """
-        # We currently use ratios (values in `[0,1]`) for each observation.
-        # In the future, maybe we could return the true value from the world
-        # (e.g., by using the EnergyGenerator's bounds).
-        return Box(
-            low=np.asarray([0.0, 0.0, 0.0]),
-            high=np.asarray([1.0, 1.0, 1.0]),
-            # We use float64, as the (default) float32 raises a warning
-            # about the bounds' precision.
-            dtype=np.float64
-        )
-
-    def asdict(self) -> Dict[str, float]:
-        """
-        Return the GlobalObservation as a dictionary.
-        """
-        return dataclasses.asdict(self)
-
-    def __array__(self) -> np.ndarray:
-        """
-        Magic method that simplifies the translation into NumPy arrays.
-
-        This method should usually not be used directly; instead, it allows
-        using the well-known :py:func:`numpy.asarray` function to transform
-        an instance of :py:class:`.GlobalObservation` into a NumPy
-        :py:class:`np.ndarray`.
-
-        The resulting array's values are guaranteed to be in the same order
-        as the GlobalObservation's fields, see :py:meth:`.fields`.
-        """
-        # Using `[*values()]` seems more efficient than other methods
-        # e.g., `list(values())` or `values()` directly.
-        return np.array([*self.asdict().values()])
