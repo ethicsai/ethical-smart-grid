@@ -40,6 +40,15 @@ def _create_observation_type(
             metadata={'include': False}
         )
 
+        # Override the qualname so that the `str` method returns a non-garbage
+        # (easily understandable) class name. By default, it would return
+        # `_create_observation_type.<locals>._Observation(personal_storage=...)`
+        # which is ugly and hard to understand. `'Observation'` is much better,
+        # even though it is not exactly correct (the class is indeed defined as
+        # a local variable of a function call, but that is not important to
+        # the third-party users).
+        __qualname__ = 'Observation'
+
         @classmethod
         def create(cls,
                    global_observation: global_observation_type,
@@ -127,7 +136,7 @@ class ObservationManager:
         """
         return self.global_observation.compute(world)
 
-    def compute(self, world: World, agent: Agent) -> BaseObservation:
+    def compute(self, world: World, agent: Agent) -> Observation:
         global_obs = self.compute_global(world)
         local_obs = self.compute_agent(world, agent)
         return self.observation.create(global_obs, local_obs)
