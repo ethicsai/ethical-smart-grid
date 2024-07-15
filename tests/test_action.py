@@ -32,7 +32,7 @@ class TestAction(unittest.TestCase):
         shifted to the storage consumption.
         """
         world = self._create_world()
-        agent = world.agents[0]
+        agent = next(iter(world.agents))
 
         # This should already be the value, but let us set it explicitly.
         agent.profile.max_storage = 500
@@ -69,7 +69,7 @@ class TestAction(unittest.TestCase):
         the storage consumption.
         """
         world = self._create_world()
-        agent = world.agents[0]
+        agent = next(iter(world.agents))
 
         # This should already be the value, but let us set it explicitly.
         agent.profile.max_storage = 500
@@ -106,7 +106,7 @@ class TestAction(unittest.TestCase):
         battery), and the battery should be emptied.
         """
         world = self._create_world()
-        agent = world.agents[0]
+        agent = next(iter(world.agents))
 
         # This should already be the value, but let us set it explicitly.
         agent.profile.max_storage = 500
@@ -141,7 +141,7 @@ class TestAction(unittest.TestCase):
         battery should be emptied, and the given energy should be reduced.
         """
         world = self._create_world()
-        agent = world.agents[0]
+        agent = next(iter(world.agents))
 
         # This should already be the value, but let us set it explicitly.
         agent.profile.max_storage = 500
@@ -176,7 +176,7 @@ class TestAction(unittest.TestCase):
         storage should be emptied, and the sold energy be reduced.
         """
         world = self._create_world()
-        agent = world.agents[0]
+        agent = next(iter(world.agents))
 
         # This should already be the value, but let us set it explicitly.
         agent.profile.max_storage = 500
@@ -210,7 +210,7 @@ class TestAction(unittest.TestCase):
         Test that we can give the energy bought at the same step.
         """
         world = self._create_world()
-        agent = world.agents[0]
+        agent = next(iter(world.agents))
 
         # This should already be the value, but let us set it explicitly.
         agent.profile.max_storage = 500

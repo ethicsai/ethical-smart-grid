@@ -33,19 +33,21 @@ class TestSeed(unittest.TestCase):
         obs = env.reset(seed=seed)
         for step in range(nb_steps):
             obs_list.append(obs)
-            obs = env.step([
-                (0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-                for _ in range(env.unwrapped.n_agent)
-            ])
+            actions = {
+                agent_name: (0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
+                for agent_name in env.agents
+            }
+            obs = env.step(actions)
 
         # 2nd run, check that the metrics correspond
         obs = env.reset(seed=seed)
         for step in range(nb_steps):
             self.assertEqual(obs, obs_list[step])
-            obs = env.step([
-                (0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-                for _ in range(env.unwrapped.n_agent)
-            ])
+            actions = {
+                agent_name: (0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
+                for agent_name in env.agents
+            }
+            obs = env.step(actions)
 
     def _helper_several_episodes_single_step(self, get_seed, nb_episodes):
         env = make_basic_smartgrid()
@@ -66,19 +68,21 @@ class TestSeed(unittest.TestCase):
             obs = env.reset(seed=seed)
             for step in range(nb_steps):
                 obs_list.append(obs)
-                obs = env.step([
-                    (0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-                    for _ in range(env.unwrapped.n_agent)
-                ])
+                actions = {
+                    agent_name: (0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
+                    for agent_name in env.agents
+                }
+                obs = env.step(actions)
             # 2nd run with same seed: check that all metrics are the same as
             # the 1st run.
             obs = env.reset(seed=seed)
             for step in range(nb_steps):
                 self.assertEqual(obs, obs_list[step])
-                obs = env.step([
-                    (0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-                    for _ in range(env.unwrapped.n_agent)
-                ])
+                actions = {
+                    agent_name: (0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
+                    for agent_name in env.agents
+                }
+                obs = env.step(actions)
 
     def test_available_energy(self):
         """
