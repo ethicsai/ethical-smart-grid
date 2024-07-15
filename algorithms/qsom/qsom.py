@@ -11,7 +11,7 @@ from algorithms.qsom.qsom_agent import QsomAgent
 from algorithms.qsom.som import SOM
 from algorithms.util.action_perturbator import EpsilonActionPerturbator
 from algorithms.util.action_selector import BoltzmannActionSelector
-from smartgrid.environment import SmartGrid
+from smartgrid.environment import SmartGrid, ObsDict, ActionDict
 
 
 class QSOM(Model):
@@ -149,6 +149,14 @@ class QSOM(Model):
                 new_obs_per_agent[agent_name],
                 reward_per_agent[agent_name]
             )
+
+    def get_optimal_actions(self, obs_per_agent: ObsDict) -> ActionDict:
+        self._assert_known_agents(obs_per_agent.keys())
+        actions = {}
+        for agent_name, agent in self.qsom_agents.items():
+            obs = obs_per_agent[agent_name]
+            actions[agent_name] = agent.get_optimal_action(obs)
+        return actions
 
     def _assert_known_agents(self, required_agents_names: Iterable[str]):
         """

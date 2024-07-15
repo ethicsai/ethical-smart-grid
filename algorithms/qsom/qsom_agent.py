@@ -129,6 +129,23 @@ class QsomAgent(object):
 
         self.step += 1
 
+    def get_optimal_action(self, observations):
+        """
+        Return the action that is considered *optimal*.
+
+        This method ignores the *exploration* part: we select the action
+        with the maximal Q-Value (no Boltzmann selection), and we do not
+        perturb it (no random noise).
+        """
+        # Many steps here are similar to `forward`, but we take the maximal
+        # interest and do not perturb the action.
+        observations = np.asarray(observations)
+        observations = self._interpolate_observations(observations)
+        input_idx = self.state_som.compute_winner_node(observations)
+        action_idx = np.argmax(self.qtable[input_idx])
+        action_unit = self.action_som.get_unit(action_idx)
+        return action_unit
+
     def _update_qvalues(self, reward: float, max_reward: float):
         # Compute the neighborhood of Input- and Action-SOM
         # (i.e. the φS and φA in the update formula)

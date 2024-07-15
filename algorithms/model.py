@@ -1,8 +1,7 @@
 """
 The base Model, an abstract class to provide a common (standard) API.
 """
-
-
+import warnings
 from abc import ABC, abstractmethod
 from typing import Union, Dict
 
@@ -87,3 +86,32 @@ class Model(ABC):
             for details
         """
         pass
+
+    def get_optimal_actions(self, observations_per_agent: ObsDict) -> ActionDict:
+        """
+        Return the actions that are considered *optimal*, for each agent.
+
+        In other terms, this method ensures *exploitation*, whereas the
+        :py:meth:`~.forward` method encourages *exploitation-exploration*.
+
+        It can be useful after the training phase, for testing purposes.
+
+        :param observations_per_agent: A dictionary mapping agents' name to
+            their observations. Exactly as in :py:meth:`~.forward`.
+
+        :return: A dict mapping each agent to its action. Actions have the
+            same structure as in :py:meth:`~.forward`, but they should be
+            produced with only *exploitation* as a goal, i.e., selecting the
+            action that should yield the best reward.
+
+        .. warning:: By default, to ensure that all models will have this method,
+            it simply returns the same actions as :py:meth:`~.forward`.
+            Models that make a distinction between exploration and exploitation
+            should override it.
+        """
+        warnings.warn(
+            f"Model {type(self).__name__} does not override `get_optimal_actions()`."
+            f" By default, we return the same actions as `forward()`: the"
+            f" actions may not be optimal."
+        )
+        return self.forward(observations_per_agent)
