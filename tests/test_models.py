@@ -13,12 +13,12 @@ class TestModels(unittest.TestCase):
     def test_random_model(self):
         env = make_basic_smartgrid()
         model = RandomModel(env.unwrapped, {})
-        obs = env.reset(seed=123)
+        obs, _ = env.reset(seed=123)
 
         max_step = 10
         for step in range(max_step):
             actions = model.forward(obs)
-            assert len(actions) == env.unwrapped.n_agent, "There should be exactly as much actions as agents"
+            assert len(actions) == env.unwrapped.num_agents, "There should be exactly as much actions as agents"
             obs, rewards, _, _, infos = env.step(actions)
         env.close()
 
@@ -40,7 +40,7 @@ class TestModels(unittest.TestCase):
             'use_neighborhood': True,
         }
         model = QSOM(env.unwrapped, hyperparams)
-        obs = env.reset(seed=123)
+        obs, _ = env.reset(seed=123)
 
         max_step = 10
         for step in range(max_step):
