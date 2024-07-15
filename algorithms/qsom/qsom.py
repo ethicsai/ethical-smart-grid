@@ -4,7 +4,7 @@ the instantiation of Q-SOM Agents from a Gym Environment.
 
 It handles creating the correct structures, giving the correct parameters, ...
 """
-import numpy as np
+from typing import Iterable
 
 from algorithms.model import Model
 from algorithms.qsom.qsom_agent import QsomAgent
@@ -96,17 +96,17 @@ class QSOM(Model):
         if hyper_parameters is None:
             hyper_parameters = QSOM.default_hyperparameters
         super().__init__(env, hyper_parameters)
-        self.qsom_agents = []
+        self.qsom_agents = {}
 
         action_selector = BoltzmannActionSelector(self.hyper_parameters["initial_tau"],
                                                   self.hyper_parameters["tau_decay"],
                                                   self.hyper_parameters["tau_decay_coeff"])
         action_perturbator = EpsilonActionPerturbator(self.hyper_parameters["noise"])
 
-        for num_agent in range(env.n_agent):
-            obs_space = env.observation_space[num_agent]
+        for agent_name in env.agents:
+            obs_space = env.observation_space(agent_name)
             assert len(obs_space.shape) == 1, 'Observation space must be 1D'
-            action_space = env.action_space[num_agent]
+            action_space = env.action_space(agent_name)
             assert len(action_space.shape) == 1, 'Action space must be 1D'
 
             state_som = SOM(12, 12,
@@ -129,35 +129,44 @@ class QSOM(Model):
                                    update_all=self.hyper_parameters["update_all"],
                                    use_neighborhood=self.hyper_parameters["use_neighborhood"])
 
-            self.qsom_agents.append(qsom_agent)
+            self.qsom_agents[agent_name] = qsom_agent
 
-    def forward(self, observations_per_agent):
+    def forward(self, obs_per_agent):
         """Choose an action for each agent, based on their observations."""
-        observations_per_agent = [
-            np.concatenate((
-                observations_per_agent['local'][i],
-                observations_per_agent['global'],
-            ))
-            for i in range(self.env.n_agent)
-        ]
-        assert len(observations_per_agent) == len(self.qsom_agents)
-        actions = [
-            self.qsom_agents[i].forward(observations_per_agent[i])
-            for i in range(len(self.qsom_agents))
-        ]
+        self._assert_known_agents(obs_per_agent.keys())
+        actions = {
+            agent_name: self.qsom_agents[agent_name].forward(obs_per_agent[agent_name])
+            for agent_name in obs_per_agent.keys()
+        }
         return actions
 
-    def backward(self, new_observations_per_agent, reward_per_agent):
+    def backward(self, new_obs_per_agent, reward_per_agent):
         """Make each agent learn, based on their rewards and observations."""
-        new_observations_per_agent = [
-            np.concatenate((
-                new_observations_per_agent['local'][i],
-                new_observations_per_agent['global'],
-            ))
-            for i in range(self.env.n_agent)
-        ]
-        assert len(reward_per_agent) == len(self.qsom_agents)
-        assert len(new_observations_per_agent) == len(self.qsom_agents)
-        for i, agent in enumerate(self.qsom_agents):
-            agent.backward(new_observations_per_agent[i],
-                           reward_per_agent[i])
+        self._assert_known_agents(new_obs_per_agent.keys())
+        self._assert_known_agents(reward_per_agent.keys())
+        for agent_name, agent in self.qsom_agents.items():
+            agent.backward(
+                new_obs_per_agent[agent_name],
+                reward_per_agent[agent_name]
+            )
+
+    def _assert_known_agents(self, required_agents_names: Iterable[str]):
+        """
+        Internal method checking we can handle (at least) the required agents.
+
+        If the env sends observations (or rewards) about an *unknown* agent
+        (i.e., we have no ``QsomAgent`` registered for this name), we cannot
+        handle it.
+
+        :param required_agents_names: The agents' names that are *required*,
+            i.e., present in either the environment's observations or rewards.
+
+        .. note:: We silently ignore agents that are known but not any more in
+            the env, to support (potential) future use-cases, such as agent
+            termination.
+        """
+        required_agents = set(required_agents_names)
+        known_agents = set(self.qsom_agents.keys())
+        missing_agents = required_agents - known_agents
+        assert len(missing_agents) == 0, \
+            f"Env contains agents that the QSOM model does not know: {missing_agents}"

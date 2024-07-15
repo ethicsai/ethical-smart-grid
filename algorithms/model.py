@@ -4,8 +4,9 @@ The base Model, an abstract class to provide a common (standard) API.
 
 
 from abc import ABC, abstractmethod
+from typing import Union, Dict
 
-from smartgrid.environment import SmartGrid
+from smartgrid.environment import SmartGrid, AgentID, ObsDict, ActionDict
 
 
 class Model(ABC):
@@ -44,7 +45,7 @@ class Model(ABC):
         self.hyper_parameters = hyper_parameters
 
     @abstractmethod
-    def forward(self, observations_per_agent):
+    def forward(self, observations_per_agent: ObsDict) -> ActionDict:
         """
         Decide which actions should be taken, based on observations.
 
@@ -56,15 +57,17 @@ class Model(ABC):
             the current state of the simulator, and are the data used to
             take actions.
 
-        :return: The list of actions, one per agent, where an action is a list
-            of *action parameters*. See the
+        :return: A dict mapping each agent to its action, where an action is a
+            list of *action parameters*. See the
             :py:attr:`SmartGrid.action_space <smartgrid.environment.SmartGrid.action_space>`
             for details on the structure of *action parameters*.
         """
         pass
 
     @abstractmethod
-    def backward(self, observations_per_agent, reward_per_agent):
+    def backward(self,
+                 observations_per_agent: ObsDict,
+                 reward_per_agent: Union[Dict[AgentID, Dict[str, float]], Dict[AgentID, float]]):
         """
         Learn (improve) the agents' policies, based on observations and rewards.
 
@@ -78,7 +81,7 @@ class Model(ABC):
         :param reward_per_agent: The rewards per agent. They describe the degree
             to which agents' actions were satisfying (interesting), with respect
             to the moral values encoded in the reward functions. If multiple
-            reward functions are used, this is a list of dicts; otherwise, it
+            reward functions are used, this is a dict of dicts; otherwise, it
             is a dict of floats. See the
             :py:meth:`Smartgrid._get_reward() <smartgrid.environment.SmartGrid._get_reward>`
             for details
