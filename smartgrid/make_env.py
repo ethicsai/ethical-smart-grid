@@ -35,13 +35,6 @@ def find_profile_data(dataset: str, filename: str) -> str:
     :py:mod:`importlib.resources` is used to get a path to the file through the
     package.
 
-    This function may raise a ``DeprecationWarning`` when accessing
-    files through the package on Python3.11+. It is due to relying on the
-    :py:func:`importlib.resources.path` function, which is deprecated since
-    Python 3.11. As we support up to Python 3.7, and as the function is
-    only available since Python 3.9, it is still used instead of the more
-    recent :py:func:`importlib.resources.files`.
-
     :param dataset: The name of the folder containing the desired file, within
         the ``data`` folder. For example, ``openei`` to access the OpenEI
         dataset. This dataset cannot be nested, e.g., ``dataset/subdataset``
@@ -61,20 +54,25 @@ def find_profile_data(dataset: str, filename: str) -> str:
         # Hard mode: need to access it through the package (importlib).
         # Also, importlib returns a context, so we need to get the path
         # and exit the context when Python terminates.
-        import importlib_resources
         from contextlib import ExitStack
         import atexit
+        # Depending on the Python version, there are two ways to use importlib.
+        try:
+            # Python 3.9+
+            from importlib.resources import files, as_file
+            data = files('smartgrid.data').joinpath(dataset, filename)
+            ctx = as_file(data)
+        except ImportError:
+            # Python 3.7 and 3.8
+            from importlib.resources import path
+            ctx = path(f'smartgrid.data.{dataset}', filename)
         # Handle the context
         file_manager = ExitStack()
         # Close the context when Python terminates
         atexit.register(file_manager.close)
-        # `path` is deprecated since Python3.9, but we support up to 3.7,
-        # so we still use `path`. There is not much benefit to check whether
-        # the new `files` API is available and use it instead.
-        ctx = importlib_resources.path(f'smartgrid.data.{dataset}', filename)
-        path = file_manager.enter_context(ctx)
+        data_file_path = file_manager.enter_context(ctx)
         # Convert the PosixPath to a simple str for easier usage.
-        return str(path)
+        return str(data_file_path)
 
 
 def make_basic_smartgrid(
