@@ -18,11 +18,9 @@ class RandomModel(Model):
         super().__init__(env, hyper_parameters)
 
     def forward(self, observations_per_agent):
-        actions = []
-        for i in range(self.env.n_agent):
-            action = self.env.action_space[i].sample()
-            actions.append(action)
-
+        actions = {}
+        for agent_name in self.env.agents:
+            actions[agent_name] = self.env.action_space(agent_name).sample()
         return actions
 
     def backward(self, observations_per_agent, reward_per_agent):
