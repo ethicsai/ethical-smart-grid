@@ -2,8 +2,9 @@ Documentation of |project_name|
 ===============================
 
 This project aims to provide a (simplified) multi-agent simulator of a
-**Smart Grid**, using the `Gymnasium <https://gymnasium.farama.org/>`_
-(formerly OpenAI Gym) framework.
+**Smart Grid**, using the `PettingZoo <https://pettingzoo.farama.org/>`_
+(a multi-agent equivalent to `Gymnasium <https://gymnasium.farama.org/>`_)
+framework.
 
 This simulator has a strong focus on **ethical considerations**: in this
 environment, the learning agents must decide how to consume and distribute

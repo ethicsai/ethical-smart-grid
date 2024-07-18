@@ -114,9 +114,9 @@ def make_basic_smartgrid(
         automatically through the *terminated* and *truncated* values.
 
     :return: An instance of a :py:class:`.SmartGrid` env.
-        This instance must be, as per the Gymnasium framework, ``reset``
+        This instance must be, as per the PettingZoo framework, ``reset()``
         before it can be used. The instance is wrapped in a
-        :py:class:`.RewardAggregator` in order to receive single-objective
+        :py:class:`.RewardAggregator` in order to produce single-objective
         rewards. To directly access the underlying env, use the
         :py:attr:`unwrapped` property.
     """

@@ -57,7 +57,7 @@ to gain money by rewarding the difference with the previous step.
             super().__init__()
             self.previous_payoffs = {}
 
-        def calculate(self, world, agents):
+        def calculate(self, world, agent):
             # Get (or use default) the payoff at the last step.
             previous_payoff = self.previous_payoffs.get(agent)
             if previous_payoff is None:

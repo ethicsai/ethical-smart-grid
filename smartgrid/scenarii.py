@@ -32,12 +32,12 @@ interaction loop. For example:
     env = medium_annual_scenario(max_step=10)
 
     done = False
-    obs = env.reset()
+    obs, _ = env.reset()
     while not done:
-        actions = [
-            agent.profile.action_space.sample()
-            for agent in env.unwrapped.agents
-        ]
+        actions = {
+            agent_name: env.action_space(agent_name).sample()
+            for agent_name in env.unwrapped.agents
+        }
         obs, rewards, terminated, truncated, _ = env.step(actions)
         done = all(terminated) or all(truncated)
 

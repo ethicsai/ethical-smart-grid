@@ -64,45 +64,15 @@ profiles to instantiate :py:class:`~smartgrid.agents.agent.Agent`\ s.
 .. note::
    If the package was installed through ``pip`` instead of cloning the repository,
    accessing the files through a relative path will not work. Instead, the files
-   must be accessed from the installed package itself. In this case, the
-   :py:mod:`importlib.resources` module can be used.
-
-To access files from an installed package:
-
-.. code-block:: Python
-
-    converter = DataOpenEIConversion()
-
-    # Before Python 3.9:
-    from importlib_resources import path
-    # `path` returns a context manager that must be used in a `with`.
-    # The first argument is the path of the dataset, using `.` instead of `/`.
-    # The `data/` folder is moved within the `smartgrid` package when installing.
-    # The second argument is the name of the requested file, within the dataset.
-    with path('smartgrid.data.openei', 'profile_office_annually.npz') as f:
-        converter.load(
-            'Office',
-            f,
-            comfort.neutral_comfort_profile
-        )
-
-    # Since Python3.9:
-    from importlib_resources import files, as_file
-    # `as_file` returns a context manager that must be used in a `with`.
-    # You may use the `smartgrid` module directly as an argument, or `'smartgrid'`
-    # (i.e., a string).
-    with as_file(files(smartgrid).joinpath('data/openei/profile_office_annually.npz')) as f:
-        converter.load(
-            'Office',
-            f,
-            comfort.neutral_comfort_profile
-        )
+   must be accessed from the installed package itself.
 
 To simplify getting the path to data files, the :py:func:`~smartgrid.make_env.find_profile_data`
 function may be used, although it has some limitations. In particular, it
 only works with a single level of nesting (e.g., ``data/dataset/sub-dataset/file``
-will not work), and it relies on the :py:func:`importlib.resources.path` function,
-which is deprecated since Python3.11 (but still usable, for now).
+will not work). Yet, this function will work whether you have cloned the
+repository (as long as the current working directory is at the project root),
+or installed as a package; it is the recommended way to specify which data file
+to use.
 
 .. code-block:: Python
 
@@ -313,14 +283,14 @@ can be used instead. To use *multi-objective* learning algorithms, which
 receive several rewards each step, simply avoid wrapping the base environment.
 
 When the environment is wrapped, the base environment can be obtained through
-the :py:obj:`~gymnasium.Wrapper.unwrapped` property. Gymnasium
-wrappers should allow access to any (public) attribute automatically:
+the :py:obj:`~gymnasium.Wrapper.unwrapped` property. The wrapper allows access
+to any public attribute of the environment automatically:
 
 .. code-block:: Python
 
    smartgrid = env.unwrapped
-   n_agent = env.n_agent  # Note that `n_agent` is not defined in the wrapper!
-   assert n_agent == smartgrid.n_agent
+   num_agents = env.num_agents  # Note that `num_agents` is not defined in the wrapper!
+   assert num_agents == smartgrid.num_agents
 
 The interaction loop
 ^^^^^^^^^^^^^^^^^^^^
@@ -333,13 +303,13 @@ can be used:
 .. code-block:: Python
 
     done = False
-    obs_n = env.reset()
+    obs_n, _ = env.reset()
     while not done:
         # Implement your decision algorithm here
-        actions = [
-            agent.profile.action_space.sample()
-            for agent in env.agents
-        ]
+        actions = {
+            agent_name: env.action_space(agent_name).sample()
+            for agent_name in env.agents
+        }
         obs_n, rewards_n, terminated_n, truncated_n, info_n = env.step(actions)
         done = all(terminated_n) or all(truncated_n)
     env.close()
@@ -349,13 +319,13 @@ Otherwise, the env termination must be handled by the interaction loop itself:
 .. code-block:: Python
 
     max_step = 50
-    obs_n = env.reset()
+    obs_n, _ = env.reset()
     for _ in range(max_step):
         # Implement your decision algorithm here
-        actions = [
-            agent.profile.action_space.sample()
-            for agent in env.agents
-        ]
+       actions = {
+            agent_name: env.action_space(agent_name).sample()
+            for agent_name in env.agents
+        }
         # Note that we do not need the `terminated` nor `truncated` values here.
         obs_n, rewards_n, _, _, info_n = env.step(actions)
     env.close()

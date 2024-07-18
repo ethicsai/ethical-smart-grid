@@ -1,12 +1,12 @@
 Usage
 =====
 
-|project_name| provides a `Gymnasium <https://gymnasium.farama.org/>`_
+|project_name| provides a `PettingZoo <https://pettingzoo.farama.org/>`_
 environment for multi-agent reinforcement learning of *ethically-aligned*
 behaviours, i.e., behaviours that take into account ethical considerations.
 
-The environment is available as a Python package, and follows the Gymnasium API
-as close as possible, such that it can be used with any Gymnasium-compliant
+The environment is available as a Python package, and follows the PettingZoo API
+as close as possible, such that it can be used with any PettingZoo-compliant
 learning algorithm with little to no modification.
 
 Installation
@@ -31,8 +31,6 @@ configurable and extensible.
 To simplify the creation of a basic environment, the method
 :py:meth:`smartgrid.make_basic_smartgrid() <smartgrid.make_env.make_basic_smartgrid>`
 is made available.
-This method is also used to register the Smart Grid environment with Gymnasium,
-using the :py:func:`gym.make() <gymnasium.make>` method.
 
 To create an environment, type in a Python console:
 
@@ -41,27 +39,18 @@ To create an environment, type in a Python console:
     from smartgrid import make_basic_smartgrid
     env = make_basic_smartgrid()
 
-Or, equivalently:
-
-.. code-block:: Python
-
-    import gymnasium as gym
-    import smartgrid
-
-    env = gym.make('EthicalSmartGrid-v0')
-
 Then, the environment can be used through the standard *interaction loop*:
 
 .. code-block:: Python
 
     done = False
-    obs = env.reset()
+    obs, _ = env.reset()
     while not done:
-        # Replace the `actions` array with your own learning algorithm here
-        actions = [
-            agent.profile.action_space.sample()
-            for agent in env.agents
-        ]
+        # Replace the `actions` dict with your own learning algorithm here
+        actions = {
+            agent_name: env.action_space(agent_name).sample()
+            for agent_name in env.agents
+        }
         obs, reward_n, terminated_n, truncated_n, info_n = env.step(actions)
         # Print the rewards received by the learning agents during this step
         print(reward_n)
