@@ -21,7 +21,7 @@ You can use argumentation:
 Using the existing argumentation reward functions
 -------------------------------------------------
 
-You can import these reward functions from the:py:mod:`smartgrid.reward.argumentation`
+You can import these reward functions from the :py:mod:`smartgrid.rewards.argumentation`
 package; accessing this packages *requires* the `AJAR`_ library, which you can
 install with ``pip install git+https://github.com/ethicsai/ajar.git@v1.0.0``.
 Trying to import anything from this package without having `AJAR`_ will raise

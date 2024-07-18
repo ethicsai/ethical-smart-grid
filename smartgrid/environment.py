@@ -2,7 +2,7 @@
 The SmartGrid environment is the main entrypoint.
 """
 import warnings
-from typing import Optional, Dict, Tuple, Any, Iterable, List
+from typing import Optional, Dict, Tuple, Any, List
 
 import numpy as np
 from gymnasium import Space
@@ -31,15 +31,9 @@ class SmartGrid(pettingzoo.ParallelEnv):
     them, to satisfy their comfort while taking into account various ethical
     considerations.
 
-    This class extends the standard :py:class:`gym.Env <gymnasium.core.Env>`
+    This class extends the standard :py:class:`pettingzoo.utils.ParallelEnv`
     in order to be easily used with different learning algorithms.
-    However, a key feature of this environment is that multiple agents co-exist,
-    hence some changes have been made to the standard Gym API.
-    Notably: the :py:attr:`~smartgrid.environment.SmartGrid.action_space` and
-    :py:attr:`~smartgrid.environment.SmartGrid.observation_space` are lists of
-    :py:class:`~gymnasium.spaces.Space` instead of just a Space; the
-    :py:meth:`~smartgrid.environment.SmartGrid.step` method returns list and
-    dicts instead of single elements.
+    This is a multi-agent version of the well-known Gym API.
     """
 
     metadata = {
@@ -108,10 +102,6 @@ class SmartGrid(pettingzoo.ParallelEnv):
                  obs_manager: ObservationManager = None):
         """
         Create the SmartGrid environment.
-
-        This sets most attributes of the environment, including the
-        :py:attr:`~smartgrid.environment.SmartGrid.action_space` and
-        :py:attr:`~smartgrid.environment.SmartGrid.observation_space`..
 
         .. warning::
             Remember that the env is not usable until you call :py:meth:`.reset` !
@@ -318,8 +308,9 @@ class SmartGrid(pettingzoo.ParallelEnv):
         can be aggregated so that the result is a single float (which is used
         by most of the decision algorithms).
         This behaviour (whether to aggregate, and how to aggregate) is
-        controlled by the :py:attr:`.reward_calculator`, see
-        :py:class:`.RewardCollection` for details.
+        controlled by an optional wrapper, see
+        :py:class:`~smartgrid.wrappers.reward_aggregator.RewardAggregator`
+         for details.
 
         :return: A dictionary of rewards, one element per agent. The element
             itself is a dict which contains at least one reward, indexed by the
@@ -402,7 +393,7 @@ class SmartGrid(pettingzoo.ParallelEnv):
 
         :param agent_name: The name of the desired :py:class:`~smartgrid.agents.agent.Agent`.
             It must correspond to an existing Agent in the current World, i.e.,
-            an agent in the :py:attr:`smartgrid.world.World.agents` list.
+            an agent in the :py:attr:`~smartgrid.world.World.agents` list.
 
         :return: An instance of :py:class:`gymnasium.spaces.Box` indicating
             the number of dimensions of actions (parameters), as well as the

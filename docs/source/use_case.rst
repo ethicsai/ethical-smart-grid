@@ -120,17 +120,17 @@ prosumers to do X". Instead, as the moral values must be respected by the
 prosumer agents, and as these agents act as proxies for inhabitants of the
 smart grid, the moral values were adapted to take their point of view.
 
-Security of Supply
+**Security of Supply**
     An action that allows a prosumer to improve its comfort is moral.
 
-Affordability
+**Affordability**
     An action that makes a prosumer pay too much money is immoral.
 
-Inclusiveness
+**Inclusiveness**
     An action that improves the equity of comforts between all prosumers is
     moral.
 
-Environmental Sustainability
+**Environmental Sustainability**
     An action that prevents transactions (buying or selling energy) with the
     national grid is moral.
 

@@ -22,7 +22,7 @@ GlobalObservation
 -----------------
 
 Creating a completely new way to compute observations is easy: simply define
-a new class (ideally a :py:func:`collections.namedtuple`), and implement its
+a new :py:func:`dataclasses.dataclass`, and implement its
 :py:meth:`~.GlobalObservation.compute` class method (not instance method!), as
 well as :py:meth:`~.GlobalObservation.reset`.
 
@@ -31,11 +31,14 @@ For example, let us create a global observation class that only contains the
 
 .. code-block:: Python
 
-    from collections import namedtuple
+    import dataclasses
+    from smartgrid.observation.base_observation import BaseObservation
 
-    fields = ['hour']
+    @dataclasses.dataclass(frozen=True)
+    class OnlyHourGlobalObservation(BaseObservation):
 
-    class OnlyHourGlobalObservation(namedtuple('OnlyHourGlobalObservation', fields)):
+        # Dataclass require defining their attributes, which helps readability.
+        hour: float
 
         @classmethod
         def compute(cls, world):
@@ -46,38 +49,38 @@ For example, let us create a global observation class that only contains the
         def reset(cls):
             pass
 
-It is a little bit trickier to retain the existing fields of the global
-observation, because of the way Python handles namedtuples. For another example,
-let us create new *global* observations that include the current day in addition
-to the existing fields.
+The existing global observation fields can also be retained, by extending the
+:py:class:`~smartgrid.observation.global_observation.GlobalObservation` dataclass.
+For another example, let us create new *global* observations that include the
+current day in addition to the existing fields.
 
 .. code-block:: Python
 
-    from smartgrid.observation import GlobalObservation
-    from collections import namedtuple
+    import dataclasses
+    from smartgrid.observation.base_observation import GlobalObservation
 
-    # `GlobalObservation._fields` is a tuple, we cannot concatenate a list to it.
-    fields = ('day',) + GlobalObservation._fields
+    @dataclasses.dataclass(frozen=True)
+    class GlobalObservationAndDay(GlobalObservation):
 
-    class GlobalObservationAndDay(namedtuple('GlobalObservationAndDay', fields)):
+        # Dataclass require defining their attributes, which helps readability.
+        # These attributes are added to the ones defined in parent classes.
+        day: float
 
         @classmethod
         def compute(cls, world):
             obs = GlobalObservation.compute(world)
-            # `obs` is an instance (tuple) of GlobalObservation that contains
-            # all the other fields we want.
+            # `obs` is an instance of GlobalObservation containing all other fields.
             # We need to compute `day` now.
             day = world.current_step // 24
             # Now, we need to combine `day` with the other fields. To avoid
             # potential errors in the order of arguments, we will use keyworded
             # arguments (transforming `obs` into a dict and using the `**` operator).
-            existing_fields = obs._asdict()
+            existing_fields = obs.asdict()
             return cls(day=day, **existing_fields)
 
         @classmethod
         def reset(cls):
-            GlobalObservation.reset()
-
+            super.reset()
 
 LocalObservation
 ----------------
@@ -88,12 +91,14 @@ difference between the agents' comfort and the average of others' comfort.
 
 .. code-block:: Python
 
-    from collections import namedtuple
-    import numpy as np
+    import dataclasses
+    from smartgrid.observation.base_observation import BaseObservation
 
-    fields = ['comfort_diff']
+    @dataclasses.dataclass(frozen=True)
+    class ComfortDiffLocalObservation(BaseObservation):
 
-    class ComfortDiffLocalObservation(namedtuple('ComfortDiffLocalObservation', fields)):
+        # Dataclass require defining their attributes, which helps readability.
+        comfort_diff: float
 
         @classmethod
         def compute(cls, world, agent):
@@ -109,6 +114,9 @@ difference between the agents' comfort and the average of others' comfort.
             # But it is provided, to allow for more complex local observations.
             pass
 
+Similarly to global observations, existing fields can be retained by inheriting
+from :py:class:`~smartgrid.observation.local_observation.LocalObservation`
+rather than :py:class:`~smartgrid.observation.base_observation.BaseObservation`.
 
 ObservationManager
 ------------------
@@ -133,7 +141,7 @@ For example, assuming that we want to use our ``GlobalObservationAndDay``:
         global_observation=GlobalObservationAndDay
     )
 
-Both *global* and *local* observations can be overriden at the same time, by
+Both *global* and *local* observations can be overridden at the same time, by
 specifying both arguments:
 
 .. code-block:: Python

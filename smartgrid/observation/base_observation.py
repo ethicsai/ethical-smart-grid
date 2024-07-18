@@ -30,9 +30,10 @@ class BaseObservation:
       which returns the :py:class:`~gymnasium.spaces.Space` in which
       Observations live (i.e., which values they can take).
     - a magic method that allows to easily create NumPy arrays by using the
-      standard :py:meth:`np.asarray` method, such as: ``np.asarray(obs)``.
+      standard :py:func:`numpy.asarray` method, such as: ``np.asarray(obs)``.
 
     Classes that extend this BaseObservation can thus be used either:
+
     - in a user-friendly manner, as a dataclass, by accessing the fields by
       their names, getting the fields names;
     - or in a programmatic manner, by converting them to NumPy arrays, which
